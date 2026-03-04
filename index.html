@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPS Workspace</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* === AJUSTES DEL DASHBOARD Y MENU DESPLEGABLE === */
+        #dashboard-view {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Contenedor del menú de perfil */
+        .profile-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* El botón redondo de arriba a la derecha */
+        .profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .profile-trigger:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* La cajita flotante con la información */
+        .profile-dropdown {
+            position: absolute;
+            top: 120%;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            width: 240px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            display: none; /* Oculto por defecto */
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        /* Clase para mostrar el menú */
+        .profile-dropdown.active {
+            display: flex;
+        }
+
+        .dropdown-header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+            margin-bottom: 10px;
+        }
+
+        .btn-logout {
+            width: 100%;
+            text-align: center;
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        
+        .btn-logout:hover {
+            background: rgba(231, 76, 60, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-view">
+        <div class="logo-text">OPS Workspace</div>
+        <p style="color: var(--text-secondary); margin-bottom: 25px;">Inicia sesión para acceder a las herramientas.</p>
+        
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Usuario" required>
+            <input type="password" id="password" placeholder="Contraseña" required>
+            <button type="submit" class="btn-primary" id="loginBtn">Ingresar</button>
+        </form>
+        <div id="error-msg" style="color: var(--danger); margin-top: 15px; font-size: 14px; display: none;"></div>
+    </div>
+
+    <div id="dashboard-view" style="display: none;">
+        
+        <div class="navbar">
+            <div class="logo-text" style="margin: 0; font-size: 20px;">📓 Workspace</div>
+            
+            <div class="profile-menu">
+                <div class="profile-trigger" id="profileTrigger" onclick="toggleProfileMenu()">
+                    <span style="font-size: 18px;">👤</span>
+                    <span id="triggerName" style="font-weight: 600; font-size: 14px; color: var(--text-primary);">Cargando...</span>
+                    <span style="font-size: 10px; opacity: 0.5;">▼</span>
+                </div>
+
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="dropdown-header">
+                        <div id="profileFullName" style="font-weight: bold; font-size: 16px; margin-bottom: 4px;">Nombre</div>
+                        <div id="profileUsername" style="color: var(--text-secondary); font-size: 13px; margin-bottom: 10px;">@usuario</div>
+                        <span class="badge" id="profileRole" style="font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 700; letter-spacing: 0.5px;">ROL</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+                </div>
+            </div>
+        </div>
+
+        <h2 style="margin-top: 40px; margin-bottom: 20px; font-size: 18px; color: var(--text-secondary); font-weight: 600;">Tus Aplicaciones</h2>
+        
+        <div class="apps-grid">
+            <a href="/cashouts/" class="app-card" id="card-cashouts">
+                <div class="app-icon">🌴</div>
+                <h3 class="app-title">Cashouts</h3>
+                <p class="app-desc">Sistema de registro y verificación de cashouts en tiempo real con sincronización a Google Sheets.</p>
+            </a>
+
+            <a href="/operapedia/" class="app-card" id="card-operapedia">
+                <div class="app-icon">📓</div>
+                <h3 class="app-title">Operapedia</h3>
+                <p class="app-desc">Panel de credenciales, métodos de pago, promociones y catálogo de juegos de nuestras compañías.</p>
+            </a>
+        </div>
+
+    </div>
+
+    <script>
+        const API_BASE = "https://general-cashouts.onrender.com/api"; // Tu servidor de Render
+        
+        const loginView = document.getElementById('login-view');
+        const dashboardView = document.getElementById('dashboard-view');
+        const loginForm = document.getElementById('loginForm');
+        const errorMsg = document.getElementById('error-msg');
+
+        // Función para abrir/cerrar el menú de perfil
+        function toggleProfileMenu() {
+            document.getElementById('profileDropdown').classList.toggle('active');
+        }
+
+        // Cierra el menú si haces clic fuera de él
+        window.onclick = function(event) {
+            if (!event.target.closest('.profile-menu')) {
+                const dropdown = document.getElementById('profileDropdown');
+                if (dropdown.classList.contains('active')) {
+                    dropdown.classList.remove('active');
+                }
+            }
+        }
+
+        // Al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            
+            if (token && userStr) {
+                const user = JSON.parse(userStr);
+                mostrarDashboard(user);
+            }
+        });
+
+        // Formulario de login
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            btn.textContent = "Verificando...";
+            btn.disabled = true;
+            errorMsg.style.display = 'none';
+
+            try {
+                const res = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: document.getElementById('username').value.trim(),
+                        password: document.getElementById('password').value
+                    })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Credenciales incorrectas");
+
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                
+                mostrarDashboard(data.user);
+            } catch (err) {
+                errorMsg.textContent = err.message;
+                errorMsg.style.display = 'block';
+            } finally {
+                btn.textContent = "Ingresar";
+                btn.disabled = false;
+            }
+        });
+
+        // Mostrar el dashboard y llenar los datos
+        function mostrarDashboard(user) {
+            loginView.style.display = 'none';
+            dashboardView.style.display = 'block';
+            
+            // Pone solo el primer nombre en el botón visible
+            const primerNombre = user.fullName.split(' ')[0];
+            document.getElementById('triggerName').textContent = primerNombre;
+
+            // Llena el menú desplegable
+            document.getElementById('profileFullName').textContent = user.fullName;
+            document.getElementById('profileUsername').textContent = '@' + user.username;
+            
+            const roleBadge = document.getElementById('profileRole');
+            roleBadge.textContent = user.role.toUpperCase();
+
+            // Referencias a las tarjetas
+            const cardCashouts = document.getElementById('card-cashouts');
+            const cardOperapedia = document.getElementById('card-operapedia');
+
+            // 1. Reseteamos la vista por defecto (mostrar ambas)
+            cardCashouts.style.display = 'flex';
+            cardOperapedia.style.display = 'flex';
+
+            // 2. Colores y permisos según el rol
+            if (user.role === 'supervisor') {
+                roleBadge.style.background = 'rgba(94, 106, 210, 0.15)';
+                roleBadge.style.color = '#6f7bf0';
+                roleBadge.style.border = '1px solid rgba(94, 106, 210, 0.3)';
+            } else if (user.role === 'analista') {
+                roleBadge.style.background = 'rgba(46, 204, 113, 0.15)';
+                roleBadge.style.color = '#2ecc71';
+                roleBadge.style.border = '1px solid rgba(46, 204, 113, 0.3)';
+            } else if (user.role === 'chats') {
+                // Color Naranja/Dorado para Chats
+                roleBadge.style.background = 'rgba(243, 156, 18, 0.15)';
+                roleBadge.style.color = '#f39c12';
+                roleBadge.style.border = '1px solid rgba(243, 156, 18, 0.3)';
+                
+                // ¡Magia! Ocultamos Cashouts
+                cardCashouts.style.display = 'none';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            location.reload();
+        }
+    </script>
+</body>
+</html>

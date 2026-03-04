@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Registro de Cash Outs</title>
+    <link rel="icon" href="/budget.png" type="image/png">
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <!-- Elementos decorativos de playa -->
+    <div class="beach-bg"></div>
+
+
+
+    <div class="container dashboard-container">
+
+
+
+        <aside class="sidebar">
+            <button onclick="window.location.href='/'" style="background: rgba(38, 70, 83, 0.1); color: var(--tertiary); width: 100%; border: 2px dashed rgba(42, 157, 143, 0.3); padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; transition: background 0.2s, border-color 0.2s;" onmouseover="this.style.background='rgba(38, 70, 83, 0.2)'; this.style.borderColor='rgba(42, 157, 143, 0.6)';" onmouseout="this.style.background='rgba(38, 70, 83, 0.1)'; this.style.borderColor='rgba(42, 157, 143, 0.3)';">
+                🏠 Volver al Hub
+            </button>
+            <!-- Indicador de Supervisor/Revisor de Turno -->
+            <div id="supervisorTurnoGlobal" class="supervisor-turno-global" style="display:none;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <span
+                        style="color: white; font-size: 13px; font-weight: bold; line-height: 1.3; display: inline-block;">
+                        👤 <span id="turnoLabel">Supervisor</span> de turno:<br> <span
+                            id="supervisorTurnoDisplay">-</span>
+                    </span>
+                </div>
+            </div>
+
+                <div class="role-selector">
+                    <button class="role-btn operator active" id="operatorBtn">Submit a Cashout</button>
+                    
+                    <button class="role-btn supervisor" id="reviewBtn">
+                        <span class="icon">🔍</span> Review a Cashout
+                    </button>
+                    
+                    <button class="role-btn rules" id="rulesBtn">
+                        <span class="icon">📜</span> Cashout Rules
+                    </button>
+                    <button class="role-btn leaderboard" id="leaderboardBtn">
+                        <span class="icon">🏆</span> Leaderboard
+                    </button>
+                    <button class="role-btn stats" id="statsBtn">
+                        <span class="icon">📊</span> Stats
+                    </button>
+                    
+                    <button class="role-btn" id="manageTeamBtn" style="display: none; background: rgba(38, 70, 83, 0.1); color: var(--tertiary);">
+                        <span class="icon">👥</span> Manage Team
+                    </button>
+                </div>
+
+            <!-- Botón de Cerrar Sesión Operador (al fondo de la barra) -->
+            <div class="logout-global">
+                <button class="role-btn logout" id="operatorLogoutBtn" style="white-space: normal; line-height: 1.2;">
+                    Cerrar Sesión Operador
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header>
+                <h1>🌴 Sistema de Registro de Cash Outs ☀️</h1>
+                <p>Registro y verificación de cash outs para múltiples compañías</p>
+            </header>
+
+            <!-- Sección operador -->
+            <div id="operatorSection" class="form-section">
+                <h2>Registrar nuevo cash out</h2>
+                <form id="cashoutForm">
+                    <div class="form-group">
+                        <label for="operationCode">Código de Operación *</label>
+                        <input type="text" id="operationCode" name="operationCode" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="operatorName">Nombre del Operador *</label>
+                        <input type="text" id="operatorName" name="operatorName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="company">Compañía *</label>
+                        <select id="company" name="company" required>
+                            <option value="">Seleccione una compañía</option>
+                        </select>
+                    </div>
+                    <button type="submit">Enviar para verificación</button>
+                </form>
+
+                <!-- Modal de Observación del Operador -->
+                <div id="observacionModal" class="modal-overlay" style="display:none;">
+                    <div class="modal-content">
+                        <h3>¿Tienes alguna observación sobre este cashout?</h3>
+                        <div class="modal-buttons">
+                            <button id="btnObservacionSi" class="btn-si">SÍ</button>
+                            <button id="btnObservacionNo" class="btn-no">NO</button>
+                        </div>
+                        <div id="observacionInputContainer" style="display:none; margin-top: 15px;">
+                            <textarea id="observacionTexto" placeholder="Escribe tu observación aquí..."
+                                rows="3"></textarea>
+                            <button id="btnEnviarConObservacion">Enviar Cashout</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="operatorSuccess" class="success-message">
+                    ¡Cash out registrado correctamente! Esperando verificación.
+                </div>
+                <div id="operatorError" class="error-message">
+                    Ha ocurrido un error al registrar el cash out. Por favor, inténtalo de nuevo.
+                </div>
+            </div>
+
+            <div id="reviewSection" class="form-section" style="display: none;">
+                <h2>🔍 Cola de Revisión</h2>
+                <p>Cash outs pendientes de verificación:</p>
+                <div id="verificationQueue" class="queue">
+                    <p>Cargando cash outs pendientes...</p>
+                </div>
+                <div id="reviewSuccess" class="success-message" style="display:none;">¡Acción procesada!</div>
+                <div id="reviewError" class="error-message" style="display:none;">Error al procesar.</div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <button id="forceRefresh" style="width: auto; display: inline-block; padding: 10px 22px;">
+                        🔄 Actualizar Cola
+                    </button>
+                </div>
+            </div>
+
+            <div id="manageTeamSection" class="form-section" style="display: none; max-width: 900px;">
+                <h2>👥 Gestión de Equipo</h2>
+                <p>Crea o elimina cuentas de acceso para tus analistas.</p>
+                
+                <div style="background: rgba(42, 157, 143, 0.05); padding: 20px; border-radius: 12px; border: 1px dashed var(--primary); margin-bottom: 25px;">
+                    <h3 style="margin-top:0; color: var(--primary);">+ Crear Nuevo Usuario</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                        <input type="text" id="newFullName" placeholder="Nombre Completo (Ej. Juan Perez)">
+                        <input type="text" id="newUsername" placeholder="Usuario de acceso (Ej. juan.perez)">
+                        <input type="password" id="newPassword" placeholder="Contraseña">
+                        <select id="newRole" style="padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3);">
+                            <option value="analista">Analista</option>
+                            <option value="supervisor">Supervisor</option>
+                            <option value="chats">Chats</option>
+                        </select>
+                    </div>
+                    <button id="btnCreateUser" style="width: auto; padding: 12px 30px;">Crear Cuenta</button>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; border: 2px solid rgba(42, 157, 143, 0.2);">
+                        <thead style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
+                            <tr>
+                                <th style="padding: 15px; text-align: left;">Nombre</th>
+                                <th style="padding: 15px; text-align: left;">Usuario</th>
+                                <th style="padding: 15px; text-align: center;">Rol</th>
+                                <th style="padding: 15px; text-align: center;">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr><td colspan="4" style="text-align:center; padding: 20px;">Cargando usuarios...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sección Reglas -->
+                <div id="rulesSection" class="form-section" style="display: none; max-width: 1200px;">
+                <h2>📜 Reglas de Cashout por Compañía</h2>
+                <p>Consulta el procedimiento específico para cada plataforma:</p>
+                
+                <div id="newCompanyContainer" style="display: none; margin-bottom: 25px; padding: 20px; background: rgba(42, 157, 143, 0.05); border-radius: 12px; border: 1px dashed var(--primary); text-align: center;">
+                    <h3 style="color: var(--primary); margin-top: 0; font-size: 1.1em;">+ Agregar Nueva Compañía</h3>
+                    <div style="display: flex; gap: 10px; max-width: 500px; margin: 0 auto;">
+                        <input type="text" id="newCompanyName" placeholder="Nombre de la nueva compañía" style="flex: 1;">
+                        <button id="btnCreateCompany" style="width: auto; padding: 10px 20px; margin-top: 0;">Guardar</button>
+                    </div>
+                </div>
+
+                <div style="width: 100%; margin-bottom: 20px;">
+                    <input type="text" id="searchRules" placeholder="🔍 Buscar compañía por nombre..." style="width: 100%; padding: 14px; border-radius: 10px; border: 2px solid rgba(42, 157, 143, 0.3); font-size: 16px; background: white; text-align: left;">
+                </div>
+
+                <div id="rulesLoading" style="text-align: center; color: var(--primary); font-weight: bold; display: none;">
+                    ⏳ Cargando reglas desde la base de datos...
+                </div>
+
+                <div id="rulesGrid" class="rules-grid">
+                    </div>
+            </div>
+
+            <!-- ✅ MODAL STATS -->
+            <div id="statsModal" class="modal-overlay" style="display: none;">
+                <div class="modal-content stats-modal">
+                    <div class="stats-header">
+                        <h2 class="stats-title">📊 STATS - Estadísticas de Cashouts</h2>
+                        <button id="cerrarStats" class="btn-close-stats">✕</button>
+                    </div>
+
+                    <div id="statsContent" class="stats-body">
+
+                        <!-- FILTROS -->
+                        <div class="stats-filters">
+                            <div
+                                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
+                                <div>
+                                    <label
+                                        style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text);">Fecha
+                                        Inicio:</label>
+                                    <input type="date" id="statsStartDate"
+                                        style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3);">
+                                </div>
+                                <div>
+                                    <label
+                                        style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text);">Fecha
+                                        Fin:</label>
+                                    <input type="date" id="statsEndDate"
+                                        style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3);">
+                                </div>
+                                <div>
+                                    <label
+                                        style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text);">Compañía:</label>
+                                    <select id="statsCompanyFilter"
+                                        style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3);">
+                                        <option value="">Todas las compañías</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <button id="applyStatsFilters"
+                                        style="width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Aplicar
+                                        Filtros</button>
+                                </div>
+                            </div>
+                            <div id="statsLoading"
+                                style="display: none; margin-top: 15px; text-align: center; color: var(--primary); font-weight: 600;">
+                                ⏳ Cargando estadísticas...
+                            </div>
+                        </div>
+
+                        <!-- ESTADÍSTICAS GENERALES -->
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                            <div
+                                style="background: linear-gradient(135deg, rgba(39, 174, 96, 0.05), white); border: 2px solid #27ae60; border-radius: 12px; padding: 20px;">
+                                <div style="font-size: 2.5em;">✅</div>
+                                <div style="font-size: 0.85em; opacity: 0.7; margin-top: 8px;">Cashouts Aprobados</div>
+                                <div id="totalApproved" style="font-size: 2em; font-weight: 700; color: #27ae60;">-
+                                </div>
+                            </div>
+                            <div
+                                style="background: linear-gradient(135deg, rgba(231, 76, 60, 0.05), white); border: 2px solid #e74c3c; border-radius: 12px; padding: 20px;">
+                                <div style="font-size: 2.5em;">❌</div>
+                                <div style="font-size: 0.85em; opacity: 0.7; margin-top: 8px;">Cashouts Rechazados</div>
+                                <div id="totalRejected" style="font-size: 2em; font-weight: 700; color: #e74c3c;">-
+                                </div>
+                            </div>
+                            <div
+                                style="background: linear-gradient(135deg, rgba(52, 152, 219, 0.05), white); border: 2px solid #3498db; border-radius: 12px; padding: 20px;">
+                                <div style="font-size: 2.5em;">📊</div>
+                                <div style="font-size: 0.85em; opacity: 0.7; margin-top: 8px;">Tasa de Aprobación</div>
+                                <div id="approvalRate" style="font-size: 2em; font-weight: 700; color: #3498db;">-</div>
+                            </div>
+                            <div
+                                style="background: linear-gradient(135deg, rgba(243, 156, 18, 0.05), white); border: 2px solid #f39c12; border-radius: 12px; padding: 20px;">
+                                <div style="font-size: 2.5em;">📝</div>
+                                <div style="font-size: 0.85em; opacity: 0.7; margin-top: 8px;">Total Procesados</div>
+                                <div id="totalProcessed" style="font-size: 2em; font-weight: 700; color: #f39c12;">-
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RANKING POR OPERADOR -->
+                        <div
+                            style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
+                            <h3 style="color: var(--primary); margin-bottom: 15px;">🏆 Ranking por Operador</h3>
+                            <div style="overflow-x: auto;">
+                                <table id="rankingTable" style="width: 100%; border-collapse: collapse;">
+                                    <thead
+                                        style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
+                                        <tr>
+                                            <th style="padding: 12px; text-align: left;">#</th>
+                                            <th style="padding: 12px; text-align: left;">Operador</th>
+                                            <th style="padding: 12px; text-align: center;">Aprobados</th>
+                                            <th style="padding: 12px; text-align: center;">Rechazados</th>
+                                            <th style="padding: 12px; text-align: center;">Total</th>
+                                            <th style="padding: 12px; text-align: center;">Tasa</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rankingTableBody">
+                                        <tr>
+                                            <td colspan="6" style="padding: 40px; text-align: center; opacity: 0.7;">⏳
+                                                Cargando datos...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- PROMEDIOS POR TURNO -->
+                        <div
+                            style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
+                            <h3 style="color: var(--primary); margin-bottom: 15px;">⏰ Promedios por Turno (General)</h3>
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead
+                                        style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
+                                        <tr>
+                                            <th style="padding: 12px; text-align: left;">Turno</th>
+                                            <th style="padding: 12px; text-align: center;">Total Cashouts</th>
+                                            <th style="padding: 12px; text-align: center;">Promedio/día</th>
+                                            <th style="padding: 12px; text-align: center;">% del Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="shiftTableBody">
+                                        <tr>
+                                            <td colspan="4" style="padding: 40px; text-align: center; opacity: 0.7;">⏳
+                                                Cargando datos...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- DESEMPEÑO POR OPERADOR Y TURNO -->
+                        <div
+                            style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
+                            <h3 style="color: var(--primary); margin-bottom: 15px;">👤 Desempeño por Operador y Turno
+                            </h3>
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead
+                                        style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
+                                        <tr>
+                                            <th style="padding: 12px; text-align: left;">Operador</th>
+                                            <th style="padding: 12px; text-align: center;">🌅
+                                                Mañana<br><small>(7:00-14:30)</small></th>
+                                            <th style="padding: 12px; text-align: center;">🌇
+                                                Tarde<br><small>(14:30-22:00)</small></th>
+                                            <th style="padding: 12px; text-align: center;">🌙
+                                                Noche<br><small>(22:00-7:00)</small></th>
+                                            <th style="padding: 12px; text-align: center;">Mejor Turno</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="operatorShiftTableBody">
+                                        <tr>
+                                            <td colspan="5" style="padding: 40px; text-align: center; opacity: 0.7;">⏳
+                                                Cargando datos...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- CASHOUTS POR COMPAÑÍA -->
+                        <div
+                            style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
+                            <h3 style="color: var(--primary); margin-bottom: 15px;">🏢 Cashouts por Compañía</h3>
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead
+                                        style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
+                                        <tr>
+                                            <th style="padding: 12px; text-align: left;">Compañía</th>
+                                            <th style="padding: 12px; text-align: center;">Aprobados</th>
+                                            <th style="padding: 12px; text-align: center;">Rechazados</th>
+                                            <th style="padding: 12px; text-align: center;">Total</th>
+                                            <th style="padding: 12px; text-align: center;">Tasa</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="companyTableBody">
+                                        <tr>
+                                            <td colspan="5" style="padding: 40px; text-align: center; opacity: 0.7;">⏳
+                                                Cargando datos...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- HISTÓRICO COMPLETO -->
+                        <div
+                            style="background: white; border-radius: 12px; padding: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
+                            <h3 style="color: var(--primary); margin-bottom: 15px;">📋 Histórico Completo</h3>
+
+                            <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+                                <input type="text" id="searchHistory" placeholder="🔍 Buscar por código de operación..."
+                                    style="flex: 1; min-width: 250px; padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3);">
+                                <select id="operatorFilter"
+                                    style="min-width: 200px; padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3);">
+                                    <option value="">Todos los operadores</option>
+                                </select>
+                            </div>
+
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead
+                                        style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
+                                        <tr>
+                                            <th style="padding: 12px; text-align: left;">Código</th>
+                                            <th style="padding: 12px; text-align: left;">Operador</th>
+                                            <th style="padding: 12px; text-align: left;">Compañía</th>
+                                            <th style="padding: 12px; text-align: center;">Fecha/Hora</th>
+                                            <th style="padding: 12px; text-align: center;">Estado</th>
+                                            <th style="padding: 12px; text-align: left;">Supervisor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="historyTableBody">
+                                        <tr>
+                                            <td colspan="6" style="padding: 40px; text-align: center; opacity: 0.7;">⏳
+                                                Cargando histórico...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div id="pagination"
+                                style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; background: rgba(42, 157, 143, 0.05); border-radius: 8px; flex-wrap: wrap; gap: 12px;">
+                                <span id="paginationInfo">Mostrando 0-0 de 0</span>
+                                <div style="display: flex; gap: 8px;">
+                                    <button id="prevPage" style="padding: 8px 16px; width: auto;">◄ Anterior</button>
+                                    <span id="pageNumbers"></span>
+                                    <button id="nextPage" style="padding: 8px 16px; width: auto;">Siguiente ►</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </main>
+    </div>
+
+    <!-- Modal de Observación del Supervisor -->
+    <div id="supervisorObservacionModal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <h3>¿Quieres agregar algo a la observación?</h3>
+            <div id="observacionOriginalDisplay"
+                style="background: rgba(255, 193, 7, 0.25); color: #2c3e50; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; text-align: left;">
+            </div>
+            <div class="modal-buttons">
+                <button id="btnSupervisorObsSi" class="btn-si">SÍ</button>
+                <button id="btnSupervisorObsNo" class="btn-no">NO</button>
+            </div>
+            <div id="supervisorObsInputContainer" style="display:none; margin-top: 15px;">
+                <textarea id="supervisorObsTexto" placeholder="Escribe tu complemento aquí..." rows="3"></textarea>
+                <button id="btnProcesarConObservacion">Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Observación del Revisor -->
+    <div id="revisionObservacionModal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <h3>¿Quieres agregar algo a la observación?</h3>
+            <div id="revisionObservacionOriginalDisplay"
+                style="background: rgba(255, 193, 7, 0.25); color: #2c3e50; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; text-align: left;">
+            </div>
+            <div class="modal-buttons">
+                <button id="btnRevisionObsSi" class="btn-si">SÍ</button>
+                <button id="btnRevisionObsNo" class="btn-no">NO</button>
+            </div>
+            <div id="revisionObsInputContainer" style="display:none; margin-top: 15px;">
+                <textarea id="revisionObsTexto" placeholder="Escribe tu complemento aquí..." rows="3"></textarea>
+                <button id="btnProcesarConObservacionRevision">Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Selección de Supervisor de Turno -->
+    <div id="supervisorTurnoModal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <h3
+                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                🎯 Bienvenido Supervisor
+            </h3>
+            <p style="font-size: 16px; color: #555; margin-bottom: 20px;">¿Quién está de turno en estos momentos?</p>
+            <select id="supervisorTurnoSelect"
+                style="width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; border: 2px solid #667eea; margin-bottom: 20px;">
+                <option value="">Seleccione un supervisor</option>
+                <option value="Micaela Albareda">Micaela Albareda</option>
+                <option value="Micaela Zevallos">Micaela Zevallos</option>
+                <option value="Abel Juscamaita">Abel Juscamaita</option>
+                <option value="Nicole Tello">Nicole Tello</option>
+                <option value="Amelia Ureta">Amelia Ureta</option>
+                <option value="Melanie Barrientos">Melanie Barrientos</option>
+            </select>
+            <button id="btnConfirmarSupervisor"
+                style="width: 100%; padding: 12px; font-size: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                Confirmar
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Selección de Revisor de Turno -->
+    <div id="revisionTurnoModal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <h3
+                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                🎯 Bienvenido a Revisión de cashout!
+            </h3>
+            <p style="font-size: 16px; color: #555; margin-bottom: 20px;">¿Quién está revisando cashouts en estos
+                momentos?</p>
+            <select id="revisionTurnoSelect"
+                style="width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; border: 2px solid #667eea; margin-bottom: 20px;">
+                <option value="">Seleccione un revisor</option>
+                <option value="Melanie Barrientos">Melanie Barrientos</option>
+                <option value="Cristopher Cardozo">Cristopher Cardozo</option>
+                <option value="Lionel Alcantara">Lionel Alcantara</option>
+                <option value="Ethan Schwartz">Ethan Schwartz</option>
+                <option value="Ariana Caballero">Ariana Caballero</option>
+                <option value="Nicolas Torvisco">Nicolas Torvisco</option>
+                <option value="Jostyn Diaz">Jostyn Diaz</option>
+                <option value="Edwin Galvez">Edwin Galvez</option>
+                <option value="Karla Ayala">Karla Ayala</option>
+                <option value="Pedro Salazar">Pedro Salazar</option>
+            </select>
+            <button id="btnConfirmarRevision"
+                style="width: 100%; padding: 12px; font-size: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                Confirmar
+            </button>
+        </div>
+    </div>
+
+    <!-- ✅ MODAL LEADERBOARD -->
+    <div id="leaderboardModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content leaderboard-modal">
+            <div class="leaderboard-header">
+                <h2 class="leaderboard-title">🏆 LEADERBOARD</h2>
+                <button id="cerrarLeaderboard" class="btn-close-leaderboard">✕</button>
+            </div>
+
+            <div id="leaderboardContent" class="leaderboard-body">
+                <p style="text-align: center; color: var(--text); opacity: 0.7;">Cargando estadísticas...</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="notification" class="notification"></div>
+    <script>
+// ====== BASE URL (Render Backend) ======
+        const API_BASE = "https://general-cashouts.onrender.com/api";
+
+        // ========== ESTADO DE USUARIO (NUEVO) ==========
+        let currentUser = null;
+        let token = null;
+
+        // Elementos del Menú
+        const operatorBtn = document.getElementById('operatorBtn');
+        const reviewBtn = document.getElementById('reviewBtn');
+        const rulesBtn = document.getElementById('rulesBtn');
+        const leaderboardBtn = document.getElementById('leaderboardBtn');
+        const statsBtn = document.getElementById('statsBtn');
+        const manageTeamBtn = document.getElementById('manageTeamBtn');
+        const operatorLogoutBtn = document.getElementById('operatorLogoutBtn');
+
+        // Secciones
+        const operatorSection = document.getElementById('operatorSection');
+        const reviewSection = document.getElementById('reviewSection');
+        const rulesSection = document.getElementById('rulesSection');
+        const manageTeamSection = document.getElementById('manageTeamSection');
+        
+        // UI General
+        const cashoutForm = document.getElementById('cashoutForm');
+        const verificationQueue = document.getElementById('verificationQueue');
+        const notification = document.getElementById('notification');
+
+
+        let cachedItems = [];
+        let autoRefreshInterval = null;
+
+        // ========================================
+        // ✅ 1. SISTEMA DE AUTENTICACIÓN
+        // ========================================
+        
+        // Fetch Wrapper: Agrega el Token a todas las peticiones automáticamente
+        async function apiFetch(endpoint, options = {}) {
+            const headers = { 'Content-Type': 'application/json', ...options.headers };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            
+            const response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+            
+            // Si el token expiró o alguien intenta hackear, lo botamos al Hub
+            if (response.status === 401 || response.status === 403) {
+                cerrarSesion();
+                throw new Error("Sesión expirada o acceso denegado");
+            }
+            return response;
+        }
+
+        // Se encarga de inicializar la interfaz una vez que el Hub valida el token
+        function iniciarApp(jwtToken, userData) {
+            token = jwtToken;
+            currentUser = userData;
+            
+            showNotification(`¡Bienvenido, ${currentUser.fullName}!`, 'success');
+
+            // Autocompletar el nombre en el formulario y bloquearlo (Nadie puede fingir ser otro)
+            const operatorNameInput = document.getElementById('operatorName');
+            if (operatorNameInput) {
+                operatorNameInput.value = currentUser.fullName;
+                operatorNameInput.readOnly = true;
+            }
+
+            // Si es supervisor, mostramos el botón de Manage Team
+            if (currentUser.role === 'supervisor') {
+                manageTeamBtn.style.display = 'block';
+            } else {
+                manageTeamBtn.style.display = 'none';
+            }
+
+            // Ocultar etiquetas antiguas de "Supervisor de Turno" si aún existen en tu HTML
+            const supervisorTurnoGlobal = document.getElementById('supervisorTurnoGlobal');
+            if(supervisorTurnoGlobal) supervisorTurnoGlobal.style.display = 'none';
+
+            operatorBtn.click();
+            cargarReglasDesdeBD(true); // Carga silenciosa para llenar los selects
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/'; // Redirigir de regreso al Hub
+        }
+
+        operatorLogoutBtn.addEventListener('click', cerrarSesion);
+
+        // ========================================
+        // ✅ 2. NAVEGACIÓN
+        // ========================================
+        
+        function desactivarBotones() {
+            [operatorBtn, reviewBtn, rulesBtn, leaderboardBtn, statsBtn, manageTeamBtn].forEach(b => b.classList.remove('active'));
+            [operatorSection, reviewSection, rulesSection, manageTeamSection].forEach(s => s.style.display = 'none');
+            detenerAutoRefresh();
+        }
+
+        operatorBtn.addEventListener('click', () => {
+            desactivarBotones();
+            operatorBtn.classList.add('active');
+            operatorSection.style.display = 'block';
+        });
+
+        reviewBtn.addEventListener('click', () => {
+            desactivarBotones();
+            reviewBtn.classList.add('active');
+            reviewSection.style.display = 'block';
+            cargarCola();
+            iniciarAutoRefresh();
+        });
+
+        rulesBtn.addEventListener('click', () => {
+            desactivarBotones();
+            rulesBtn.classList.add('active');
+            rulesSection.style.display = 'block';
+            cargarReglasDesdeBD();
+        });
+
+        manageTeamBtn.addEventListener('click', () => {
+            desactivarBotones();
+            manageTeamBtn.classList.add('active');
+            manageTeamSection.style.display = 'block';
+            cargarUsuarios();
+        });
+
+        // ========================================
+        // ✅ 3. UTILIDADES Y NOTIFICACIONES
+        // ========================================
+
+        function showNotification(msg, type = "success") {
+            notification.textContent = msg;
+            notification.style.background = type === "error" ? "linear-gradient(135deg, #FF6B9D, #FFA07A)" : "linear-gradient(135deg, #00C9FF, #92FE9D)";
+            notification.style.color = type === "error" ? "#fff" : "#003d5c";
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 3200);
+        }
+
+        function calcularTiempoTranscurrido(cashoutChecking) {
+            try {
+                const [fecha, hora] = cashoutChecking.split(' ');
+                const [mes, dia, año] = fecha.split('/');
+                const [horas, mins, segs] = hora.split(':');
+                const inicio = new Date(año, mes - 1, dia, horas, mins, segs);
+                const diffSeg = Math.floor((new Date() - inicio) / 1000);
+                if (diffSeg < 0) return "0s";
+                
+                const h = Math.floor(diffSeg / 3600);
+                const m = Math.floor((diffSeg % 3600) / 60);
+                const s = diffSeg % 60;
+                
+                const partes = [];
+                if (h > 0) partes.push(`${h}h`);
+                if (m > 0) partes.push(`${m}m`);
+                if (s > 0 || partes.length === 0) partes.push(`${s}s`);
+                return partes.join(' ');
+            } catch (error) { return 'Error'; }
+        }
+
+        // ========================================
+        // ✅ 4. CREACIÓN DE CASHOUTS
+        // ========================================
+        let cashoutPendiente = null;
+
+        cashoutForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            document.getElementById('operatorSuccess').style.display = 'none';
+            document.getElementById('operatorError').style.display = 'none';
+
+            cashoutPendiente = {
+                operationCode: document.getElementById('operationCode').value,
+                operatorName: currentUser.fullName, // Toma el nombre del usuario logueado
+                company: document.getElementById('company').value,
+                observacion: ""
+            };
+
+            document.getElementById('observacionModal').style.display = 'flex';
+            document.getElementById('observacionInputContainer').style.display = 'none';
+            document.getElementById('observacionTexto').value = '';
+        });
+
+        document.getElementById('btnObservacionSi').addEventListener('click', () => {
+            document.getElementById('observacionInputContainer').style.display = 'block';
+        });
+
+        document.getElementById('btnObservacionNo').addEventListener('click', async () => {
+            document.getElementById('btnObservacionSi').disabled = true;
+            document.getElementById('btnObservacionNo').disabled = true;
+            document.getElementById('btnObservacionNo').textContent = 'Enviando...';
+            cashoutPendiente.observacion = "";
+            await enviarCashout();
+            document.getElementById('btnObservacionSi').disabled = false;
+            document.getElementById('btnObservacionNo').disabled = false;
+            document.getElementById('btnObservacionNo').textContent = 'NO';
+        });
+
+        document.getElementById('btnEnviarConObservacion').addEventListener('click', async () => {
+            const obs = document.getElementById('observacionTexto').value.trim();
+            if (!obs) return showNotification("Por favor, escribe una observación o selecciona NO.", "error");
+
+            const btnEnviar = document.getElementById('btnEnviarConObservacion');
+            btnEnviar.disabled = true;
+            btnEnviar.textContent = 'Enviando...';
+            cashoutPendiente.observacion = obs;
+            await enviarCashout();
+            btnEnviar.disabled = false;
+            btnEnviar.textContent = 'Enviar Cashout';
+        });
+
+        async function enviarCashout() {
+            try {
+                document.getElementById('observacionModal').style.display = 'none';
+                
+                await apiFetch(`/cashouts`, {
+                    method: "POST",
+                    body: JSON.stringify(cashoutPendiente)
+                });
+
+                document.getElementById('operatorSuccess').style.display = 'block';
+                showNotification("¡Cash out enviado correctamente!", "success");
+                
+                cashoutForm.reset();
+                document.getElementById('operatorName').value = currentUser.fullName;
+                
+                if (reviewSection.style.display === 'block') await cargarCola();
+            } catch (err) {
+                document.getElementById('operatorError').style.display = 'block';
+                showNotification("Error al subir cash out.", "error");
+            }
+            cashoutPendiente = null;
+        }
+
+        // ========================================
+        // ✅ 5. COLA UNIFICADA DE REVISIÓN
+        // ========================================
+        function iniciarAutoRefresh() {
+            if (autoRefreshInterval) return;
+            autoRefreshInterval = setInterval(() => {
+                if (reviewSection.style.display === 'block') cargarCola();
+            }, 10000);
+        }
+
+        function detenerAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+        }
+
+        document.getElementById('forceRefresh').addEventListener('click', cargarCola);
+
+        async function cargarCola() {
+            try {
+                const resp = await apiFetch(`/cashouts?status=pending&limit=300`);
+                let items = await resp.json();
+
+                items = items.map(x => ({
+                    row: x._id,
+                    operationCode: x.operationCode,
+                    operatorName: x.operatorName,
+                    company: x.company,
+                    observacion: x.observacion || "",
+                    cashoutChecking: x.cashoutChecking || "",
+                    timestamp: x.timestamp || x.createdAt
+                }));
+
+                cachedItems = items;
+                renderizarCola(items);
+            } catch (err) {
+                if (verificationQueue.children.length === 0) verificationQueue.innerHTML = '<p>Error al cargar la cola.</p>';
+            }
+        }
+
+        function renderizarCola(items) {
+            items.sort((a, b) => new Date(b.cashoutChecking || b.timestamp) - new Date(a.cashoutChecking || a.timestamp));
+
+            const idsActuales = items.map(i => i.row).sort().join(',');
+            const idsEnUI = Array.from(verificationQueue.querySelectorAll('[data-cashout-id]')).map(el => el.getAttribute('data-cashout-id')).sort().join(',');
+
+            // Solo actualizar el cronómetro si no hubo cambios reales
+            if (idsActuales === idsEnUI && items.length > 0) {
+                items.forEach(item => {
+                    const div = verificationQueue.querySelector(`[data-cashout-id="${item.row}"]`);
+                    if (div && item.cashoutChecking) {
+                        const cro = div.querySelector('.cronometro-live');
+                        if (cro) cro.textContent = `⏱️ ${calcularTiempoTranscurrido(item.cashoutChecking)}`;
+                    }
+                });
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+
+            if (items.length === 0) {
+                fragment.appendChild(document.createElement('p')).textContent = "No hay cash outs pendientes.";
+            } else {
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'cashout-item';
+                    div.setAttribute('data-cashout-id', item.row);
+
+                    const obsHtml = item.observacion ? `<div class="observacion-tag">📝 Observación: ${item.observacion}</div>` : '';
+                    const tiempoHtml = item.cashoutChecking ? `<div class="cronometro-live">⏱️ ${calcularTiempoTranscurrido(item.cashoutChecking)}</div>` : '';
+
+                    div.innerHTML = `
+                        <div><strong>${item.operationCode}</strong> <span>${item.company}</span></div>
+                        <div>Operador: ${item.operatorName}</div>
+                        <div>Inicio: ${item.cashoutChecking || 'Sin fecha'}</div>
+                        ${tiempoHtml}
+                        ${obsHtml}
+                        <div style="display: flex; gap: 10px; margin-top: 12px;">
+                            <button onclick="iniciarRevision('${item.row}', 'paid')" class="btn-action btn-verify">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                <span>Aprobar</span>
+                            </button>
+                            <button onclick="iniciarRevision('${item.row}', 'rejected')" class="btn-action btn-reject">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                <span>Rechazar</span>
+                            </button>
+                        </div>
+                    `;
+                    fragment.appendChild(div);
+                });
+            }
+
+            verificationQueue.innerHTML = "";
+            verificationQueue.appendChild(fragment);
+        }
+
+        let revisionPendiente = null;
+        let procesandoRevision = false;
+
+        window.iniciarRevision = function (row, nuevoEstado) {
+            if (procesandoRevision) return;
+            
+            const item = cachedItems.find(i => i.row === row);
+            revisionPendiente = {
+                row: row,
+                estado: nuevoEstado,
+                observacionOriginal: item ? item.observacion : ""
+            };
+
+            const display = document.getElementById('observacionOriginalDisplay');
+            if (revisionPendiente.observacionOriginal) {
+                display.innerHTML = `<strong>Observación Operador:</strong><br>${revisionPendiente.observacionOriginal}`;
+                display.style.display = 'block';
+            } else {
+                display.innerHTML = `<em>Sin observación previa</em>`;
+                display.style.display = 'block';
+            }
+
+            document.getElementById('supervisorObsInputContainer').style.display = 'none';
+            document.getElementById('supervisorObsTexto').value = '';
+            document.getElementById('supervisorObservacionModal').style.display = 'flex';
+        };
+
+        document.getElementById('btnSupervisorObsSi').addEventListener('click', () => {
+            document.getElementById('supervisorObsInputContainer').style.display = 'block';
+        });
+
+        document.getElementById('btnSupervisorObsNo').addEventListener('click', async () => {
+            await ejecutarRevision("");
+        });
+
+        document.getElementById('btnProcesarConObservacion').addEventListener('click', async () => {
+            const obs = document.getElementById('supervisorObsTexto').value.trim();
+            if (!obs) return showNotification("Escribe algo o presiona NO", "error");
+            await ejecutarRevision(obs);
+        });
+
+        async function ejecutarRevision(obsAdicional) {
+            if (!revisionPendiente) return;
+            procesandoRevision = true;
+            document.getElementById('supervisorObservacionModal').style.display = 'none';
+
+            let observacionFinal = revisionPendiente.observacionOriginal;
+            if (obsAdicional) {
+                const prefijo = currentUser.role === 'supervisor' ? 'Supervisor' : 'Analista';
+                observacionFinal = observacionFinal ? `${observacionFinal} | ${prefijo}: ${obsAdicional}` : `${prefijo}: ${obsAdicional}`;
+            }
+
+            // Ocultamos de UI de inmediato
+            cachedItems = cachedItems.filter(item => item.row !== revisionPendiente.row);
+            renderizarCola(cachedItems);
+            showNotification(revisionPendiente.estado === 'paid' ? "¡Aprobado!" : "Rechazado", "success");
+
+            try {
+                await apiFetch(`/cashouts/${encodeURIComponent(revisionPendiente.row)}`, {
+                    method: "PATCH",
+                    body: JSON.stringify({
+                        status: revisionPendiente.estado,
+                        supervisorName: currentUser.fullName, // 👈 Tu nombre se envía automáticamente
+                        observacion: observacionFinal
+                    })
+                });
+                
+                if (leaderboardModal.style.display === 'flex') await cargarLeaderboard();
+                await cargarCola();
+            } catch (err) {
+                showNotification("Error procesando. Recargando...", "error");
+                await cargarCola();
+            } finally {
+                procesandoRevision = false;
+                revisionPendiente = null;
+            }
+        }
+
+        // ========================================
+        // ✅ 6. GESTIÓN DE EQUIPO (MANAGE TEAM)
+        // ========================================
+        async function cargarUsuarios() {
+            try {
+                const res = await apiFetch(`/users`);
+                const json = await res.json();
+                const tbody = document.getElementById('usersTableBody');
+                
+                if(json.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay usuarios</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = json.data.map(u => `
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 12px; font-weight: bold;">${u.fullName}</td>
+                        <td style="padding: 12px; color: var(--tertiary);">${u.username}</td>
+                        <td style="padding: 12px; text-align: center;">
+                            <span style="background: ${u.role === 'supervisor' ? 'var(--primary)' : 'var(--accent)'}; color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; text-transform: uppercase;">
+                                ${u.role}
+                            </span>
+                        </td>
+                        <td style="padding: 12px; text-align: center;">
+                            <button onclick="cambiarPasswordUsuario('${u._id}', '${u.username}')" style="background: var(--accent); padding: 5px 10px; width: auto; font-size: 12px; margin-right: 5px;">🔑 Clave</button>
+                            <button onclick="eliminarUsuario('${u._id}')" style="background: var(--error); padding: 5px 10px; width: auto; font-size: 12px;" ${u.username === 'admin' ? 'disabled' : ''}>🗑️ Borrar</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch(e) {
+                showNotification("Error cargando usuarios", "error");
+            }
+        }
+
+        document.getElementById('btnCreateUser').addEventListener('click', async () => {
+            const fullName = document.getElementById('newFullName').value.trim();
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newPassword').value;
+            const role = document.getElementById('newRole').value;
+
+            if(!fullName || !username || !password) return showNotification("Llena todos los campos", "error");
+
+            const btn = document.getElementById('btnCreateUser');
+            btn.disabled = true;
+            btn.textContent = "Creando...";
+
+            try {
+                const res = await apiFetch(`/users`, {
+                    method: 'POST',
+                    body: JSON.stringify({ fullName, username, password, role })
+                });
+                
+                const data = await res.json();
+                if(!res.ok) throw new Error(data.error);
+
+                showNotification("Usuario creado con éxito");
+                document.getElementById('newFullName').value = '';
+                document.getElementById('newUsername').value = '';
+                document.getElementById('newPassword').value = '';
+                cargarUsuarios();
+            } catch(e) {
+                showNotification(e.message, "error");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Crear Cuenta";
+            }
+        });
+
+        window.eliminarUsuario = async function(id) {
+            if(!confirm("¿Estás seguro de eliminar este usuario?")) return;
+            try {
+                const res = await apiFetch(`/users/${id}`, { method: 'DELETE' });
+                if(res.ok) {
+                    showNotification("Usuario eliminado");
+                    cargarUsuarios();
+                } else {
+                    const data = await res.json();
+                    showNotification(data.error, "error");
+                }
+            } catch(e) { showNotification("Error al eliminar", "error"); }
+        }
+
+        window.cambiarPasswordUsuario = async function(id, username) {
+            // Usamos un simple prompt del navegador para pedir la clave rápido
+            const nuevaClave = prompt(`Ingrese la NUEVA contraseña para el usuario: ${username}`);
+            
+            if (nuevaClave === null) return; // Si el supervisor presiona "Cancelar"
+            if (nuevaClave.trim().length < 4) {
+                return showNotification("La contraseña debe tener al menos 4 caracteres.", "error");
+            }
+
+            try {
+                const res = await apiFetch(`/users/${id}/password`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ newPassword: nuevaClave.trim() })
+                });
+
+                if (res.ok) {
+                    showNotification(`Contraseña de ${username} actualizada con éxito.`, "success");
+                } else {
+                    const data = await res.json();
+                    showNotification(data.error, "error");
+                }
+            } catch (e) {
+                showNotification("Error al cambiar la contraseña", "error");
+            }
+        };
+
+        // ========================================
+        // ✅ 7. CASHOUT RULES
+        // ========================================
+        const rulesGrid = document.getElementById('rulesGrid');
+        const newCompanyContainer = document.getElementById('newCompanyContainer');
+        const searchRulesInput = document.getElementById('searchRules');
+
+        async function cargarReglasDesdeBD(silencioso = false) {
+            if(!silencioso && rulesGrid) rulesGrid.innerHTML = '<p style="text-align: center;">Cargando reglas...</p>';
+            try {
+                const res = await apiFetch(`/rules`);
+                const json = await res.json();
+                const rules = json.data;
+                
+                actualizarSelectsConReglas(rules);
+                if(silencioso) return;
+
+                const isSupervisor = currentUser.role === 'supervisor';
+                if (newCompanyContainer) newCompanyContainer.style.display = isSupervisor ? 'block' : 'none';
+
+                if (rules.length === 0) return rulesGrid.innerHTML = '<p style="text-align:center;">No hay compañías.</p>';
+
+                rulesGrid.innerHTML = rules.map(rule => `
+                    <div class="rule-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px dashed rgba(42, 157, 143, 0.2); padding-bottom: 10px;">
+                            <h3 style="margin: 0;">${rule.name}</h3>
+                            ${isSupervisor ? `<button onclick="toggleEditRegla('${rule._id}')" style="width: auto; padding: 6px 14px; font-size: 13px; margin: 0; background: var(--accent); border-radius: 8px;">✏️ Editar</button>` : ''}
+                        </div>
+                        <div id="view-mode-${rule._id}" style="background: rgba(0,0,0,0.02); white-space: pre-wrap; color: var(--tertiary); padding: 15px; border-radius: 10px; min-height: 60px;">${rule.ruleText ? rule.ruleText : '<i>Sin reglas.</i>'}</div>
+                        <div id="edit-mode-${rule._id}" style="display: none;">
+                            <textarea class="rule-text" id="rule-text-${rule._id}">${rule.ruleText || ''}</textarea>
+                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                <button onclick="guardarEdicionRegla('${rule._id}')" id="btn-save-${rule._id}" style="width:auto; padding:8px 15px;">💾 Guardar</button>
+                                <button onclick="toggleEditRegla('${rule._id}')" style="width:auto; padding:8px 15px; background: var(--error);">❌ Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch(e) { console.error(e); }
+        }
+
+        window.toggleEditRegla = (id) => {
+            const v = document.getElementById(`view-mode-${id}`);
+            const e = document.getElementById(`edit-mode-${id}`);
+            v.style.display = v.style.display === 'none' ? 'block' : 'none';
+            e.style.display = e.style.display === 'none' ? 'block' : 'none';
+        };
+
+        window.guardarEdicionRegla = async (id) => {
+            const text = document.getElementById(`rule-text-${id}`).value.trim();
+            const btn = document.getElementById(`btn-save-${id}`);
+            btn.disabled = true; btn.textContent = "⏳";
+            try {
+                await apiFetch(`/rules/${id}`, { method: 'PUT', body: JSON.stringify({ ruleText: text }) });
+                document.getElementById(`view-mode-${id}`).innerHTML = text || '<i>Sin reglas.</i>';
+                toggleEditRegla(id);
+                showNotification("Regla actualizada");
+            } catch(e) { showNotification("Error", "error"); }
+            finally { btn.disabled = false; btn.textContent = "💾 Guardar"; }
+        };
+
+        if (searchRulesInput) {
+            searchRulesInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                document.querySelectorAll('#rulesGrid .rule-card').forEach(card => {
+                    card.style.display = card.querySelector('h3').textContent.toLowerCase().includes(term) ? '' : 'none';
+                });
+            });
+        }
+
+        function actualizarSelectsConReglas(rules) {
+            const selects = [document.getElementById('company'), document.getElementById('statsCompanyFilter')];
+            selects.forEach(select => {
+                if(!select) return;
+                const val = select.value; 
+                select.innerHTML = select.id === 'company' ? '<option value="">Seleccione una compañía</option>' : '<option value="">Todas las compañías</option>';
+                rules.forEach(r => select.appendChild(new Option(r.name, r.name)));
+                if(Array.from(select.options).some(o => o.value === val)) select.value = val;
+            });
+        }
+
+        // ========================================
+        // ✅ 8. LEADERBOARD Y STATS
+        // ========================================
+        
+        // Modal Leaderboard
+        const leaderboardModal = document.getElementById('leaderboardModal');
+        const cerrarLeaderboard = document.getElementById('cerrarLeaderboard');
+        const leaderboardContent = document.getElementById('leaderboardContent');
+
+        leaderboardBtn.addEventListener('click', async () => {
+            desactivarBotones();
+            leaderboardBtn.classList.add('active');
+            leaderboardModal.style.display = 'flex';
+            await cargarLeaderboard();
+        });
+
+        cerrarLeaderboard.addEventListener('click', () => {
+            leaderboardModal.style.display = 'none';
+            operatorBtn.click(); // Volver a la pantalla principal
+        });
+
+        async function cargarLeaderboard() {
+            try {
+                leaderboardContent.innerHTML = '<p style="text-align: center; opacity: 0.7;">Cargando estadísticas...</p>';
+                const resp = await apiFetch(`/leaderboard`);
+                const data = await resp.json();
+
+                if (!data.ranking || data.ranking.length === 0) {
+                    leaderboardContent.innerHTML = '<p style="text-align: center; opacity: 0.7;">No hay datos disponibles.</p>';
+                    return;
+                }
+
+                const medallas = ['🥇', '🥈', '🥉'];
+                let html = `<div style="text-align: center; margin-bottom: 20px; padding: 15px; background: rgba(42, 157, 143, 0.1); border-radius: 12px;"><h3 style="margin: 0; color: var(--primary);">📊 Total: ${data.totalCashouts} cashouts verificados</h3></div>`;
+
+                data.ranking.forEach((supervisor, index) => {
+                    const esTop3 = index < 3;
+                    const bColor = esTop3 ? 'rgba(255, 215, 0, 0.5)' : 'rgba(42, 157, 143, 0.3)';
+                    const bg = esTop3 ? 'rgba(255, 215, 0, 0.05)' : 'rgba(42, 157, 143, 0.05)';
+
+                    html += `
+                        <div style="border: 2px solid ${bColor}; border-radius: 12px; padding: 20px; margin-bottom: 15px; background: ${bg}; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                <span style="font-size: 2em;">${medallas[index] || `#${index + 1}`}</span>
+                                <div>
+                                    <h3 style="margin: 0; font-size: 1.3em;">${supervisor.name}</h3>
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;">
+                                    <p style="margin: 0; opacity: 0.7; font-size: 0.85em;">📊 Cashouts</p>
+                                    <p style="margin: 5px 0 0 0; font-size: 1.5em; font-weight: bold; color: var(--success);">${supervisor.totalVerificados}</p>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;">
+                                    <p style="margin: 0; opacity: 0.7; font-size: 0.85em;">⏱️ Promedio</p>
+                                    <p style="margin: 5px 0 0 0; font-size: 1.5em; font-weight: bold; color: var(--primary);">${supervisor.tiempoPromedio}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                leaderboardContent.innerHTML = html;
+            } catch (error) { leaderboardContent.innerHTML = '<p style="text-align: center; color: var(--error);">❌ Error</p>'; }
+        }
+
+        // Modal Stats (Todo su código previo se mantiene intacto, pero ahora usa apiFetch)
+        let statsData = [];
+        let filteredStatsData = [];
+        let currentPage = 1;
+        const itemsPerPage = 50;
+
+        statsBtn.addEventListener('click', () => {
+            desactivarBotones();
+            statsBtn.classList.add('active');
+            document.getElementById('statsModal').style.display = 'flex';
+            
+            const hoy = new Date();
+            document.getElementById('statsEndDate').valueAsDate = hoy;
+            const hace30dias = new Date();
+            hace30dias.setDate(hace30dias.getDate() - 30);
+            document.getElementById('statsStartDate').valueAsDate = hace30dias;
+            
+            cargarEstadisticas();
+        });
+
+        document.getElementById('cerrarStats').addEventListener('click', () => {
+            document.getElementById('statsModal').style.display = 'none';
+            operatorBtn.click();
+        });
+
+        document.getElementById('applyStatsFilters').addEventListener('click', async () => {
+            await cargarEstadisticas();
+        });
+
+        async function cargarEstadisticas() {
+            const loading = document.getElementById('statsLoading');
+            loading.style.display = 'block';
+
+            try {
+                const startDate = document.getElementById('statsStartDate').value;
+                const endDate = document.getElementById('statsEndDate').value;
+                const company = document.getElementById('statsCompanyFilter').value;
+
+                let query = `?startRow=9082`;
+                if (startDate) query += `&startDate=${startDate}`;
+                if (endDate) query += `&endDate=${endDate}`;
+                if (company) query += `&company=${encodeURIComponent(company)}`;
+
+                const response = await apiFetch(`/stats${query}`);
+                const data = await response.json();
+                statsData = data.history || [];
+
+                document.getElementById('totalApproved').textContent = data.general.totalApproved.toLocaleString();
+                document.getElementById('totalRejected').textContent = data.general.totalRejected.toLocaleString();
+                document.getElementById('totalProcessed').textContent = data.general.totalProcessed.toLocaleString();
+                document.getElementById('approvalRate').textContent = `${data.general.approvalRate.toFixed(1)}%`;
+
+                const tbodyRanking = document.getElementById('rankingTableBody');
+                if (data.byOperator.length > 0) {
+                    tbodyRanking.innerHTML = data.byOperator.map((op, i) => `<tr style="border-bottom: 1px solid rgba(42, 157, 143, 0.1);"><td style="padding: 12px;">${i + 1}</td><td style="padding: 12px; font-weight: 600;">${op.name}</td><td style="padding: 12px; text-align: center; color: #27ae60;">${op.approved}</td><td style="padding: 12px; text-align: center; color: #e74c3c;">${op.rejected}</td><td style="padding: 12px; text-align: center; font-weight: 700;">${op.total}</td><td style="padding: 12px; text-align: center; color: ${op.rate >= 90 ? '#27ae60' : '#e74c3c'};">${op.rate.toFixed(1)}%</td></tr>`).join('');
+                }
+
+                actualizarHistorico(statsData);
+            } catch (error) {
+                showNotification('Error al cargar estadísticas', 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        function actualizarHistorico(data) {
+            filteredStatsData = data;
+            currentPage = 1;
+            const operadores = [...new Set(data.map(item => item.operatorName))].sort();
+            const operatorFilter = document.getElementById('operatorFilter');
+            operatorFilter.innerHTML = '<option value="">Todos los operadores</option>';
+            operadores.forEach(op => operatorFilter.appendChild(new Option(op, op)));
+            renderHistoricoPage();
+        }
+
+        function renderHistoricoPage() {
+            const tbody = document.getElementById('historyTableBody');
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageData = filteredStatsData.slice(start, end);
+
+            tbody.innerHTML = pageData.map(item => `
+                <tr style="border-bottom: 1px solid rgba(42, 157, 143, 0.1);">
+                    <td style="padding: 12px; font-family: monospace; font-weight: 600;">${item.operationCode}</td>
+                    <td style="padding: 12px;">${item.operatorName}</td>
+                    <td style="padding: 12px;">${item.company}</td>
+                    <td style="padding: 12px; text-align: center; font-size: 0.9em;">${item.cashoutTime}</td>
+                    <td style="padding: 12px; text-align: center; font-size: 1.3em;">${item.status === 'approved' ? '✅' : '❌'}</td>
+                    <td style="padding: 12px;">${item.supervisorName || '-'}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('paginationInfo').textContent = `Mostrando ${start + 1}-${Math.min(end, filteredStatsData.length)} de ${filteredStatsData.length}`;
+        }
+
+        document.getElementById('prevPage').addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderHistoricoPage(); } });
+        document.getElementById('nextPage').addEventListener('click', () => { if (currentPage < Math.ceil(filteredStatsData.length / itemsPerPage)) { currentPage++; renderHistoricoPage(); } });
+        document.getElementById('searchHistory').addEventListener('input', filtrarHistorico);
+        document.getElementById('operatorFilter').addEventListener('change', filtrarHistorico);
+
+        function filtrarHistorico() {
+            const search = document.getElementById('searchHistory').value.toLowerCase();
+            const op = document.getElementById('operatorFilter').value;
+            filteredStatsData = statsData.filter(item => (!search || item.operationCode.toLowerCase().includes(search)) && (!op || item.operatorName === op));
+            currentPage = 1;
+            renderHistoricoPage();
+        }
+
+        // ========================================
+        // ✅ 9. ARRANQUE (BOOTSTRAP)
+        // ========================================
+            document.addEventListener("DOMContentLoaded", () => {
+            const savedToken = localStorage.getItem('token');
+            const savedUser = localStorage.getItem('user');
+
+            if (savedToken && savedUser) {
+                // Hay sesión guardada por el Hub, entramos directo
+                iniciarApp(savedToken, JSON.parse(savedUser));
+            } else {
+                // Si alguien intenta entrar a /cashouts directo sin pasar por el Hub,
+                // lo botamos de regreso a la pantalla de Login del Hub.
+                window.location.href = '/';
+            }
+        });
+    </script>
+
+</body>
+
+</html>

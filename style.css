@@ -1,0 +1,192 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --bg-app: #0f1115;
+    --bg-card: #16181d;
+    --bg-input: #1e2128;
+    --text-primary: #ffffff;
+    --text-secondary: #a0aabf;
+    --accent: #5e6ad2;
+    --accent-hover: #6f7bf0;
+    --border: rgba(255, 255, 255, 0.08);
+    --danger: #e74c3c;
+}
+
+* { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 80px;
+}
+
+/* ================= LOGIN VIEW ================= */
+#login-view {
+    background: var(--bg-card);
+    padding: 40px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    margin: auto;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 30px;
+    background: linear-gradient(135deg, #ffffff 0%, #a0aabf 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+}
+
+input {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 14px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 15px;
+    outline: none;
+    transition: border 0.2s;
+}
+
+input:focus { border-color: var(--accent); }
+
+button.btn-primary {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button.btn-primary:hover { background: var(--accent-hover); }
+
+/* ================= DASHBOARD VIEW ================= */
+#dashboard-view {
+    width: 100%;
+    max-width: 900px;
+    padding: 20px;
+    display: none; /* Oculto hasta que inicie sesión */
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(22, 24, 29, 0.7);
+    backdrop-filter: blur(12px);
+    padding: 15px 25px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    margin-bottom: 40px;
+}
+
+.user-info { display: flex; align-items: center; gap: 15px; }
+
+.btn-logout {
+    background: rgba(231, 76, 60, 0.1);
+    color: var(--danger);
+    border: 1px solid rgba(231, 76, 60, 0.2);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.apps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.app-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 30px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: transform 0.2s, border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.app-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+}
+
+.app-icon { font-size: 40px; }
+.app-title { font-size: 20px; font-weight: 700; margin: 0; }
+.app-desc { color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin: 0; }
+
+/* ================= PROFILE SECTION ================= */
+.profile-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    padding: 25px;
+    border-radius: 16px;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.profile-avatar {
+    font-size: 35px;
+    background: rgba(94, 106, 210, 0.15);
+    height: 70px;
+    width: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid rgba(94, 106, 210, 0.4);
+}
+
+.profile-details h2 {
+    margin: 0 0 10px 0;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+}
+
+.profile-badges {
+    display: flex;
+    gap: 10px;
+}
+
+.badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.user-badge {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+}
