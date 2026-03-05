@@ -88,12 +88,13 @@
             background: rgba(231, 76, 60, 0.2);
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 </head>
 <body>
-
+<div id="particles-js"></div>
     <div id="login-view">
         <div class="logo-text">OPS Workspace</div>
-        <p style="color: var(--text-secondary); margin-bottom: 25px;">Inicia sesión para acceder a las herramientas.</p>
+        <p style="color: var(--text-secondary); margin-bottom: 25px;"></p>
         
         <form id="loginForm">
             <input type="text" id="username" placeholder="Usuario" required>
@@ -140,6 +141,12 @@
                 <h3 class="app-title">Operapedia</h3>
                 <p class="app-desc">Panel de credenciales, métodos de pago, promociones y catálogo de juegos de nuestras compañías.</p>
             </a>
+
+            <a href="/balance-monitor/" class="app-card" id="card-balance">
+                <div class="app-icon">📈</div>
+                <h3 class="app-title">Balance Monitor</h3>
+                <p class="app-desc">Monitoreo de saldos y estados de cuenta en tiempo real. (Módulo Externo)</p>
+            </a>
         </div>
 
     </div>
@@ -151,7 +158,47 @@
         const dashboardView = document.getElementById('dashboard-view');
         const loginForm = document.getElementById('loginForm');
         const errorMsg = document.getElementById('error-msg');
-
+        // ✅ INICIALIZAR EL FONDO TECNOLÓGICO
+                if(typeof particlesJS !== 'undefined') {
+                    particlesJS("particles-js", {
+                    "particles": {
+                        "number": { "value": 60, "density": { "enable": true, "value_area": 800 } },
+                        "color": { "value": "#5e6ad2" }, // Color morado de tu marca
+                        "shape": { "type": "circle" },
+                        "opacity": { "value": 0.3, "random": false },
+                        "size": { "value": 3, "random": true },
+                        "line_linked": { 
+                            "enable": true, 
+                            "distance": 150, 
+                            "color": "#5e6ad2", 
+                            "opacity": 0.2, 
+                            "width": 1 
+                        },
+                        "move": { 
+                            "enable": true, 
+                            "speed": 1.5, 
+                            "direction": "none", 
+                            "random": false, 
+                            "straight": false, 
+                            "out_mode": "out", 
+                            "bounce": false 
+                        }
+                    },
+                    "interactivity": {
+                        "detect_on": "window",
+                        "events": {
+                        "onhover": { "enable": true, "mode": "grab" }, // Conecta las líneas con tu cursor
+                        "onclick": { "enable": true, "mode": "push" }, // Añade más bolitas si haces clic
+                        "resize": true
+                        },
+                        "modes": {
+                        "grab": { "distance": 200, "line_linked": { "opacity": 0.6 } },
+                        "push": { "particles_nb": 4 }
+                        }
+                    },
+                    "retina_detect": true
+                    });
+                }
         // Función para abrir/cerrar el menú de perfil
         function toggleProfileMenu() {
             document.getElementById('profileDropdown').classList.toggle('active');
@@ -228,31 +275,36 @@
             const roleBadge = document.getElementById('profileRole');
             roleBadge.textContent = user.role.toUpperCase();
 
-            // Referencias a las tarjetas
+            // Referencias a las 3 tarjetas
             const cardCashouts = document.getElementById('card-cashouts');
             const cardOperapedia = document.getElementById('card-operapedia');
+            const cardBalance = document.getElementById('card-balance'); // 👈 Nueva referencia
 
-            // 1. Reseteamos la vista por defecto (mostrar ambas)
-            cardCashouts.style.display = 'flex';
-            cardOperapedia.style.display = 'flex';
+            // 1. Reseteamos la vista por defecto (mostrar todas)
+            if(cardCashouts) cardCashouts.style.display = 'flex';
+            if(cardOperapedia) cardOperapedia.style.display = 'flex';
+            if(cardBalance) cardBalance.style.display = 'flex';
 
             // 2. Colores y permisos según el rol
             if (user.role === 'supervisor') {
                 roleBadge.style.background = 'rgba(94, 106, 210, 0.15)';
                 roleBadge.style.color = '#6f7bf0';
                 roleBadge.style.border = '1px solid rgba(94, 106, 210, 0.3)';
+                
             } else if (user.role === 'analista') {
                 roleBadge.style.background = 'rgba(46, 204, 113, 0.15)';
                 roleBadge.style.color = '#2ecc71';
                 roleBadge.style.border = '1px solid rgba(46, 204, 113, 0.3)';
+                
             } else if (user.role === 'chats') {
                 // Color Naranja/Dorado para Chats
                 roleBadge.style.background = 'rgba(243, 156, 18, 0.15)';
                 roleBadge.style.color = '#f39c12';
                 roleBadge.style.border = '1px solid rgba(243, 156, 18, 0.3)';
                 
-                // ¡Magia! Ocultamos Cashouts
-                cardCashouts.style.display = 'none';
+                // ¡Magia! Ocultamos Cashouts y Balance Monitor a los de Chats
+                if(cardCashouts) cardCashouts.style.display = 'none';
+                if(cardBalance) cardBalance.style.display = 'none'; // 👈 Se oculta aquí
             }
         }
 
