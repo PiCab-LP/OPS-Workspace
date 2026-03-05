@@ -72,9 +72,10 @@
 
             const user = JSON.parse(userStr);
 
-            // Si el rol es 'chats', no tiene permiso de ver esta página, pa' fuera también
-            if (user.role === 'chats') {
+            // 🛑 NUEVO: Ni 'chats' ni 'analista' pueden ver los balances
+            if (user.role === 'chats' || user.role === 'analista') {
                 window.location.href = '/';
+                return;
             }
         });
     </script>

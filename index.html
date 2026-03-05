@@ -280,7 +280,7 @@
             // Referencias a las 3 tarjetas
             const cardCashouts = document.getElementById('card-cashouts');
             const cardOperapedia = document.getElementById('card-operapedia');
-            const cardBalance = document.getElementById('card-balance'); // 👈 Nueva referencia
+            const cardBalance = document.getElementById('card-balance'); //
 
             // 1. Reseteamos la vista por defecto (mostrar todas)
             if(cardCashouts) cardCashouts.style.display = 'flex';
@@ -297,6 +297,8 @@
                 roleBadge.style.background = 'rgba(46, 204, 113, 0.15)';
                 roleBadge.style.color = '#2ecc71';
                 roleBadge.style.border = '1px solid rgba(46, 204, 113, 0.3)';
+
+                if(cardBalance) cardBalance.style.display = 'none';
                 
             } else if (user.role === 'chats') {
                 roleBadge.style.background = 'rgba(243, 156, 18, 0.15)';
