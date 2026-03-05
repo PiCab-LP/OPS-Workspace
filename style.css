@@ -198,6 +198,6 @@ button.btn-primary:hover { background: var(--accent-hover); }
     height: 100vh;
     top: 0;
     left: 0;
-    z-index: -1; /* Lo pone por detrás de todos tus paneles */
+    z-index: -1;
     pointer-events: auto;
 }
