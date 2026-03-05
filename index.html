@@ -299,14 +299,23 @@
                 roleBadge.style.border = '1px solid rgba(46, 204, 113, 0.3)';
                 
             } else if (user.role === 'chats') {
-                // Color Naranja/Dorado para Chats
                 roleBadge.style.background = 'rgba(243, 156, 18, 0.15)';
                 roleBadge.style.color = '#f39c12';
                 roleBadge.style.border = '1px solid rgba(243, 156, 18, 0.3)';
                 
-                // ¡Magia! Ocultamos Cashouts y Balance Monitor a los de Chats
+                // Chats no ve Cashouts ni Balance
                 if(cardCashouts) cardCashouts.style.display = 'none';
-                if(cardBalance) cardBalance.style.display = 'none'; // 👈 Se oculta aquí
+                if(cardBalance) cardBalance.style.display = 'none';
+
+            } else if (user.role === 'asistente') {
+                // Color Azul para Asistente Administrativo
+                roleBadge.style.background = 'rgba(52, 152, 219, 0.15)';
+                roleBadge.style.color = '#3498db';
+                roleBadge.style.border = '1px solid rgba(52, 152, 219, 0.3)';
+                
+                // ¡Magia! El asistente SOLO ve Balance Monitor
+                if(cardCashouts) cardCashouts.style.display = 'none';
+                if(cardOperapedia) cardOperapedia.style.display = 'none';
             }
         }
 

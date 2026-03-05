@@ -145,6 +145,7 @@
                             <option value="analista">Analista</option>
                             <option value="supervisor">Supervisor</option>
                             <option value="chats">Chats</option>
+                            <option value="asistente">Asistente Administrativo</option>
                         </select>
                     </div>
                     <button id="btnCreateUser" style="width: auto; padding: 12px 30px;">Crear Cuenta</button>
@@ -1319,8 +1320,18 @@
             const savedUser = localStorage.getItem('user');
 
             if (savedToken && savedUser) {
-                // Hay sesión guardada por el Hub, entramos directo
-                iniciarApp(savedToken, JSON.parse(savedUser));
+                // 1. Convertimos el texto guardado en un objeto real
+                const user = JSON.parse(savedUser);
+
+                // 2. 🛑 SEGURIDAD: Revisamos la jerarquía (El VIP de la discoteca)
+                if (user.role === 'chats' || user.role === 'asistente') {
+                    // Si no tienen permiso, los botamos al Hub inmediatamente
+                    window.location.href = '/';
+                    return; // 👈 Este return es VITAL para que el código de abajo no se ejecute
+                }
+
+                // 3. Si pasó la validación (es supervisor o analista), entramos directo
+                iniciarApp(savedToken, user);
             } else {
                 // Si alguien intenta entrar a /cashouts directo sin pasar por el Hub,
                 // lo botamos de regreso a la pantalla de Login del Hub.

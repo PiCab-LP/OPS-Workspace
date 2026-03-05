@@ -218,12 +218,18 @@
 
             const user = JSON.parse(userStr);
 
+            // 🛑 SEGURIDAD NUEVA: Si es asistente, no tiene nada que hacer aquí, pa' fuera
+            if (user.role === 'asistente') {
+                window.location.href = '/';
+                return; // 👈 Vital para detener la ejecución inmediatamente
+            }
+
             // Magia pura: Si es supervisor, le damos permisos de admin en Operapedia automáticamente
             if (user.role === 'supervisor') {
                 localStorage.setItem('credentialsAdminLoggedIn', 'true');
             } else {
                 localStorage.removeItem('credentialsAdminLoggedIn');
-                // Ocultamos botones que un analista nunca debería ver
+                // Ocultamos botones que un analista o el rol de chats nunca deberían ver
                 document.getElementById('editModeBtn').style.display = 'none';
                 document.getElementById('catalogBtn').style.display = 'none';
             }
