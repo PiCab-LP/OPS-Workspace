@@ -201,3 +201,93 @@ button.btn-primary:hover { background: var(--accent-hover); }
     z-index: -1;
     pointer-events: auto;
 }
+
+/* ================= MODO CLARO ================= */
+/* Cuando el body tenga esta clase, se reemplazan los colores base */
+body.light-mode {
+    --bg-app: #f4f6f8;          /* Fondo gris muy clarito para la pantalla */
+    --bg-card: #ffffff;         /* Fondo blanco puro para las tarjetas/login */
+    --text-primary: #1f2937;    /* Texto gris casi negro */
+    --text-secondary: #6b7280;  /* Texto secundario gris medio */
+    --border: rgba(0, 0, 0, 0.1); /* Bordes grises sutiles */
+}
+
+
+/* ================= CORRECCIONES NAVBAR MODO CLARO ================= */
+
+/* 1. Hace que la barra sea blanca, con borde gris y sombra suave */
+body.light-mode .navbar {
+    background-color: var(--bg-card); 
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); 
+    /* Si tu navbar ya tiene border-radius y padding en el CSS original, se mantendrán */
+}
+
+/* 2. El texto de "Workspace" pasa a ser oscuro */
+body.light-mode .logo-text {
+    color: var(--text-primary) !important;
+}
+
+/* 3. El botón del perfil de la derecha deja de ser gris oscuro */
+body.light-mode .profile-trigger {
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--border);
+}
+
+body.light-mode .profile-trigger:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+/* ================= CORRECCIONES NAVBAR MODO CLARO ================= */
+body.light-mode .navbar {
+    background-color: var(--bg-card); 
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); 
+}
+
+/* LA SOLUCIÓN NUCLEAR PARA EL LOGO */
+body.light-mode .logo-text,
+body.light-mode .logo-text * {
+    color: #1f2937 !important;
+    background: none !important; /* Apaga cualquier gradiente de fondo */
+    -webkit-text-fill-color: #1f2937 !important; /* Fuerza el color sobre el gradiente webkit */
+    text-shadow: none !important;
+}
+
+body.light-mode .profile-trigger {
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--border);
+}
+
+body.light-mode .profile-trigger:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .profile-trigger,
+body.light-mode .profile-trigger span {
+    color: #1f2937 !important;
+}
+
+/* ================= INTERCAMBIO DE LOGOS ================= */
+/* Cuando se activa el modo claro, ocultamos el logo blanco */
+body.light-mode .logo-dark {
+    display: none !important;
+}
+
+/* Y mostramos el logo negro */
+body.light-mode .logo-light {
+    display: block !important;
+}
+
+/* ================= CORRECCIÓN INPUTS LOGIN MODO CLARO ================= */
+/* ¡Ahora con el ID correcto: login-view! */
+body.light-mode #login-view input {
+    background-color: #f4f6f8 !important; 
+    color: #1f2937 !important;           
+    border: 1px solid rgba(0, 0, 0, 0.15) !important; 
+}
+
+/* Para que las palabras "Usuario" y "Contraseña" se vean grises y legibles */
+body.light-mode #login-view input::placeholder {
+    color: #6b7280 !important;
+}

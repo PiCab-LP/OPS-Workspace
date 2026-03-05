@@ -88,12 +88,125 @@
         .btn-logout:hover {
             background: rgba(231, 76, 60, 0.2);
         }
+
+        /* ================= ESTILOS MODO CLARO / OSCURO ================= */
+        body.light-mode {
+            --bg-app: #f4f6f8;
+            --bg-card: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        /* ================= CORRECCIONES NAVBAR MODO CLARO ================= */
+        body.light-mode .navbar {
+            background-color: var(--bg-card); 
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); 
+        }
+
+        body.light-mode .logo-text,
+        body.light-mode .logo-text * {
+            color: #1f2937 !important;
+            background: none !important;
+            -webkit-text-fill-color: #1f2937 !important;
+            text-shadow: none !important;
+        }
+
+        body.light-mode .profile-trigger {
+            background: rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border);
+        }
+
+        body.light-mode .profile-trigger:hover {
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        body.light-mode .profile-trigger,
+        body.light-mode .profile-trigger span {
+            color: #1f2937 !important;
+        }
+
+        /* ================= INTERCAMBIO DE LOGOS ================= */
+        body.light-mode .logo-dark {
+            display: none !important;
+        }
+
+        body.light-mode .logo-light {
+            display: block !important;
+        }
+
+        /* ================= SWITCH DE TEMA ESTILO IOS ================= */
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 64px;
+            height: 32px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .theme-switch .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255, 255, 255, 0.05); 
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            transition: 0.4s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6px;
+        }
+
+        .theme-switch .slider::before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #5e6ad2; 
+            border-radius: 50%;
+            transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+            z-index: 2;
+        }
+
+        .theme-switch .switch-icon {
+            height: 14px;
+            width: 14px;
+            z-index: 1;
+            object-fit: contain;
+        }
+
+        body.light-mode .theme-switch .slider {
+            background-color: rgba(0, 0, 0, 0.05); 
+        }
+
+        .theme-switch input:checked + .slider::before {
+            transform: translateX(32px);
+            background-color: #1f2937; 
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 </head>
 <body>
     <div id="particles-js"></div>
-    <div id="login-view">
+    
+    <div id="login-view" style="position: relative;">
+        <label class="theme-switch" style="position: absolute; top: 20px; right: 20px;" title="Cambiar Tema">
+            <input type="checkbox" class="theme-checkbox" onchange="toggleTheme()">
+            <span class="slider">
+                <img src="./imgs/daylight.png" alt="Dark" class="switch-icon">
+                <img src="./imgs/moon (2).png" alt="Light" class="switch-icon">
+            </span>
+        </label>
+
         <div class="logo-text">OPS Workspace</div>
         <p style="color: var(--text-secondary); margin-bottom: 25px;"></p>
         
@@ -108,22 +221,37 @@
     <div id="dashboard-view" style="display: none;">
         
         <div class="navbar">
-            <div class="logo-text" style="margin: 0; font-size: 20px;">📓 Workspace</div>
+            <div class="logo-text" style="margin: 0; font-size: 20px; display: flex; align-items: center; gap: 8px;">
+                <img src="./imgs/categories (1).png" alt="Logo" class="logo-dark" style="height: 28px; width: auto;">
+                <img src="./imgs/categories.png" alt="Logo" class="logo-light" style="height: 28px; width: auto; display: none;">
+                Workspace
+            </div>
             
-            <div class="profile-menu">
-                <div class="profile-trigger" id="profileTrigger" onclick="toggleProfileMenu()">
-                    <span style="font-size: 18px;">👤</span>
-                    <span id="triggerName" style="font-weight: 600; font-size: 14px; color: var(--text-primary);">Cargando...</span>
-                    <span style="font-size: 10px; opacity: 0.5;">▼</span>
-                </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <label class="theme-switch" title="Cambiar Tema">
+                    <input type="checkbox" class="theme-checkbox" onchange="toggleTheme()">
+                    <span class="slider">
+                        <img src="./imgs/daylight.png" alt="Dark" class="switch-icon">
+                        <img src="./imgs/moon (2).png" alt="Light" class="switch-icon">
+                    </span>
+                </label>
 
-                <div class="profile-dropdown" id="profileDropdown">
-                    <div class="dropdown-header">
-                        <div id="profileFullName" style="font-weight: bold; font-size: 16px; margin-bottom: 4px;">Nombre</div>
-                        <div id="profileUsername" style="color: var(--text-secondary); font-size: 13px; margin-bottom: 10px;">@usuario</div>
-                        <span class="badge" id="profileRole" style="font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 700; letter-spacing: 0.5px;">ROL</span>
+                <div class="profile-menu">
+                    <div class="profile-trigger" id="profileTrigger" onclick="toggleProfileMenu()">
+                        <img src="./imgs/user (1).png" alt="Perfil" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                        <span id="triggerName" style="font-weight: 600; font-size: 14px; color: var(--text-primary);">Cargando...</span>
+                        <span style="font-size: 10px; opacity: 0.5;">▼</span>
                     </div>
-                    <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="dropdown-header">
+                            <div id="profileFullName" style="font-weight: bold; font-size: 16px; margin-bottom: 4px;">Nombre</div>
+                            <div id="profileUsername" style="color: var(--text-secondary); font-size: 13px; margin-bottom: 10px;">@usuario</div>
+                            <span class="badge" id="profileRole" style="font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 700; letter-spacing: 0.5px;">ROL</span>
+                        </div>
+                        
+                        <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -132,24 +260,23 @@
         
         <div class="apps-grid">
             <a href="/cashouts/" class="app-card" id="card-cashouts">
-                <div class="app-icon">🌴</div>
+                <img src="./imgs/budget (1).png" alt="Cashouts" style="width: 40px; height: 40px; object-fit: contain;">
                 <h3 class="app-title">Cashouts</h3>
                 <p class="app-desc">Sistema de registro y verificación de cashouts en tiempo real con sincronización a Google Sheets.</p>
             </a>
 
             <a href="/operapedia/" class="app-card" id="card-operapedia">
-                <div class="app-icon">📓</div>
+                <img src="./imgs/book.png" alt="Operapedia" style="width: 40px; height: 40px; object-fit: contain;">
                 <h3 class="app-title">Operapedia</h3>
                 <p class="app-desc">Panel de credenciales, métodos de pago, promociones y catálogo de juegos de nuestras compañías.</p>
             </a>
 
             <a href="/balance-monitor/" class="app-card" id="card-balance">
-                <div class="app-icon">📈</div>
+                <img src="./imgs/statistics.png" alt="Balances" style="width: 40px; height: 40px; object-fit: contain;">
                 <h3 class="app-title">Balance Monitor</h3>
-                <p class="app-desc">Monitoreo de saldos y estados de cuenta en tiempo real. (Módulo Externo)</p>
+                <p class="app-desc">Monitoreo balances y movimientos. (Módulo Externo)</p>
             </a>
         </div>
-
     </div>
 
     <script>
@@ -165,7 +292,7 @@
             particlesJS("particles-js", {
               "particles": {
                 "number": { "value": 60, "density": { "enable": true, "value_area": 800 } },
-                "color": { "value": "#5e6ad2" }, // Color morado
+                "color": { "value": "#5e6ad2" },
                 "shape": { "type": "circle" },
                 "opacity": { "value": 0.3, "random": false },
                 "size": { "value": 3, "random": true },
@@ -187,7 +314,7 @@
                 }
               },
               "interactivity": {
-                "detect_on": "window", /* 👈 Detecta el cursor en toda la pantalla */
+                "detect_on": "window",
                 "events": {
                   "onhover": { "enable": true, "mode": "grab" },
                   "onclick": { "enable": true, "mode": "push" },
@@ -201,6 +328,7 @@
               "retina_detect": true
             });
         }
+
         // Función para abrir/cerrar el menú de perfil
         function toggleProfileMenu() {
             document.getElementById('profileDropdown').classList.toggle('active');
@@ -210,7 +338,7 @@
         window.onclick = function(event) {
             if (!event.target.closest('.profile-menu')) {
                 const dropdown = document.getElementById('profileDropdown');
-                if (dropdown.classList.contains('active')) {
+                if (dropdown && dropdown.classList.contains('active')) {
                     dropdown.classList.remove('active');
                 }
             }
@@ -261,26 +389,23 @@
             }
         });
 
-        // Mostrar el dashboard y llenar los datos
+        // Mostrar el dashboard y llenar los datos (CON ROLES ACTUALIZADOS)
         function mostrarDashboard(user) {
             loginView.style.display = 'none';
             dashboardView.style.display = 'block';
             
-            // Pone solo el primer nombre en el botón visible
             const primerNombre = user.fullName.split(' ')[0];
             document.getElementById('triggerName').textContent = primerNombre;
 
-            // Llena el menú desplegable
             document.getElementById('profileFullName').textContent = user.fullName;
             document.getElementById('profileUsername').textContent = '@' + user.username;
             
             const roleBadge = document.getElementById('profileRole');
             roleBadge.textContent = user.role.toUpperCase();
 
-            // Referencias a las 3 tarjetas
             const cardCashouts = document.getElementById('card-cashouts');
             const cardOperapedia = document.getElementById('card-operapedia');
-            const cardBalance = document.getElementById('card-balance'); //
+            const cardBalance = document.getElementById('card-balance');
 
             // 1. Reseteamos la vista por defecto (mostrar todas)
             if(cardCashouts) cardCashouts.style.display = 'flex';
@@ -297,7 +422,7 @@
                 roleBadge.style.background = 'rgba(46, 204, 113, 0.15)';
                 roleBadge.style.color = '#2ecc71';
                 roleBadge.style.border = '1px solid rgba(46, 204, 113, 0.3)';
-
+                
                 if(cardBalance) cardBalance.style.display = 'none';
                 
             } else if (user.role === 'chats') {
@@ -305,17 +430,14 @@
                 roleBadge.style.color = '#f39c12';
                 roleBadge.style.border = '1px solid rgba(243, 156, 18, 0.3)';
                 
-                // Chats no ve Cashouts ni Balance
                 if(cardCashouts) cardCashouts.style.display = 'none';
                 if(cardBalance) cardBalance.style.display = 'none';
 
             } else if (user.role === 'asistente') {
-                // Color Azul para Asistente Administrativo
                 roleBadge.style.background = 'rgba(52, 152, 219, 0.15)';
                 roleBadge.style.color = '#3498db';
                 roleBadge.style.border = '1px solid rgba(52, 152, 219, 0.3)';
                 
-                // ¡Magia! El asistente SOLO ve Balance Monitor
                 if(cardCashouts) cardCashouts.style.display = 'none';
                 if(cardOperapedia) cardOperapedia.style.display = 'none';
             }
@@ -326,6 +448,32 @@
             localStorage.removeItem('user');
             location.reload();
         }
+
+        // ================= LÓGICA MODO CLARO / OSCURO (SWITCH) =================
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('workspaceTheme', isLight ? 'light' : 'dark');
+            
+            // Sincronizar el estado del switch en Login y Dashboard
+            const checkboxes = document.querySelectorAll('.theme-checkbox');
+            checkboxes.forEach(chk => chk.checked = isLight);
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('workspaceTheme');
+            const isLight = savedTheme === 'light';
+            
+            if (isLight) {
+                document.body.classList.add('light-mode');
+            }
+            
+            // Marcar los checkboxes correctamente al cargar la página
+            const checkboxes = document.querySelectorAll('.theme-checkbox');
+            checkboxes.forEach(chk => chk.checked = isLight);
+        }
+        
+        loadTheme();
     </script>
 </body>
 </html>
