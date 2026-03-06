@@ -1065,6 +1065,40 @@
         const newCompanyContainer = document.getElementById('newCompanyContainer');
         const searchRulesInput = document.getElementById('searchRules');
 
+        // 👇 AGREGA ESTE BLOQUE NUEVO PARA GUARDAR COMPAÑÍAS 👇
+        const btnCreateCompany = document.getElementById('btnCreateCompany');
+        if (btnCreateCompany) {
+            btnCreateCompany.addEventListener('click', async () => {
+                const companyName = document.getElementById('newCompanyName').value.trim();
+                
+                if (!companyName) return showNotification("Por favor, ingresa el nombre de la compañía.", "error");
+
+                btnCreateCompany.disabled = true;
+                btnCreateCompany.textContent = "⏳";
+
+                try {
+                    const res = await apiFetch(`/rules`, {
+                        method: 'POST',
+                        body: JSON.stringify({ name: companyName, ruleText: "" })
+                    });
+                    
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || "Error al crear la compañía");
+
+                    showNotification("¡Compañía agregada con éxito!");
+                    document.getElementById('newCompanyName').value = '';
+                    
+                    // Recargamos la lista para que aparezca la nueva
+                    cargarReglasDesdeBD(); 
+                } catch (e) {
+                    showNotification(e.message, "error");
+                } finally {
+                    btnCreateCompany.disabled = false;
+                    btnCreateCompany.textContent = "Guardar";
+                }
+            });
+        }
+
         async function cargarReglasDesdeBD(silencioso = false) {
             if(!silencioso && rulesGrid) rulesGrid.innerHTML = '<p style="text-align: center;">Cargando reglas...</p>';
             try {
