@@ -255,8 +255,13 @@
                 </div>
             </div>
         </div>
-
-        <h2 style="margin-top: 40px; margin-bottom: 20px; font-size: 18px; color: var(--text-secondary); font-weight: 600;">Tus Aplicaciones</h2>
+        <div style="margin-top: 40px; margin-bottom: 10px;">
+            <h1 style="margin: 0; font-size: 28px; color: var(--text-primary); font-weight: 700;">
+                Hola de nuevo, <span id="welcomeName" style="color: #5e6ad2;">...</span>!
+            </h1>
+            <p style="margin-top: 5px; color: var(--text-secondary); font-size: 15px;">¿Qué haremos el día de hoy?</p>
+        </div>
+        <h2 style="margin-top: 30px; margin-bottom: 20px; font-size: 18px; color: var(--text-secondary); font-weight: 600;">Tus Aplicaciones</h2>
         
         <div class="apps-grid">
             <a href="/cashouts/" class="app-card" id="card-cashouts">
@@ -428,6 +433,9 @@
             
             const primerNombre = user.fullName.split(' ')[0];
             document.getElementById('triggerName').textContent = primerNombre;
+
+            const welcomeName = document.getElementById('welcomeName');
+            if(welcomeName) welcomeName.textContent = primerNombre;
 
             document.getElementById('profileFullName').textContent = user.fullName;
             document.getElementById('profileUsername').textContent = '@' + user.username;
