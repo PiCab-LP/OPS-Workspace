@@ -72,7 +72,7 @@
 
             <!-- Sección operador -->
             <div id="operatorSection" class="form-section">
-                <h2>Registrar nuevo cash out</h2>
+                <h2>Subir un nuevo cash out</h2>
                 <form id="cashoutForm">
                     <div class="form-group">
                         <label for="operationCode">Código de Operación *</label>
@@ -88,7 +88,7 @@
                             <option value="">Seleccione una compañía</option>
                         </select>
                     </div>
-                    <button type="submit">Enviar para verificación</button>
+                    <button type="submit">Empezar verificación!</button>
                 </form>
 
                 <!-- Modal de Observación del Operador -->
@@ -197,44 +197,59 @@
             <div id="statsModal" class="modal-overlay" style="display: none;">
                 <div class="modal-content stats-modal">
                     <div class="stats-header">
-                        <h2 class="stats-title">📊 STATS - Estadísticas de Cashouts</h2>
+                        <h2 class="stats-title"> STATS - Estadísticas de Cashouts</h2>
                         <button id="cerrarStats" class="btn-close-stats">✕</button>
                     </div>
 
                     <div id="statsContent" class="stats-body">
 
                         <!-- FILTROS -->
-                        <div class="stats-filters">
-                            <div
-                                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
-                                <div>
-                                    <label
-                                        style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text);">Fecha
-                                        Inicio:</label>
-                                    <input type="date" id="statsStartDate"
-                                        style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3);">
-                                </div>
-                                <div>
-                                    <label
-                                        style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text);">Fecha
-                                        Fin:</label>
-                                    <input type="date" id="statsEndDate"
-                                        style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3);">
-                                </div>
-                                <div>
-                                    <label
-                                        style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text);">Compañía:</label>
-                                    <select id="statsCompanyFilter"
-                                        style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3);">
-                                        <option value="">Todas las compañías</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <button id="applyStatsFilters"
-                                        style="width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Aplicar
-                                        Filtros</button>
-                                </div>
-                            </div>
+<div class="stats-filters" style="margin-bottom: 30px; background: rgba(42, 157, 143, 0.05); padding: 20px; border-radius: 12px;">
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end;">
+        
+        <div style="flex: 1; min-width: 150px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 14px;">Fecha Inicio:</label>
+            <input type="date" id="statsStartDate" min="2026-01-21"
+                style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3); background: white; color: #333;">
+        </div>
+
+        <div style="flex: 1; min-width: 150px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 14px;">Fecha Fin:</label>
+            <input type="date" id="statsEndDate" min="2026-01-21"
+                style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3); background: white; color: #333;">
+        </div>
+
+        <div style="flex: 1.5; min-width: 200px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 14px;">Compañía:</label>
+            <select id="statsCompanyFilter"
+                style="width: 100%; padding: 11px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3); background: white; color: #333; cursor: pointer;">
+                <option value="">Todas las compañías</option>
+            </select>
+        </div>
+
+        <div style="flex: 0.5; min-width: 120px;">
+            <button id="applyStatsFilters"
+                style="width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;">
+                Aplicar
+            </button>
+        </div>
+
+        <div style="position: relative; margin-bottom: 12px;">
+            <div style="cursor: help; background: #4a5568; color: white; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; font-weight: bold;"
+                 onmouseover="this.nextElementSibling.style.display='block'" 
+                 onmouseout="this.nextElementSibling.style.display='none'">?</div>
+            <div class="tooltip" style="display: none; position: absolute; bottom: 130%; right: 0; width: 260px; background: #2d3748; color: #fff; text-align: center; padding: 12px; border-radius: 10px; font-size: 12px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.3); line-height: 1.5; border: 1px solid rgba(255,255,255,0.1);">
+                📅 Datos disponibles desde el <strong>21 de enero de 2026</strong>, fecha oficial de inicio del sistema.
+                <div style="position: absolute; top: 100%; right: 5px; border-width: 8px; border-style: solid; border-color: #2d3748 transparent transparent transparent;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="statsLoading" style="display: none; margin-top: 15px; text-align: center; color: var(--primary); font-weight: 600; font-size: 14px;">
+        <span style="display: inline-block; animation: rotate 1s linear infinite;">⏳</span> Procesando estadísticas...
+    </div>
+</div>
+
                             <div id="statsLoading"
                                 style="display: none; margin-top: 15px; text-align: center; color: var(--primary); font-weight: 600;">
                                 ⏳ Cargando estadísticas...
@@ -259,10 +274,10 @@
                                 </div>
                             </div>
                             <div
-                                style="background: linear-gradient(135deg, rgba(52, 152, 219, 0.05), white); border: 2px solid #3498db; border-radius: 12px; padding: 20px;">
-                                <div style="font-size: 2.5em;">📊</div>
-                                <div style="font-size: 0.85em; opacity: 0.7; margin-top: 8px;">Tasa de Aprobación</div>
-                                <div id="approvalRate" style="font-size: 2em; font-weight: 700; color: #3498db;">-</div>
+                                style="flex: 1; min-width: 200px; background: rgba(52, 152, 219, 0.05); border: 2px solid #3498db; border-radius: 12px; padding: 20px; text-align: center;">
+                                <div style="font-size: 32px; margin-bottom: 10px;">⏱️</div>
+                                <div style="color: var(--text-secondary); font-size: 14px; margin-bottom: 5px;">Tiempo Promedio</div>
+                                <div id="averageTimeGlobal" style="font-size: 28px; font-weight: 800; color: #3498db;">-</div>
                             </div>
                             <div
                                 style="background: linear-gradient(135deg, rgba(243, 156, 18, 0.05), white); border: 2px solid #f39c12; border-radius: 12px; padding: 20px;">
@@ -274,26 +289,22 @@
                         </div>
 
                         <!-- RANKING POR OPERADOR -->
-                        <div
-                            style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
+                        <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
                             <h3 style="color: var(--primary); margin-bottom: 15px;">🏆 Ranking por Operador</h3>
                             <div style="overflow-x: auto;">
                                 <table id="rankingTable" style="width: 100%; border-collapse: collapse;">
-                                    <thead
-                                        style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
+                                    <thead style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
                                         <tr>
                                             <th style="padding: 12px; text-align: left;">#</th>
                                             <th style="padding: 12px; text-align: left;">Operador</th>
                                             <th style="padding: 12px; text-align: center;">Aprobados</th>
                                             <th style="padding: 12px; text-align: center;">Rechazados</th>
                                             <th style="padding: 12px; text-align: center;">Total</th>
-                                            <th style="padding: 12px; text-align: center;">Tasa</th>
-                                        </tr>
+                                            <th style="padding: 12px; text-align: center;">Tiempo Promedio</th> </tr>
                                     </thead>
                                     <tbody id="rankingTableBody">
                                         <tr>
-                                            <td colspan="6" style="padding: 40px; text-align: center; opacity: 0.7;">⏳
-                                                Cargando datos...</td>
+                                            <td colspan="6" style="padding: 40px; text-align: center; opacity: 0.7;">⏳ Cargando datos...</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -368,66 +379,17 @@
                                             <th style="padding: 12px; text-align: center;">Aprobados</th>
                                             <th style="padding: 12px; text-align: center;">Rechazados</th>
                                             <th style="padding: 12px; text-align: center;">Total</th>
-                                            <th style="padding: 12px; text-align: center;">Tasa</th>
                                         </tr>
                                     </thead>
                                     <tbody id="companyTableBody">
                                         <tr>
-                                            <td colspan="5" style="padding: 40px; text-align: center; opacity: 0.7;">⏳
+                                            <td colspan="4" style="padding: 40px; text-align: center; opacity: 0.7;">⏳
                                                 Cargando datos...</td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-
-                        <!-- HISTÓRICO COMPLETO -->
-                        <div
-                            style="background: white; border-radius: 12px; padding: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
-                            <h3 style="color: var(--primary); margin-bottom: 15px;">📋 Histórico Completo</h3>
-
-                            <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-                                <input type="text" id="searchHistory" placeholder="🔍 Buscar por código de operación..."
-                                    style="flex: 1; min-width: 250px; padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3);">
-                                <select id="operatorFilter"
-                                    style="min-width: 200px; padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3);">
-                                    <option value="">Todos los operadores</option>
-                                </select>
-                            </div>
-
-                            <div style="overflow-x: auto;">
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <thead
-                                        style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
-                                        <tr>
-                                            <th style="padding: 12px; text-align: left;">Código</th>
-                                            <th style="padding: 12px; text-align: left;">Operador</th>
-                                            <th style="padding: 12px; text-align: left;">Compañía</th>
-                                            <th style="padding: 12px; text-align: center;">Fecha/Hora</th>
-                                            <th style="padding: 12px; text-align: center;">Estado</th>
-                                            <th style="padding: 12px; text-align: left;">Supervisor</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="historyTableBody">
-                                        <tr>
-                                            <td colspan="6" style="padding: 40px; text-align: center; opacity: 0.7;">⏳
-                                                Cargando histórico...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div id="pagination"
-                                style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; background: rgba(42, 157, 143, 0.05); border-radius: 8px; flex-wrap: wrap; gap: 12px;">
-                                <span id="paginationInfo">Mostrando 0-0 de 0</span>
-                                <div style="display: flex; gap: 8px;">
-                                    <button id="prevPage" style="padding: 8px 16px; width: auto;">◄ Anterior</button>
-                                    <span id="pageNumbers"></span>
-                                    <button id="nextPage" style="padding: 8px 16px; width: auto;">Siguiente ►</button>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
             </div>
@@ -581,17 +543,43 @@
         
         // Fetch Wrapper: Agrega el Token a todas las peticiones automáticamente
         async function apiFetch(endpoint, options = {}) {
-            const headers = { 'Content-Type': 'application/json', ...options.headers };
-            if (token) headers['Authorization'] = `Bearer ${token}`;
+            console.log(`%c[API Request] Iniciando: ${endpoint}`, 'color: #00C9FF; font-weight: bold;');
             
-            const response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
-            
-            // Si el token expiró o alguien intenta hackear, lo botamos al Hub
-            if (response.status === 401 || response.status === 403) {
-                cerrarSesion();
-                throw new Error("Sesión expirada o acceso denegado");
+            const headers = { 
+                'Accept': 'application/json',
+                ...options.headers 
+            };
+
+            // Solo enviamos Content-Type si hay un cuerpo, para simplificar el Preflight OPTIONS
+            if (options.body) {
+                headers['Content-Type'] = 'application/json';
+                console.log('[API] Detectado Body, agregando Content-Type');
             }
-            return response;
+
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+                console.log('[API] Token adjuntado al header');
+            } else {
+                console.warn('[API] No hay token disponible para esta petición');
+            }
+
+            try {
+                console.log('[API] Enviando fetch real...');
+                const response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+                
+                console.log(`%c[API Response] Status: ${response.status} (${response.statusText})`, 'color: #92FE9D; font-weight: bold;');
+
+                if (response.status === 401 || response.status === 403) {
+                    console.error('[API] Error de autenticación detectado.');
+                    cerrarSesion();
+                    throw new Error("Sesión expirada");
+                }
+                
+                return response;
+            } catch (err) {
+                console.error(`%c[API Error] Fallo crítico en fetch: ${err.message}`, 'color: #FF6B9D; font-weight: bold;');
+                throw err;
+            }
         }
 
         // Se encarga de inicializar la interfaz una vez que el Hub valida el token
@@ -1244,19 +1232,23 @@
         let currentPage = 1;
         const itemsPerPage = 50;
 
-        statsBtn.addEventListener('click', () => {
-            desactivarBotones();
-            statsBtn.classList.add('active');
-            document.getElementById('statsModal').style.display = 'flex';
-            
-            const hoy = new Date();
-            document.getElementById('statsEndDate').valueAsDate = hoy;
-            const hace30dias = new Date();
-            hace30dias.setDate(hace30dias.getDate() - 30);
-            document.getElementById('statsStartDate').valueAsDate = hace30dias;
-            
-            cargarEstadisticas();
-        });
+statsBtn.addEventListener('click', () => {
+    desactivarBotones();
+    statsBtn.classList.add('active');
+    document.getElementById('statsModal').style.display = 'flex';
+    
+    const hoy = new Date();
+    const fechaMinima = new Date('2026-01-21'); // Fecha de inicio oficial
+    
+    // Ponemos la fecha de fin como hoy
+    document.getElementById('statsEndDate').valueAsDate = hoy;
+    
+    // Si hoy es antes del 21 de enero (improbable ahora), o para setear el rango inicial:
+    // Ponemos la fecha de inicio en el 21 de enero por defecto
+    document.getElementById('statsStartDate').value = "2026-01-21";
+    
+    cargarEstadisticas();
+});
 
         document.getElementById('cerrarStats').addEventListener('click', () => {
             document.getElementById('statsModal').style.display = 'none';
@@ -1267,84 +1259,124 @@
             await cargarEstadisticas();
         });
 
-        async function cargarEstadisticas() {
-            const loading = document.getElementById('statsLoading');
-            loading.style.display = 'block';
+async function cargarEstadisticas() {
+    const loading = document.getElementById('statsLoading');
+    if (loading) loading.style.display = 'block';
 
-            try {
-                const startDate = document.getElementById('statsStartDate').value;
-                const endDate = document.getElementById('statsEndDate').value;
-                const company = document.getElementById('statsCompanyFilter').value;
+    try {
+        const startDate = document.getElementById('statsStartDate').value;
+        const endDate = document.getElementById('statsEndDate').value;
+        const company = document.getElementById('statsCompanyFilter').value;
 
-                let query = `?startRow=9082`;
-                if (startDate) query += `&startDate=${startDate}`;
-                if (endDate) query += `&endDate=${endDate}`;
-                if (company) query += `&company=${encodeURIComponent(company)}`;
+        const params = new URLSearchParams({
+            startRow: '5720',
+            startDate: startDate,
+            endDate: endDate
+        });
+        if (company) params.append('company', company);
 
-                const response = await apiFetch(`/stats${query}`);
-                const data = await response.json();
-                statsData = data.history || [];
+        const response = await apiFetch(`/stats?${params.toString()}`);
+        const data = await response.json();
+        
 
-                document.getElementById('totalApproved').textContent = data.general.totalApproved.toLocaleString();
-                document.getElementById('totalRejected').textContent = data.general.totalRejected.toLocaleString();
-                document.getElementById('totalProcessed').textContent = data.general.totalProcessed.toLocaleString();
-                document.getElementById('approvalRate').textContent = `${data.general.approvalRate.toFixed(1)}%`;
-
-                const tbodyRanking = document.getElementById('rankingTableBody');
-                if (data.byOperator.length > 0) {
-                    tbodyRanking.innerHTML = data.byOperator.map((op, i) => `<tr style="border-bottom: 1px solid rgba(42, 157, 143, 0.1);"><td style="padding: 12px;">${i + 1}</td><td style="padding: 12px; font-weight: 600;">${op.name}</td><td style="padding: 12px; text-align: center; color: #27ae60;">${op.approved}</td><td style="padding: 12px; text-align: center; color: #e74c3c;">${op.rejected}</td><td style="padding: 12px; text-align: center; font-weight: 700;">${op.total}</td><td style="padding: 12px; text-align: center; color: ${op.rate >= 90 ? '#27ae60' : '#e74c3c'};">${op.rate.toFixed(1)}%</td></tr>`).join('');
-                }
-
-                actualizarHistorico(statsData);
-            } catch (error) {
-                showNotification('Error al cargar estadísticas', 'error');
-            } finally {
-                loading.style.display = 'none';
+        // --- A. RESUMEN GENERAL ---
+        if (data.general) {
+            document.getElementById('totalApproved').textContent = data.general.totalApproved?.toLocaleString() || 0;
+            document.getElementById('totalRejected').textContent = data.general.totalRejected?.toLocaleString() || 0;
+            document.getElementById('totalProcessed').textContent = data.general.totalProcessed?.toLocaleString() || 0;
+            
+            // ✅ ACTUALIZADO: Mostramos el tiempo promedio en lugar de la tasa
+            // El backend envía este dato como 'averageTime' (ej: "4m 20s")
+            const avgDisplay = document.getElementById('averageTimeGlobal');
+            if (avgDisplay) {
+                avgDisplay.textContent = data.general.averageTime || "0s";
             }
         }
 
-        function actualizarHistorico(data) {
-            filteredStatsData = data;
-            currentPage = 1;
-            const operadores = [...new Set(data.map(item => item.operatorName))].sort();
-            const operatorFilter = document.getElementById('operatorFilter');
-            operatorFilter.innerHTML = '<option value="">Todos los operadores</option>';
-            operadores.forEach(op => operatorFilter.appendChild(new Option(op, op)));
-            renderHistoricoPage();
-        }
+        // --- B. ⏰ PROMEDIOS POR TURNO (ID: shiftTableBody) ---
+        const tbodyTurnos = document.getElementById('shiftTableBody');
+        if (tbodyTurnos && data.byShift) {
+            const total = data.general.totalProcessed || 1;
+            const days = data.general.totalDays || 1;
+            const shiftMapping = { morning: "Mañana 🌅", afternoon: "Tarde 🌇", night: "Noche 🌙" };
 
-        function renderHistoricoPage() {
-            const tbody = document.getElementById('historyTableBody');
-            const start = (currentPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const pageData = filteredStatsData.slice(start, end);
-
-            tbody.innerHTML = pageData.map(item => `
-                <tr style="border-bottom: 1px solid rgba(42, 157, 143, 0.1);">
-                    <td style="padding: 12px; font-family: monospace; font-weight: 600;">${item.operationCode}</td>
-                    <td style="padding: 12px;">${item.operatorName}</td>
-                    <td style="padding: 12px;">${item.company}</td>
-                    <td style="padding: 12px; text-align: center; font-size: 0.9em;">${item.cashoutTime}</td>
-                    <td style="padding: 12px; text-align: center; font-size: 1.3em;">${item.status === 'approved' ? '✅' : '❌'}</td>
-                    <td style="padding: 12px;">${item.supervisorName || '-'}</td>
+            tbodyTurnos.innerHTML = Object.entries(data.byShift).map(([key, count]) => `
+                <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                    <td style="padding:12px;">${shiftMapping[key] || key}</td>
+                    <td style="padding:12px; text-align:center;">${count.toLocaleString()}</td>
+                    <td style="padding:12px; text-align:center;">${(count / days).toFixed(1)}</td>
+                    <td style="padding:12px; text-align:center;">${((count / total) * 100).toFixed(1)}%</td>
                 </tr>
             `).join('');
-
-            document.getElementById('paginationInfo').textContent = `Mostrando ${start + 1}-${Math.min(end, filteredStatsData.length)} de ${filteredStatsData.length}`;
         }
 
-        document.getElementById('prevPage').addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderHistoricoPage(); } });
-        document.getElementById('nextPage').addEventListener('click', () => { if (currentPage < Math.ceil(filteredStatsData.length / itemsPerPage)) { currentPage++; renderHistoricoPage(); } });
-        document.getElementById('searchHistory').addEventListener('input', filtrarHistorico);
-        document.getElementById('operatorFilter').addEventListener('change', filtrarHistorico);
+        // --- C. 👤 DESEMPEÑO POR OPERADOR Y TURNO (ID: operatorShiftTableBody) ---
+        const tbodyOpShift = document.getElementById('operatorShiftTableBody');
+        if (tbodyOpShift && data.byOperatorAndShift) {
+            tbodyOpShift.innerHTML = data.byOperatorAndShift.map((op) => {
+                const nombreOperador = op.operator || op.name || 'Sin nombre';
+                const manana = op.shifts?.morning || 0;
+                const tarde = op.shifts?.afternoon || 0;
+                const noche = op.shifts?.night || 0;
+                const mejorTurnoMap = { 'morning': 'Mañana 🌅', 'afternoon': 'Tarde 🌇', 'night': 'Noche 🌙' };
+                const mejorTurnoDesc = mejorTurnoMap[op.bestShift] || op.bestShift || '-';
 
-        function filtrarHistorico() {
-            const search = document.getElementById('searchHistory').value.toLowerCase();
-            const op = document.getElementById('operatorFilter').value;
-            filteredStatsData = statsData.filter(item => (!search || item.operationCode.toLowerCase().includes(search)) && (!op || item.operatorName === op));
-            currentPage = 1;
-            renderHistoricoPage();
+                return `
+                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                        <td style="padding:12px; font-weight:bold;">${nombreOperador}</td>
+                        <td style="padding:12px; text-align:center;">${manana}</td>
+                        <td style="padding:12px; text-align:center;">${tarde}</td>
+                        <td style="padding:12px; text-align:center;">${noche}</td>
+                        <td style="padding:12px; text-align:center; font-weight:bold; color: var(--primary);">${mejorTurnoDesc}</td>
+                    </tr>
+                `;
+            }).join('');
         }
+
+        // --- D. 🏆 RANKING POR OPERADOR (ID: rankingTableBody) ---
+        const tbodyRanking = document.getElementById('rankingTableBody');
+        if (tbodyRanking && data.byOperator) {
+            tbodyRanking.innerHTML = data.byOperator.map((op, index) => `
+                <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                    <td style="padding:12px;">${index + 1}</td>
+                    <td style="padding:12px; font-weight:bold;">${op.name || 'Sin nombre'}</td>
+                    <td style="padding:12px; text-align:center; color: #2ecc71;">${op.approved || 0}</td>
+                    <td style="padding:12px; text-align:center; color: #e74c3c;">${op.rejected || 0}</td>
+                    <td style="padding:12px; text-align:center; font-weight:bold;">${op.total || 0}</td>
+                    <td style="padding:12px; text-align:center; color: var(--primary); font-weight: 600;">
+                        ${op.averageTime || '0s'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // --- E. 🏢 CASHOUTS POR COMPAÑÍA (ID: companyTableBody) ---
+const tbodyCompany = document.getElementById('companyTableBody');
+if (tbodyCompany && data.byCompany) {
+    tbodyCompany.innerHTML = data.byCompany.map(c => {
+        // Sumamos los valores para obtener el total real
+        const aprobados = c.approved || 0;
+        const rechazados = c.rejected || 0;
+        const totalReal = aprobados + rechazados;
+
+        return `
+            <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                <td style="padding:12px; font-weight: 500;">${c.company || 'Sin Nombre'}</td>
+                <td style="padding:12px; text-align:center; color: #2ecc71;">${aprobados.toLocaleString()}</td>
+                <td style="padding:12px; text-align:center; color: #e74c3c;">${rechazados.toLocaleString()}</td>
+                <td style="padding:12px; text-align:center; font-weight:bold; background: rgba(0,0,0,0.02);">${totalReal.toLocaleString()}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+    } catch (error) {
+        console.error('[Stats Error]:', error);
+    } finally {
+        if (loading) loading.style.display = 'none';
+    }
+}
+
 
         // ========================================
         // ✅ 9. ARRANQUE (BOOTSTRAP)
