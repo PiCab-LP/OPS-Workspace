@@ -20,7 +20,10 @@
 
 
         <aside class="sidebar">
-            <button onclick="window.location.href='/'" style="background: rgba(38, 70, 83, 0.1); color: var(--tertiary); width: 100%; border: 2px dashed rgba(42, 157, 143, 0.3); padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; transition: background 0.2s, border-color 0.2s;" onmouseover="this.style.background='rgba(38, 70, 83, 0.2)'; this.style.borderColor='rgba(42, 157, 143, 0.6)';" onmouseout="this.style.background='rgba(38, 70, 83, 0.1)'; this.style.borderColor='rgba(42, 157, 143, 0.3)';">
+            <button onclick="window.location.href='/'"
+                style="background: rgba(38, 70, 83, 0.1); color: var(--tertiary); width: 100%; border: 2px dashed rgba(42, 157, 143, 0.3); padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; transition: background 0.2s, border-color 0.2s;"
+                onmouseover="this.style.background='rgba(38, 70, 83, 0.2)'; this.style.borderColor='rgba(42, 157, 143, 0.6)';"
+                onmouseout="this.style.background='rgba(38, 70, 83, 0.1)'; this.style.borderColor='rgba(42, 157, 143, 0.3)';">
                 🏠 Volver al Hub
             </button>
             <!-- Indicador de Supervisor/Revisor de Turno -->
@@ -34,27 +37,28 @@
                 </div>
             </div>
 
-                <div class="role-selector">
-                    <button class="role-btn operator active" id="operatorBtn">Submit a Cashout</button>
-                    
-                    <button class="role-btn supervisor" id="reviewBtn">
-                        <span class="icon">🔍</span> Review a Cashout
-                    </button>
-                    
-                    <button class="role-btn rules" id="rulesBtn">
-                        <span class="icon">📜</span> Cashout Rules
-                    </button>
-                    <button class="role-btn leaderboard" id="leaderboardBtn">
-                        <span class="icon">🏆</span> Leaderboard
-                    </button>
-                    <button class="role-btn stats" id="statsBtn">
-                        <span class="icon">📊</span> Stats
-                    </button>
-                    
-                    <button class="role-btn" id="manageTeamBtn" style="display: none; background: rgba(38, 70, 83, 0.1); color: var(--tertiary);">
-                        <span class="icon">👥</span> Manage Team
-                    </button>
-                </div>
+            <div class="role-selector">
+                <button class="role-btn operator active" id="operatorBtn">Submit a Cashout</button>
+
+                <button class="role-btn supervisor" id="reviewBtn">
+                    <span class="icon">🔍</span> Review a Cashout
+                </button>
+
+                <button class="role-btn rules" id="rulesBtn">
+                    <span class="icon">📜</span> Cashout Rules
+                </button>
+                <button class="role-btn leaderboard" id="leaderboardBtn">
+                    <span class="icon">🏆</span> Leaderboard
+                </button>
+                <button class="role-btn stats" id="statsBtn">
+                    <span class="icon">📊</span> Stats
+                </button>
+
+                <button class="role-btn" id="manageTeamBtn"
+                    style="display: none; background: rgba(38, 70, 83, 0.1); color: var(--tertiary);">
+                    <span class="icon">👥</span> Manage Team
+                </button>
+            </div>
 
             <!-- Botón de Cerrar Sesión Operador (al fondo de la barra) -->
             <div class="logout-global">
@@ -123,7 +127,7 @@
                 </div>
                 <div id="reviewSuccess" class="success-message" style="display:none;">¡Acción procesada!</div>
                 <div id="reviewError" class="error-message" style="display:none;">Error al procesar.</div>
-                
+
                 <div style="margin-top: 20px; text-align: center;">
                     <button id="forceRefresh" style="width: auto; display: inline-block; padding: 10px 22px;">
                         🔄 Actualizar Cola
@@ -134,14 +138,17 @@
             <div id="manageTeamSection" class="form-section" style="display: none; max-width: 900px;">
                 <h2>👥 Gestión de Equipo</h2>
                 <p>Crea o elimina cuentas de acceso para tus analistas.</p>
-                
-                <div style="background: rgba(42, 157, 143, 0.05); padding: 20px; border-radius: 12px; border: 1px dashed var(--primary); margin-bottom: 25px;">
+
+                <div
+                    style="background: rgba(42, 157, 143, 0.05); padding: 20px; border-radius: 12px; border: 1px dashed var(--primary); margin-bottom: 25px;">
                     <h3 style="margin-top:0; color: var(--primary);">+ Crear Nuevo Usuario</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
                         <input type="text" id="newFullName" placeholder="Nombre Completo (Ej. Juan Perez)">
                         <input type="text" id="newUsername" placeholder="Usuario de acceso (Ej. juan.perez)">
                         <input type="password" id="newPassword" placeholder="Contraseña">
-                        <select id="newRole" style="padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3);">
+                        <select id="newRole"
+                            style="padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3);">
                             <option value="analista">Analista</option>
                             <option value="supervisor">Supervisor</option>
                             <option value="chats">Chats</option>
@@ -152,7 +159,8 @@
                 </div>
 
                 <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; border: 2px solid rgba(42, 157, 143, 0.2);">
+                    <table
+                        style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; border: 2px solid rgba(42, 157, 143, 0.2);">
                         <thead style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
                             <tr>
                                 <th style="padding: 15px; text-align: left;">Nombre</th>
@@ -162,35 +170,42 @@
                             </tr>
                         </thead>
                         <tbody id="usersTableBody">
-                            <tr><td colspan="4" style="text-align:center; padding: 20px;">Cargando usuarios...</td></tr>
+                            <tr>
+                                <td colspan="4" style="text-align:center; padding: 20px;">Cargando usuarios...</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
             <!-- Sección Reglas -->
-                <div id="rulesSection" class="form-section" style="display: none; max-width: 1200px;">
+            <div id="rulesSection" class="form-section" style="display: none; max-width: 1200px;">
                 <h2>📜 Reglas de Cashout por Compañía</h2>
                 <p>Consulta el procedimiento específico para cada plataforma:</p>
-                
-                <div id="newCompanyContainer" style="display: none; margin-bottom: 25px; padding: 20px; background: rgba(42, 157, 143, 0.05); border-radius: 12px; border: 1px dashed var(--primary); text-align: center;">
+
+                <div id="newCompanyContainer"
+                    style="display: none; margin-bottom: 25px; padding: 20px; background: rgba(42, 157, 143, 0.05); border-radius: 12px; border: 1px dashed var(--primary); text-align: center;">
                     <h3 style="color: var(--primary); margin-top: 0; font-size: 1.1em;">+ Agregar Nueva Compañía</h3>
                     <div style="display: flex; gap: 10px; max-width: 500px; margin: 0 auto;">
-                        <input type="text" id="newCompanyName" placeholder="Nombre de la nueva compañía" style="flex: 1;">
-                        <button id="btnCreateCompany" style="width: auto; padding: 10px 20px; margin-top: 0;">Guardar</button>
+                        <input type="text" id="newCompanyName" placeholder="Nombre de la nueva compañía"
+                            style="flex: 1;">
+                        <button id="btnCreateCompany"
+                            style="width: auto; padding: 10px 20px; margin-top: 0;">Guardar</button>
                     </div>
                 </div>
 
                 <div style="width: 100%; margin-bottom: 20px;">
-                    <input type="text" id="searchRules" placeholder="🔍 Buscar compañía por nombre..." style="width: 100%; padding: 14px; border-radius: 10px; border: 2px solid rgba(42, 157, 143, 0.3); font-size: 16px; background: white; text-align: left;">
+                    <input type="text" id="searchRules" placeholder="🔍 Buscar compañía por nombre..."
+                        style="width: 100%; padding: 14px; border-radius: 10px; border: 2px solid rgba(42, 157, 143, 0.3); font-size: 16px; background: white; text-align: left;">
                 </div>
 
-                <div id="rulesLoading" style="text-align: center; color: var(--primary); font-weight: bold; display: none;">
+                <div id="rulesLoading"
+                    style="text-align: center; color: var(--primary); font-weight: bold; display: none;">
                     ⏳ Cargando reglas desde la base de datos...
                 </div>
 
                 <div id="rulesGrid" class="rules-grid">
-                    </div>
+                </div>
             </div>
 
             <!-- ✅ MODAL STATS -->
@@ -204,193 +219,220 @@
                     <div id="statsContent" class="stats-body">
 
                         <!-- FILTROS -->
-<div class="stats-filters" style="margin-bottom: 30px; background: rgba(42, 157, 143, 0.05); padding: 20px; border-radius: 12px;">
-    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end;">
-        
-        <div style="flex: 1; min-width: 150px;">
-            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 14px;">Fecha Inicio:</label>
-            <input type="date" id="statsStartDate" min="2026-01-21"
-                style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3); background: white; color: #333;">
-        </div>
+                        <div class="stats-filters"
+                            style="margin-bottom: 30px; background: rgba(42, 157, 143, 0.05); padding: 20px; border-radius: 12px;">
+                            <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end;">
 
-        <div style="flex: 1; min-width: 150px;">
-            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 14px;">Fecha Fin:</label>
-            <input type="date" id="statsEndDate" min="2026-01-21"
-                style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3); background: white; color: #333;">
-        </div>
+                                <div style="flex: 1; min-width: 150px;">
+                                    <label
+                                        style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 14px;">Fecha
+                                        Inicio:</label>
+                                    <input type="date" id="statsStartDate" min="2026-01-21"
+                                        style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3); background: white; color: #333;">
+                                </div>
 
-        <div style="flex: 1.5; min-width: 200px;">
-            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 14px;">Compañía:</label>
-            <select id="statsCompanyFilter"
-                style="width: 100%; padding: 11px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3); background: white; color: #333; cursor: pointer;">
-                <option value="">Todas las compañías</option>
-            </select>
-        </div>
+                                <div style="flex: 1; min-width: 150px;">
+                                    <label
+                                        style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 14px;">Fecha
+                                        Fin:</label>
+                                    <input type="date" id="statsEndDate" min="2026-01-21"
+                                        style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3); background: white; color: #333;">
+                                </div>
 
-        <div style="flex: 0.5; min-width: 120px;">
-            <button id="applyStatsFilters"
-                style="width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;">
-                Aplicar
-            </button>
-        </div>
+                                <div style="flex: 1.5; min-width: 200px;">
+                                    <label
+                                        style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 14px;">Compañía:</label>
+                                    <select id="statsCompanyFilter"
+                                        style="width: 100%; padding: 11px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3); background: white; color: #333; cursor: pointer;">
+                                        <option value="">Todas las compañías</option>
+                                    </select>
+                                </div>
 
-        <div style="position: relative; margin-bottom: 12px;">
-            <div style="cursor: help; background: #4a5568; color: white; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; font-weight: bold;"
-                 onmouseover="this.nextElementSibling.style.display='block'" 
-                 onmouseout="this.nextElementSibling.style.display='none'">?</div>
-            <div class="tooltip" style="display: none; position: absolute; bottom: 130%; right: 0; width: 260px; background: #2d3748; color: #fff; text-align: center; padding: 12px; border-radius: 10px; font-size: 12px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.3); line-height: 1.5; border: 1px solid rgba(255,255,255,0.1);">
-                📅 Datos disponibles desde el <strong>21 de enero de 2026</strong>, fecha oficial de inicio del sistema.
-                <div style="position: absolute; top: 100%; right: 5px; border-width: 8px; border-style: solid; border-color: #2d3748 transparent transparent transparent;"></div>
-            </div>
-        </div>
-    </div>
+                                <div style="flex: 0.5; min-width: 120px;">
+                                    <button id="applyStatsFilters"
+                                        style="width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;">
+                                        Aplicar
+                                    </button>
+                                </div>
 
-    <div id="statsLoading" style="display: none; margin-top: 15px; text-align: center; color: var(--primary); font-weight: 600; font-size: 14px;">
-        <span style="display: inline-block; animation: rotate 1s linear infinite;">⏳</span> Procesando estadísticas...
-    </div>
-</div>
-
-
-                        <!-- ESTADÍSTICAS GENERALES -->
-                        <div
-                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px;">
-                            <div
-                                style="background: linear-gradient(135deg, rgba(39, 174, 96, 0.05), white); border: 2px solid #27ae60; border-radius: 12px; padding: 20px;">
-                                <div style="font-size: 2.5em;">✅</div>
-                                <div style="font-size: 0.85em; opacity: 0.7; margin-top: 8px;">Cashouts Aprobados</div>
-                                <div id="totalApproved" style="font-size: 2em; font-weight: 700; color: #27ae60;">-
+                                <div style="position: relative; margin-bottom: 12px;">
+                                    <div style="cursor: help; background: #4a5568; color: white; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; font-weight: bold;"
+                                        onmouseover="this.nextElementSibling.style.display='block'"
+                                        onmouseout="this.nextElementSibling.style.display='none'">?</div>
+                                    <div class="tooltip"
+                                        style="display: none; position: absolute; bottom: 130%; right: 0; width: 260px; background: #2d3748; color: #fff; text-align: center; padding: 12px; border-radius: 10px; font-size: 12px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.3); line-height: 1.5; border: 1px solid rgba(255,255,255,0.1);">
+                                        📅 Datos disponibles desde el <strong>21 de enero de 2026</strong>, fecha
+                                        oficial de inicio del sistema.
+                                        <div
+                                            style="position: absolute; top: 100%; right: 5px; border-width: 8px; border-style: solid; border-color: #2d3748 transparent transparent transparent;">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div
-                                style="background: linear-gradient(135deg, rgba(231, 76, 60, 0.05), white); border: 2px solid #e74c3c; border-radius: 12px; padding: 20px;">
-                                <div style="font-size: 2.5em;">❌</div>
-                                <div style="font-size: 0.85em; opacity: 0.7; margin-top: 8px;">Cashouts Rechazados</div>
-                                <div id="totalRejected" style="font-size: 2em; font-weight: 700; color: #e74c3c;">-
+
+                        </div>
+                    </div>
+
+
+                    <!-- ESTADÍSTICAS GENERALES -->
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                        <div
+                            style="background: linear-gradient(135deg, rgba(39, 174, 96, 0.05), white); border: 2px solid #27ae60; border-radius: 12px; padding: 20px;">
+                            <div style="font-size: 2.5em;">✅</div>
+                            <div style="font-size: 0.85em; opacity: 0.7; margin-top: 8px;">Cashouts Aprobados</div>
+                            <div id="totalApproved" style="font-size: 2em; font-weight: 700; color: #27ae60;">-
+                            </div>
+                        </div>
+                        <div
+                            style="background: linear-gradient(135deg, rgba(231, 76, 60, 0.05), white); border: 2px solid #e74c3c; border-radius: 12px; padding: 20px;">
+                            <div style="font-size: 2.5em;">❌</div>
+                            <div style="font-size: 0.85em; opacity: 0.7; margin-top: 8px;">Cashouts Rechazados</div>
+                            <div id="totalRejected" style="font-size: 2em; font-weight: 700; color: #e74c3c;">-
+                            </div>
+                        </div>
+                        <div
+                            style="flex: 1; min-width: 200px; background: rgba(52, 152, 219, 0.05); border: 2px solid #3498db; border-radius: 12px; padding: 20px; text-align: center;">
+                            <div style="font-size: 32px; margin-bottom: 10px;">⏱️</div>
+                            <div style="color: var(--text-secondary); font-size: 14px; margin-bottom: 5px;">Tiempo
+                                Promedio</div>
+                            <div id="averageTimeGlobal" style="font-size: 28px; font-weight: 800; color: #3498db;">-
+                            </div>
+                        </div>
+                        <div
+                            style="background: linear-gradient(135deg, rgba(243, 156, 18, 0.05), white); border: 2px solid #f39c12; border-radius: 12px; padding: 20px;">
+                            <div style="font-size: 2.5em;">📝</div>
+                            <div style="font-size: 0.85em; opacity: 0.7; margin-top: 8px;">Total Procesados</div>
+                            <div id="totalProcessed" style="font-size: 2em; font-weight: 700; color: #f39c12;">-
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RANKING POR OPERADOR -->
+                    <div
+                        style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
+                        <h3 style="color: var(--primary); margin-bottom: 15px;">🏆 Ranking por Operador</h3>
+                        <div style="overflow-x: auto;">
+                            <table id="rankingTable" style="width: 100%; border-collapse: collapse;">
+                                <thead
+                                    style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
+                                    <tr>
+                                        <th style="padding: 12px; text-align: left;">#</th>
+                                        <th style="padding: 12px; text-align: left;">Operador</th>
+                                        <th style="padding: 12px; text-align: center;">Aprobados</th>
+                                        <th style="padding: 12px; text-align: center;">Rechazados</th>
+                                        <th style="padding: 12px; text-align: center;">Total</th>
+                                        <th style="padding: 12px; text-align: center;">Tiempo Promedio</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rankingTableBody">
+                                    <tr>
+                                        <td colspan="6" style="padding: 40px; text-align: center; opacity: 0.7;">⏳
+                                            Cargando datos...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- PROMEDIOS POR TURNO -->
+                    <div
+                        style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
+                        <h3 style="color: var(--primary); margin-bottom: 15px;">⏰ Promedio de Cashouts por Turno</h3>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead
+                                    style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
+                                    <tr>
+                                        <th style="padding: 12px; text-align: left;">Turno</th>
+                                        <th style="padding: 12px; text-align: center;">Total Cashouts</th>
+                                        <th style="padding: 12px; text-align: center;">% de Carga</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="shiftTableBody">
+                                    <tr>
+                                        <td colspan="3" style="padding: 40px; text-align: center; opacity: 0.7;">⏳
+                                            Cargando datos...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- DESEMPEÑO POR OPERADOR Y TURNO -->
+                    <div
+                        style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
+                        <div
+                            style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px;">
+                            <h3 style="color: var(--primary); margin: 0;">👤 Desempeño por Operador y Turno</h3>
+                            <div style="position: relative;">
+                                <div style="cursor: help; background: #4a5568; color: white; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; font-weight: bold;"
+                                    onmouseover="this.nextElementSibling.style.display='block'"
+                                    onmouseout="this.nextElementSibling.style.display='none'">?</div>
+                                <div class="tooltip"
+                                    style="display: none; position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); width: 260px; background: #2d3748; color: #fff; text-align: center; padding: 12px; border-radius: 10px; font-size: 12px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.3); line-height: 1.5; border: 1px solid rgba(255,255,255,0.1);">
+                                    Esta función se desenvuelve mejor en un rango de semana específicos.
+                                    <div
+                                        style="position: absolute; top: 100%; left: 50%; width: 0; height: 0; border-width: 8px; border-style: solid; border-color: #2d3748 transparent transparent transparent; transform: translateX(-50%);">
+                                    </div>
                                 </div>
                             </div>
-                            <div
-                                style="flex: 1; min-width: 200px; background: rgba(52, 152, 219, 0.05); border: 2px solid #3498db; border-radius: 12px; padding: 20px; text-align: center;">
-                                <div style="font-size: 32px; margin-bottom: 10px;">⏱️</div>
-                                <div style="color: var(--text-secondary); font-size: 14px; margin-bottom: 5px;">Tiempo Promedio</div>
-                                <div id="averageTimeGlobal" style="font-size: 28px; font-weight: 800; color: #3498db;">-</div>
-                            </div>
-                            <div
-                                style="background: linear-gradient(135deg, rgba(243, 156, 18, 0.05), white); border: 2px solid #f39c12; border-radius: 12px; padding: 20px;">
-                                <div style="font-size: 2.5em;">📝</div>
-                                <div style="font-size: 0.85em; opacity: 0.7; margin-top: 8px;">Total Procesados</div>
-                                <div id="totalProcessed" style="font-size: 2em; font-weight: 700; color: #f39c12;">-
-                                </div>
-                            </div>
                         </div>
-
-                        <!-- RANKING POR OPERADOR -->
-                        <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
-                            <h3 style="color: var(--primary); margin-bottom: 15px;">🏆 Ranking por Operador</h3>
-                            <div style="overflow-x: auto;">
-                                <table id="rankingTable" style="width: 100%; border-collapse: collapse;">
-                                    <thead style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
-                                        <tr>
-                                            <th style="padding: 12px; text-align: left;">#</th>
-                                            <th style="padding: 12px; text-align: left;">Operador</th>
-                                            <th style="padding: 12px; text-align: center;">Aprobados</th>
-                                            <th style="padding: 12px; text-align: center;">Rechazados</th>
-                                            <th style="padding: 12px; text-align: center;">Total</th>
-                                            <th style="padding: 12px; text-align: center;">Tiempo Promedio</th> </tr>
-                                    </thead>
-                                    <tbody id="rankingTableBody">
-                                        <tr>
-                                            <td colspan="6" style="padding: 40px; text-align: center; opacity: 0.7;">⏳ Cargando datos...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead
+                                    style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
+                                    <tr>
+                                        <th style="padding: 12px; text-align: left;">Operador</th>
+                                        <th style="padding: 12px; text-align: center;">🌅
+                                            Mañana<br><small>(7:00-14:30)</small></th>
+                                        <th style="padding: 12px; text-align: center;">🌇
+                                            Tarde<br><small>(14:30-22:00)</small></th>
+                                        <th style="padding: 12px; text-align: center;">🌙
+                                            Noche<br><small>(22:00-7:00)</small></th>
+                                        <th style="padding: 12px; text-align: center;">Mejor Turno</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="operatorShiftTableBody">
+                                    <tr>
+                                        <td colspan="5" style="padding: 40px; text-align: center; opacity: 0.7;">⏳
+                                            Cargando datos...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
+                    </div>
 
-                        <!-- PROMEDIOS POR TURNO -->
-                        <div
-                            style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
-                            <h3 style="color: var(--primary); margin-bottom: 15px;">⏰ Promedios por Turno (General)</h3>
-                            <div style="overflow-x: auto;">
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <thead
-                                        style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
-                                        <tr>
-                                            <th style="padding: 12px; text-align: left;">Turno</th>
-                                            <th style="padding: 12px; text-align: center;">Total Cashouts</th>
-                                            <th style="padding: 12px; text-align: center;">Promedio/día</th>
-                                            <th style="padding: 12px; text-align: center;">% del Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="shiftTableBody">
-                                        <tr>
-                                            <td colspan="4" style="padding: 40px; text-align: center; opacity: 0.7;">⏳
-                                                Cargando datos...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- DESEMPEÑO POR OPERADOR Y TURNO -->
-                        <div
-                            style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
-                            <h3 style="color: var(--primary); margin-bottom: 15px;">👤 Desempeño por Operador y Turno
-                            </h3>
-                            <div style="overflow-x: auto;">
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <thead
-                                        style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
-                                        <tr>
-                                            <th style="padding: 12px; text-align: left;">Operador</th>
-                                            <th style="padding: 12px; text-align: center;">🌅
-                                                Mañana<br><small>(7:00-14:30)</small></th>
-                                            <th style="padding: 12px; text-align: center;">🌇
-                                                Tarde<br><small>(14:30-22:00)</small></th>
-                                            <th style="padding: 12px; text-align: center;">🌙
-                                                Noche<br><small>(22:00-7:00)</small></th>
-                                            <th style="padding: 12px; text-align: center;">Mejor Turno</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="operatorShiftTableBody">
-                                        <tr>
-                                            <td colspan="5" style="padding: 40px; text-align: center; opacity: 0.7;">⏳
-                                                Cargando datos...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- CASHOUTS POR COMPAÑÍA -->
-                        <div
-                            style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
-                            <h3 style="color: var(--primary); margin-bottom: 15px;">🏢 Cashouts por Compañía</h3>
-                            <div style="overflow-x: auto;">
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <thead
-                                        style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
-                                        <tr>
-                                            <th style="padding: 12px; text-align: left;">Compañía</th>
-                                            <th style="padding: 12px; text-align: center;">Aprobados</th>
-                                            <th style="padding: 12px; text-align: center;">Rechazados</th>
-                                            <th style="padding: 12px; text-align: center;">Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="companyTableBody">
-                                        <tr>
-                                            <td colspan="4" style="padding: 40px; text-align: center; opacity: 0.7;">⏳
-                                                Cargando datos...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                    <!-- CASHOUTS POR COMPAÑÍA -->
+                    <div
+                        style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
+                        <h3 style="color: var(--primary); margin-bottom: 15px;">🏢 Cashouts por Compañía</h3>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead
+                                    style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
+                                    <tr>
+                                        <th style="padding: 12px; text-align: left;">Compañía</th>
+                                        <th style="padding: 12px; text-align: center;">Aprobados</th>
+                                        <th style="padding: 12px; text-align: center;">Rechazados</th>
+                                        <th style="padding: 12px; text-align: center;">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="companyTableBody">
+                                    <tr>
+                                        <td colspan="4" style="padding: 40px; text-align: center; opacity: 0.7;">⏳
+                                            Cargando datos...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
+    </div>
 
 
-        </main>
+    </main>
     </div>
 
     <!-- Modal de Observación del Supervisor -->
@@ -500,8 +542,39 @@
 
 
     <div id="notification" class="notification"></div>
+
+    <style>
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .custom-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(42, 157, 143, 0.2);
+            border-top-color: var(--primary, #2a9d8f);
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+        }
+    </style>
+    <div id="statsLoading"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.75); z-index: 999999; justify-content: center; align-items: center; flex-direction: column;">
+        <div
+            style="background: white; padding: 40px 60px; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.4); display: flex; flex-direction: column; align-items: center; gap: 20px;">
+            <div class="custom-spinner"></div>
+            <span style="color: var(--primary, #2a9d8f); font-weight: 800; font-size: 22px;">Procesando
+                estadísticas...</span>
+        </div>
+    </div>
+
     <script>
-// ====== BASE URL (Render Backend) ======
+        // ====== BASE URL (Render Backend) ======
         const API_BASE = "https://general-cashouts.onrender.com/api";
 
         // ========== ESTADO DE USUARIO (NUEVO) ==========
@@ -522,7 +595,7 @@
         const reviewSection = document.getElementById('reviewSection');
         const rulesSection = document.getElementById('rulesSection');
         const manageTeamSection = document.getElementById('manageTeamSection');
-        
+
         // UI General
         const cashoutForm = document.getElementById('cashoutForm');
         const verificationQueue = document.getElementById('verificationQueue');
@@ -535,14 +608,14 @@
         // ========================================
         // ✅ 1. SISTEMA DE AUTENTICACIÓN
         // ========================================
-        
+
         // Fetch Wrapper: Agrega el Token a todas las peticiones automáticamente
         async function apiFetch(endpoint, options = {}) {
             console.log(`%c[API Request] Iniciando: ${endpoint}`, 'color: #00C9FF; font-weight: bold;');
-            
-            const headers = { 
+
+            const headers = {
                 'Accept': 'application/json',
-                ...options.headers 
+                ...options.headers
             };
 
             // Solo enviamos Content-Type si hay un cuerpo, para simplificar el Preflight OPTIONS
@@ -561,7 +634,7 @@
             try {
                 console.log('[API] Enviando fetch real...');
                 const response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
-                
+
                 console.log(`%c[API Response] Status: ${response.status} (${response.statusText})`, 'color: #92FE9D; font-weight: bold;');
 
                 if (response.status === 401 || response.status === 403) {
@@ -569,7 +642,7 @@
                     cerrarSesion();
                     throw new Error("Sesión expirada");
                 }
-                
+
                 return response;
             } catch (err) {
                 console.error(`%c[API Error] Fallo crítico en fetch: ${err.message}`, 'color: #FF6B9D; font-weight: bold;');
@@ -581,7 +654,7 @@
         function iniciarApp(jwtToken, userData) {
             token = jwtToken;
             currentUser = userData;
-            
+
             showNotification(`¡Bienvenido, ${currentUser.fullName}!`, 'success');
 
             // Autocompletar el nombre en el formulario y bloquearlo (Nadie puede fingir ser otro)
@@ -600,7 +673,7 @@
 
             // Ocultar etiquetas antiguas de "Supervisor de Turno" si aún existen en tu HTML
             const supervisorTurnoGlobal = document.getElementById('supervisorTurnoGlobal');
-            if(supervisorTurnoGlobal) supervisorTurnoGlobal.style.display = 'none';
+            if (supervisorTurnoGlobal) supervisorTurnoGlobal.style.display = 'none';
 
             operatorBtn.click();
             cargarReglasDesdeBD(true); // Carga silenciosa para llenar los selects
@@ -617,7 +690,7 @@
         // ========================================
         // ✅ 2. NAVEGACIÓN
         // ========================================
-        
+
         function desactivarBotones() {
             [operatorBtn, reviewBtn, rulesBtn, leaderboardBtn, statsBtn, manageTeamBtn].forEach(b => b.classList.remove('active'));
             [operatorSection, reviewSection, rulesSection, manageTeamSection].forEach(s => s.style.display = 'none');
@@ -672,11 +745,11 @@
                 const inicio = new Date(año, mes - 1, dia, horas, mins, segs);
                 const diffSeg = Math.floor((new Date() - inicio) / 1000);
                 if (diffSeg < 0) return "0s";
-                
+
                 const h = Math.floor(diffSeg / 3600);
                 const m = Math.floor((diffSeg % 3600) / 60);
                 const s = diffSeg % 60;
-                
+
                 const partes = [];
                 if (h > 0) partes.push(`${h}h`);
                 if (m > 0) partes.push(`${m}m`);
@@ -738,7 +811,7 @@
         async function enviarCashout() {
             try {
                 document.getElementById('observacionModal').style.display = 'none';
-                
+
                 await apiFetch(`/cashouts`, {
                     method: "POST",
                     body: JSON.stringify(cashoutPendiente)
@@ -746,10 +819,10 @@
 
                 document.getElementById('operatorSuccess').style.display = 'block';
                 showNotification("¡Cash out enviado correctamente!", "success");
-                
+
                 cashoutForm.reset();
                 document.getElementById('operatorName').value = currentUser.fullName;
-                
+
                 if (reviewSection.style.display === 'block') await cargarCola();
             } catch (err) {
                 document.getElementById('operatorError').style.display = 'block';
@@ -860,7 +933,7 @@
 
         window.iniciarRevision = function (row, nuevoEstado) {
             if (procesandoRevision) return;
-            
+
             const item = cachedItems.find(i => i.row === row);
             revisionPendiente = {
                 row: row,
@@ -921,7 +994,7 @@
                         observacion: observacionFinal
                     })
                 });
-                
+
                 if (leaderboardModal.style.display === 'flex') await cargarLeaderboard();
                 await cargarCola();
             } catch (err) {
@@ -941,8 +1014,8 @@
                 const res = await apiFetch(`/users`);
                 const json = await res.json();
                 const tbody = document.getElementById('usersTableBody');
-                
-                if(json.data.length === 0) {
+
+                if (json.data.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay usuarios</td></tr>';
                     return;
                 }
@@ -962,7 +1035,7 @@
                         </td>
                     </tr>
                 `).join('');
-            } catch(e) {
+            } catch (e) {
                 showNotification("Error cargando usuarios", "error");
             }
         }
@@ -973,7 +1046,7 @@
             const password = document.getElementById('newPassword').value;
             const role = document.getElementById('newRole').value;
 
-            if(!fullName || !username || !password) return showNotification("Llena todos los campos", "error");
+            if (!fullName || !username || !password) return showNotification("Llena todos los campos", "error");
 
             const btn = document.getElementById('btnCreateUser');
             btn.disabled = true;
@@ -984,16 +1057,16 @@
                     method: 'POST',
                     body: JSON.stringify({ fullName, username, password, role })
                 });
-                
+
                 const data = await res.json();
-                if(!res.ok) throw new Error(data.error);
+                if (!res.ok) throw new Error(data.error);
 
                 showNotification("Usuario creado con éxito");
                 document.getElementById('newFullName').value = '';
                 document.getElementById('newUsername').value = '';
                 document.getElementById('newPassword').value = '';
                 cargarUsuarios();
-            } catch(e) {
+            } catch (e) {
                 showNotification(e.message, "error");
             } finally {
                 btn.disabled = false;
@@ -1001,24 +1074,24 @@
             }
         });
 
-        window.eliminarUsuario = async function(id) {
-            if(!confirm("¿Estás seguro de eliminar este usuario?")) return;
+        window.eliminarUsuario = async function (id) {
+            if (!confirm("¿Estás seguro de eliminar este usuario?")) return;
             try {
                 const res = await apiFetch(`/users/${id}`, { method: 'DELETE' });
-                if(res.ok) {
+                if (res.ok) {
                     showNotification("Usuario eliminado");
                     cargarUsuarios();
                 } else {
                     const data = await res.json();
                     showNotification(data.error, "error");
                 }
-            } catch(e) { showNotification("Error al eliminar", "error"); }
+            } catch (e) { showNotification("Error al eliminar", "error"); }
         }
 
-        window.cambiarPasswordUsuario = async function(id, username) {
+        window.cambiarPasswordUsuario = async function (id, username) {
             // Usamos un simple prompt del navegador para pedir la clave rápido
             const nuevaClave = prompt(`Ingrese la NUEVA contraseña para el usuario: ${username}`);
-            
+
             if (nuevaClave === null) return; // Si el supervisor presiona "Cancelar"
             if (nuevaClave.trim().length < 4) {
                 return showNotification("La contraseña debe tener al menos 4 caracteres.", "error");
@@ -1053,7 +1126,7 @@
         if (btnCreateCompany) {
             btnCreateCompany.addEventListener('click', async () => {
                 const companyName = document.getElementById('newCompanyName').value.trim();
-                
+
                 if (!companyName) return showNotification("Por favor, ingresa el nombre de la compañía.", "error");
 
                 btnCreateCompany.disabled = true;
@@ -1064,15 +1137,15 @@
                         method: 'POST',
                         body: JSON.stringify({ name: companyName, ruleText: "" })
                     });
-                    
+
                     const data = await res.json();
                     if (!res.ok) throw new Error(data.error || "Error al crear la compañía");
 
                     showNotification("¡Compañía agregada con éxito!");
                     document.getElementById('newCompanyName').value = '';
-                    
+
                     // Recargamos la lista para que aparezca la nueva
-                    cargarReglasDesdeBD(); 
+                    cargarReglasDesdeBD();
                 } catch (e) {
                     showNotification(e.message, "error");
                 } finally {
@@ -1083,14 +1156,14 @@
         }
 
         async function cargarReglasDesdeBD(silencioso = false) {
-            if(!silencioso && rulesGrid) rulesGrid.innerHTML = '<p style="text-align: center;">Cargando reglas...</p>';
+            if (!silencioso && rulesGrid) rulesGrid.innerHTML = '<p style="text-align: center;">Cargando reglas...</p>';
             try {
                 const res = await apiFetch(`/rules`);
                 const json = await res.json();
                 const rules = json.data;
-                
+
                 actualizarSelectsConReglas(rules);
-                if(silencioso) return;
+                if (silencioso) return;
 
                 const isSupervisor = currentUser.role === 'supervisor';
                 if (newCompanyContainer) newCompanyContainer.style.display = isSupervisor ? 'block' : 'none';
@@ -1113,7 +1186,7 @@
                         </div>
                     </div>
                 `).join('');
-            } catch(e) { console.error(e); }
+            } catch (e) { console.error(e); }
         }
 
         window.toggleEditRegla = (id) => {
@@ -1132,7 +1205,7 @@
                 document.getElementById(`view-mode-${id}`).innerHTML = text || '<i>Sin reglas.</i>';
                 toggleEditRegla(id);
                 showNotification("Regla actualizada");
-            } catch(e) { showNotification("Error", "error"); }
+            } catch (e) { showNotification("Error", "error"); }
             finally { btn.disabled = false; btn.textContent = "💾 Guardar"; }
         };
 
@@ -1148,18 +1221,18 @@
         function actualizarSelectsConReglas(rules) {
             const selects = [document.getElementById('company'), document.getElementById('statsCompanyFilter')];
             selects.forEach(select => {
-                if(!select) return;
-                const val = select.value; 
+                if (!select) return;
+                const val = select.value;
                 select.innerHTML = select.id === 'company' ? '<option value="">Seleccione una compañía</option>' : '<option value="">Todas las compañías</option>';
                 rules.forEach(r => select.appendChild(new Option(r.name, r.name)));
-                if(Array.from(select.options).some(o => o.value === val)) select.value = val;
+                if (Array.from(select.options).some(o => o.value === val)) select.value = val;
             });
         }
 
         // ========================================
         // ✅ 8. LEADERBOARD Y STATS
         // ========================================
-        
+
         // Modal Leaderboard
         const leaderboardModal = document.getElementById('leaderboardModal');
         const cerrarLeaderboard = document.getElementById('cerrarLeaderboard');
@@ -1227,23 +1300,23 @@
         let currentPage = 1;
         const itemsPerPage = 50;
 
-statsBtn.addEventListener('click', () => {
-    desactivarBotones();
-    statsBtn.classList.add('active');
-    document.getElementById('statsModal').style.display = 'flex';
-    
-    const hoy = new Date();
-    const fechaMinima = new Date('2026-01-21'); // Fecha de inicio oficial
-    
-    // Ponemos la fecha de fin como hoy
-    document.getElementById('statsEndDate').valueAsDate = hoy;
-    
-    // Si hoy es antes del 21 de enero (improbable ahora), o para setear el rango inicial:
-    // Ponemos la fecha de inicio en el 21 de enero por defecto
-    document.getElementById('statsStartDate').value = "2026-01-21";
-    
-    cargarEstadisticas();
-});
+        statsBtn.addEventListener('click', () => {
+            desactivarBotones();
+            statsBtn.classList.add('active');
+            document.getElementById('statsModal').style.display = 'flex';
+
+            const hoy = new Date();
+            const fechaMinima = new Date('2026-01-21'); // Fecha de inicio oficial
+
+            // Ponemos la fecha de fin como hoy
+            document.getElementById('statsEndDate').valueAsDate = hoy;
+
+            // Si hoy es antes del 21 de enero (improbable ahora), o para setear el rango inicial:
+            // Ponemos la fecha de inicio en el 21 de enero por defecto
+            document.getElementById('statsStartDate').value = "2026-01-21";
+
+            cargarEstadisticas();
+        });
 
         document.getElementById('cerrarStats').addEventListener('click', () => {
             document.getElementById('statsModal').style.display = 'none';
@@ -1254,69 +1327,70 @@ statsBtn.addEventListener('click', () => {
             await cargarEstadisticas();
         });
 
-async function cargarEstadisticas() {
-    const loading = document.getElementById('statsLoading');
-    if (loading) loading.style.display = 'block';
+        async function cargarEstadisticas() {
+            const loading = document.getElementById('statsLoading');
+            if (loading) loading.style.display = 'flex';
 
-    try {
-        const startDate = document.getElementById('statsStartDate').value;
-        const endDate = document.getElementById('statsEndDate').value;
-        const company = document.getElementById('statsCompanyFilter').value;
+            try {
+                const startDate = document.getElementById('statsStartDate').value;
+                const endDate = document.getElementById('statsEndDate').value;
+                const company = document.getElementById('statsCompanyFilter').value;
 
-        const params = new URLSearchParams({
-            startRow: '5720',
-            startDate: startDate,
-            endDate: endDate
-        });
-        if (company) params.append('company', company);
+                const params = new URLSearchParams({
+                    startRow: '5720',
+                    startDate: startDate,
+                    endDate: endDate
+                });
+                if (company) params.append('company', company);
 
-        const response = await apiFetch(`/stats?${params.toString()}`);
-        const data = await response.json();
-        
+                const response = await apiFetch(`/stats?${params.toString()}`);
+                const data = await response.json();
 
-        // --- A. RESUMEN GENERAL ---
-        if (data.general) {
-            document.getElementById('totalApproved').textContent = data.general.totalApproved?.toLocaleString() || 0;
-            document.getElementById('totalRejected').textContent = data.general.totalRejected?.toLocaleString() || 0;
-            document.getElementById('totalProcessed').textContent = data.general.totalProcessed?.toLocaleString() || 0;
-            
-            // ✅ ACTUALIZADO: Mostramos el tiempo promedio en lugar de la tasa
-            // El backend envía este dato como 'averageTime' (ej: "4m 20s")
-            const avgDisplay = document.getElementById('averageTimeGlobal');
-            if (avgDisplay) {
-                avgDisplay.textContent = data.general.averageTime || "0s";
-            }
-        }
 
-        // --- B. ⏰ PROMEDIOS POR TURNO (ID: shiftTableBody) ---
-        const tbodyTurnos = document.getElementById('shiftTableBody');
-        if (tbodyTurnos && data.byShift) {
-            const total = data.general.totalProcessed || 1;
-            const days = data.general.totalDays || 1;
-            const shiftMapping = { morning: "Mañana 🌅", afternoon: "Tarde 🌇", night: "Noche 🌙" };
+                // --- A. RESUMEN GENERAL ---
+                if (data.general) {
+                    document.getElementById('totalApproved').textContent = data.general.totalApproved?.toLocaleString() || 0;
+                    document.getElementById('totalRejected').textContent = data.general.totalRejected?.toLocaleString() || 0;
+                    document.getElementById('totalProcessed').textContent = data.general.totalProcessed?.toLocaleString() || 0;
 
-            tbodyTurnos.innerHTML = Object.entries(data.byShift).map(([key, count]) => `
-                <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
-                    <td style="padding:12px;">${shiftMapping[key] || key}</td>
-                    <td style="padding:12px; text-align:center;">${count.toLocaleString()}</td>
-                    <td style="padding:12px; text-align:center;">${(count / days).toFixed(1)}</td>
-                    <td style="padding:12px; text-align:center;">${((count / total) * 100).toFixed(1)}%</td>
-                </tr>
-            `).join('');
-        }
+                    // ✅ ACTUALIZADO: Mostramos el tiempo promedio en lugar de la tasa
+                    // El backend envía este dato como 'averageTime' (ej: "4m 20s")
+                    const avgDisplay = document.getElementById('averageTimeGlobal');
+                    if (avgDisplay) {
+                        avgDisplay.textContent = data.general.averageTime || "0s";
+                    }
+                }
 
-        // --- C. 👤 DESEMPEÑO POR OPERADOR Y TURNO (ID: operatorShiftTableBody) ---
-        const tbodyOpShift = document.getElementById('operatorShiftTableBody');
-        if (tbodyOpShift && data.byOperatorAndShift) {
-            tbodyOpShift.innerHTML = data.byOperatorAndShift.map((op) => {
-                const nombreOperador = op.operator || op.name || 'Sin nombre';
-                const manana = op.shifts?.morning || 0;
-                const tarde = op.shifts?.afternoon || 0;
-                const noche = op.shifts?.night || 0;
-                const mejorTurnoMap = { 'morning': 'Mañana 🌅', 'afternoon': 'Tarde 🌇', 'night': 'Noche 🌙' };
-                const mejorTurnoDesc = mejorTurnoMap[op.bestShift] || op.bestShift || '-';
+                // --- B. ⏰ PROMEDIO DE CASHOUTS POR TURNO (ID: shiftTableBody) ---
+                const tbodyTurnos = document.getElementById('shiftTableBody');
+                if (tbodyTurnos && data.byShift) {
+                    const sumShifts = Object.values(data.byShift).reduce((a, b) => a + b, 0) || 1;
+                    const shiftMapping = { morning: "Mañana 🌅", afternoon: "Tarde 🌇", night: "Noche 🌙" };
 
-                return `
+                    tbodyTurnos.innerHTML = Object.entries(data.byShift).map(([key, count]) => {
+                        const perce = ((count / sumShifts) * 100).toFixed(1);
+                        return `
+                        <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <td style="padding:12px;">${shiftMapping[key] || key}</td>
+                            <td style="padding:12px; text-align:center;">${count.toLocaleString()}</td>
+                            <td style="padding:12px; text-align:center;">${perce}%</td>
+                        </tr>
+                        `;
+                    }).join('');
+                }
+
+                // --- C. 👤 DESEMPEÑO POR OPERADOR Y TURNO (ID: operatorShiftTableBody) ---
+                const tbodyOpShift = document.getElementById('operatorShiftTableBody');
+                if (tbodyOpShift && data.byOperatorAndShift) {
+                    tbodyOpShift.innerHTML = data.byOperatorAndShift.map((op) => {
+                        const nombreOperador = op.operator || op.name || 'Sin nombre';
+                        const manana = op.shifts?.morning || 0;
+                        const tarde = op.shifts?.afternoon || 0;
+                        const noche = op.shifts?.night || 0;
+                        const mejorTurnoMap = { 'morning': 'Mañana 🌅', 'afternoon': 'Tarde 🌇', 'night': 'Noche 🌙' };
+                        const mejorTurnoDesc = mejorTurnoMap[op.bestShift] || op.bestShift || '-';
+
+                        return `
                     <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
                         <td style="padding:12px; font-weight:bold;">${nombreOperador}</td>
                         <td style="padding:12px; text-align:center;">${manana}</td>
@@ -1325,13 +1399,13 @@ async function cargarEstadisticas() {
                         <td style="padding:12px; text-align:center; font-weight:bold; color: var(--primary);">${mejorTurnoDesc}</td>
                     </tr>
                 `;
-            }).join('');
-        }
+                    }).join('');
+                }
 
-        // --- D. 🏆 RANKING POR OPERADOR (ID: rankingTableBody) ---
-        const tbodyRanking = document.getElementById('rankingTableBody');
-        if (tbodyRanking && data.byOperator) {
-            tbodyRanking.innerHTML = data.byOperator.map((op, index) => `
+                // --- D. 🏆 RANKING POR OPERADOR (ID: rankingTableBody) ---
+                const tbodyRanking = document.getElementById('rankingTableBody');
+                if (tbodyRanking && data.byOperator) {
+                    tbodyRanking.innerHTML = data.byOperator.map((op, index) => `
                 <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
                     <td style="padding:12px;">${index + 1}</td>
                     <td style="padding:12px; font-weight:bold;">${op.name || 'Sin nombre'}</td>
@@ -1343,18 +1417,18 @@ async function cargarEstadisticas() {
                     </td>
                 </tr>
             `).join('');
-        }
+                }
 
-        // --- E. 🏢 CASHOUTS POR COMPAÑÍA (ID: companyTableBody) ---
-const tbodyCompany = document.getElementById('companyTableBody');
-if (tbodyCompany && data.byCompany) {
-    tbodyCompany.innerHTML = data.byCompany.map(c => {
-        // Sumamos los valores para obtener el total real
-        const aprobados = c.approved || 0;
-        const rechazados = c.rejected || 0;
-        const totalReal = aprobados + rechazados;
+                // --- E. 🏢 CASHOUTS POR COMPAÑÍA (ID: companyTableBody) ---
+                const tbodyCompany = document.getElementById('companyTableBody');
+                if (tbodyCompany && data.byCompany) {
+                    tbodyCompany.innerHTML = data.byCompany.map(c => {
+                        // Sumamos los valores para obtener el total real
+                        const aprobados = c.approved || 0;
+                        const rechazados = c.rejected || 0;
+                        const totalReal = aprobados + rechazados;
 
-        return `
+                        return `
             <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
                 <td style="padding:12px; font-weight: 500;">${c.company || 'Sin Nombre'}</td>
                 <td style="padding:12px; text-align:center; color: #2ecc71;">${aprobados.toLocaleString()}</td>
@@ -1362,21 +1436,21 @@ if (tbodyCompany && data.byCompany) {
                 <td style="padding:12px; text-align:center; font-weight:bold; background: rgba(0,0,0,0.02);">${totalReal.toLocaleString()}</td>
             </tr>
         `;
-    }).join('');
-}
+                    }).join('');
+                }
 
-    } catch (error) {
-        console.error('[Stats Error]:', error);
-    } finally {
-        if (loading) loading.style.display = 'none';
-    }
-}
+            } catch (error) {
+                console.error('[Stats Error]:', error);
+            } finally {
+                if (loading) loading.style.display = 'none';
+            }
+        }
 
 
         // ========================================
         // ✅ 9. ARRANQUE (BOOTSTRAP)
         // ========================================
-            document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", () => {
             const savedToken = localStorage.getItem('token');
             const savedUser = localStorage.getItem('user');
 
