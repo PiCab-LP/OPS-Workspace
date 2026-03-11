@@ -60,12 +60,7 @@
                 </button>
             </div>
 
-            <!-- Botón de Cerrar Sesión Operador (al fondo de la barra) -->
-            <div class="logout-global">
-                <button class="role-btn logout" id="operatorLogoutBtn" style="white-space: normal; line-height: 1.2;">
-                    Cerrar Sesión Operador
-                </button>
-            </div>
+
         </aside>
 
         <main class="main-content">
@@ -95,21 +90,7 @@
                     <button type="submit">Empezar verificación!</button>
                 </form>
 
-                <!-- Modal de Observación del Operador -->
-                <div id="observacionModal" class="modal-overlay" style="display:none;">
-                    <div class="modal-content">
-                        <h3>¿Tienes alguna observación sobre este cashout?</h3>
-                        <div class="modal-buttons">
-                            <button id="btnObservacionSi" class="btn-si">SÍ</button>
-                            <button id="btnObservacionNo" class="btn-no">NO</button>
-                        </div>
-                        <div id="observacionInputContainer" style="display:none; margin-top: 15px;">
-                            <textarea id="observacionTexto" placeholder="Escribe tu observación aquí..."
-                                rows="3"></textarea>
-                            <button id="btnEnviarConObservacion">Enviar Cashout</button>
-                        </div>
-                    </div>
-                </div>
+
 
                 <div id="operatorSuccess" class="success-message">
                     ¡Cash out registrado correctamente! Esperando verificación.
@@ -441,38 +422,17 @@
     </main>
     </div>
 
-    <!-- Modal de Observación del Supervisor -->
+    <!-- Modal de Observación del Revisor -->
     <div id="supervisorObservacionModal" class="modal-overlay" style="display:none;">
         <div class="modal-content">
-            <h3>¿Quieres agregar algo a la observación?</h3>
-            <div id="observacionOriginalDisplay"
-                style="background: rgba(255, 193, 7, 0.25); color: #2c3e50; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; text-align: left;">
-            </div>
+            <h3>¿Tienes alguna observación sobre este cashout?</h3>
             <div class="modal-buttons">
                 <button id="btnSupervisorObsSi" class="btn-si">SÍ</button>
                 <button id="btnSupervisorObsNo" class="btn-no">NO</button>
             </div>
             <div id="supervisorObsInputContainer" style="display:none; margin-top: 15px;">
-                <textarea id="supervisorObsTexto" placeholder="Escribe tu complemento aquí..." rows="3"></textarea>
+                <textarea id="supervisorObsTexto" placeholder="Escribe tu observación aquí..." rows="3"></textarea>
                 <button id="btnProcesarConObservacion">Continuar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Observación del Revisor -->
-    <div id="revisionObservacionModal" class="modal-overlay" style="display:none;">
-        <div class="modal-content">
-            <h3>¿Quieres agregar algo a la observación?</h3>
-            <div id="revisionObservacionOriginalDisplay"
-                style="background: rgba(255, 193, 7, 0.25); color: #2c3e50; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; text-align: left;">
-            </div>
-            <div class="modal-buttons">
-                <button id="btnRevisionObsSi" class="btn-si">SÍ</button>
-                <button id="btnRevisionObsNo" class="btn-no">NO</button>
-            </div>
-            <div id="revisionObsInputContainer" style="display:none; margin-top: 15px;">
-                <textarea id="revisionObsTexto" placeholder="Escribe tu complemento aquí..." rows="3"></textarea>
-                <button id="btnProcesarConObservacionRevision">Continuar</button>
             </div>
         </div>
     </div>
@@ -594,7 +554,6 @@
         const leaderboardBtn = document.getElementById('leaderboardBtn');
         const statsBtn = document.getElementById('statsBtn');
         const manageTeamBtn = document.getElementById('manageTeamBtn');
-        const operatorLogoutBtn = document.getElementById('operatorLogoutBtn');
 
         // Secciones
         const operatorSection = document.getElementById('operatorSection');
@@ -645,7 +604,9 @@
 
                 if (response.status === 401 || response.status === 403) {
                     console.error('[API] Error de autenticación detectado.');
-                    cerrarSesion();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/';
                     throw new Error("Sesión expirada");
                 }
 
@@ -660,8 +621,6 @@
         function iniciarApp(jwtToken, userData) {
             token = jwtToken;
             currentUser = userData;
-
-            showNotification(`¡Bienvenido, ${currentUser.fullName}!`, 'success');
 
             // Autocompletar el nombre en el formulario y bloquearlo (Nadie puede fingir ser otro)
             const operatorNameInput = document.getElementById('operatorName');
@@ -685,13 +644,7 @@
             cargarReglasDesdeBD(true); // Carga silenciosa para llenar los selects
         }
 
-        function cerrarSesion() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = '/'; // Redirigir de regreso al Hub
-        }
 
-        operatorLogoutBtn.addEventListener('click', cerrarSesion);
 
         // ========================================
         // ✅ 2. NAVEGACIÓN
@@ -769,7 +722,7 @@
         // ========================================
         let cashoutPendiente = null;
 
-        cashoutForm.addEventListener('submit', (e) => {
+        cashoutForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             document.getElementById('operatorSuccess').style.display = 'none';
             document.getElementById('operatorError').style.display = 'none';
@@ -781,43 +734,22 @@
                 observacion: ""
             };
 
-            document.getElementById('observacionModal').style.display = 'flex';
-            document.getElementById('observacionInputContainer').style.display = 'none';
-            document.getElementById('observacionTexto').value = '';
-        });
+            const btnSubmit = cashoutForm.querySelector('button[type="submit"]');
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.textContent = 'Enviando...';
+            }
 
-        document.getElementById('btnObservacionSi').addEventListener('click', () => {
-            document.getElementById('observacionInputContainer').style.display = 'block';
-        });
-
-        document.getElementById('btnObservacionNo').addEventListener('click', async () => {
-            document.getElementById('btnObservacionSi').disabled = true;
-            document.getElementById('btnObservacionNo').disabled = true;
-            document.getElementById('btnObservacionNo').textContent = 'Enviando...';
-            cashoutPendiente.observacion = "";
             await enviarCashout();
-            document.getElementById('btnObservacionSi').disabled = false;
-            document.getElementById('btnObservacionNo').disabled = false;
-            document.getElementById('btnObservacionNo').textContent = 'NO';
-        });
-
-        document.getElementById('btnEnviarConObservacion').addEventListener('click', async () => {
-            const obs = document.getElementById('observacionTexto').value.trim();
-            if (!obs) return showNotification("Por favor, escribe una observación o selecciona NO.", "error");
-
-            const btnEnviar = document.getElementById('btnEnviarConObservacion');
-            btnEnviar.disabled = true;
-            btnEnviar.textContent = 'Enviando...';
-            cashoutPendiente.observacion = obs;
-            await enviarCashout();
-            btnEnviar.disabled = false;
-            btnEnviar.textContent = 'Enviar Cashout';
+            
+            if (btnSubmit) {
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'Empezar verificación!'; // O el texto original
+            }
         });
 
         async function enviarCashout() {
             try {
-                document.getElementById('observacionModal').style.display = 'none';
-
                 await apiFetch(`/cashouts`, {
                     method: "POST",
                     body: JSON.stringify(cashoutPendiente)
@@ -940,21 +872,10 @@
         window.iniciarRevision = function (row, nuevoEstado) {
             if (procesandoRevision) return;
 
-            const item = cachedItems.find(i => i.row === row);
             revisionPendiente = {
                 row: row,
-                estado: nuevoEstado,
-                observacionOriginal: item ? item.observacion : ""
+                estado: nuevoEstado
             };
-
-            const display = document.getElementById('observacionOriginalDisplay');
-            if (revisionPendiente.observacionOriginal) {
-                display.innerHTML = `<strong>Observación Operador:</strong><br>${revisionPendiente.observacionOriginal}`;
-                display.style.display = 'block';
-            } else {
-                display.innerHTML = `<em>Sin observación previa</em>`;
-                display.style.display = 'block';
-            }
 
             document.getElementById('supervisorObsInputContainer').style.display = 'none';
             document.getElementById('supervisorObsTexto').value = '';
@@ -980,11 +901,7 @@
             procesandoRevision = true;
             document.getElementById('supervisorObservacionModal').style.display = 'none';
 
-            let observacionFinal = revisionPendiente.observacionOriginal;
-            if (obsAdicional) {
-                const prefijo = currentUser.role === 'supervisor' ? 'Supervisor' : 'Analista';
-                observacionFinal = observacionFinal ? `${observacionFinal} | ${prefijo}: ${obsAdicional}` : `${prefijo}: ${obsAdicional}`;
-            }
+            let observacionFinal = obsAdicional ? obsAdicional : "";
 
             // Ocultamos de UI de inmediato
             cachedItems = cachedItems.filter(item => item.row !== revisionPendiente.row);
