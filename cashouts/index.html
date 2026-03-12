@@ -92,12 +92,7 @@
 
 
 
-                <div id="operatorSuccess" class="success-message">
-                    ¡Cash out registrado correctamente! Esperando verificación.
-                </div>
-                <div id="operatorError" class="error-message">
-                    Ha ocurrido un error al registrar el cash out. Por favor, inténtalo de nuevo.
-                </div>
+
             </div>
 
             <div id="reviewSection" class="form-section" style="display: none;">
@@ -106,8 +101,7 @@
                 <div id="verificationQueue" class="queue">
                     <p>Cargando cash outs pendientes...</p>
                 </div>
-                <div id="reviewSuccess" class="success-message" style="display:none;">¡Acción procesada!</div>
-                <div id="reviewError" class="error-message" style="display:none;">Error al procesar.</div>
+
 
                 <div style="margin-top: 20px; text-align: center;">
                     <button id="forceRefresh" style="width: auto; display: inline-block; padding: 10px 22px;">
@@ -696,14 +690,22 @@
             setTimeout(() => notification.classList.remove('show'), 3200);
         }
 
-        function calcularTiempoTranscurrido(cashoutChecking) {
+        function calcularTiempoTranscurrido(rowId, cashoutChecking) {
             try {
-                const [fecha, hora] = cashoutChecking.split(' ');
-                const [mes, dia, año] = fecha.split('/');
-                const [horas, mins, segs] = hora.split(':');
-                const inicio = new Date(año, mes - 1, dia, horas, mins, segs);
-                const diffSeg = Math.floor((new Date() - inicio) / 1000);
-                if (diffSeg < 0) return "0s";
+                let inicioTime;
+                if (rowId && rowId.length === 24) {
+                    inicioTime = parseInt(rowId.substring(0, 8), 16) * 1000;
+                } else if (cashoutChecking) {
+                    const [fecha, hora] = cashoutChecking.split(' ');
+                    const [mes, dia, año] = fecha.split('/');
+                    const [horas, mins, segs] = hora.split(':');
+                    inicioTime = new Date(año, mes - 1, dia, horas, mins, segs).getTime();
+                } else {
+                    return "0s";
+                }
+
+                let diffSeg = Math.floor((Date.now() - inicioTime) / 1000);
+                if (diffSeg < 0) diffSeg = 0;
 
                 const h = Math.floor(diffSeg / 3600);
                 const m = Math.floor((diffSeg % 3600) / 60);
@@ -717,6 +719,18 @@
             } catch (error) { return 'Error'; }
         }
 
+        // Script para actualizar los cronómetros en tiempo real cada segundo
+        setInterval(() => {
+            const cronometros = document.querySelectorAll('.cashout-item[data-cashout-id]');
+            cronometros.forEach(item => {
+                const cro = item.querySelector('.cronometro-live');
+                const rowId = item.getAttribute('data-cashout-id');
+                if (cro && rowId) {
+                    cro.textContent = `⏱️ ${calcularTiempoTranscurrido(rowId, null)}`;
+                }
+            });
+        }, 1000);
+
         // ========================================
         // ✅ 4. CREACIÓN DE CASHOUTS
         // ========================================
@@ -724,8 +738,7 @@
 
         cashoutForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            document.getElementById('operatorSuccess').style.display = 'none';
-            document.getElementById('operatorError').style.display = 'none';
+
 
             cashoutPendiente = {
                 operationCode: document.getElementById('operationCode').value,
@@ -755,7 +768,7 @@
                     body: JSON.stringify(cashoutPendiente)
                 });
 
-                document.getElementById('operatorSuccess').style.display = 'block';
+
                 showNotification("¡Cash out enviado correctamente!", "success");
 
                 cashoutForm.reset();
@@ -763,7 +776,7 @@
 
                 if (reviewSection.style.display === 'block') await cargarCola();
             } catch (err) {
-                document.getElementById('operatorError').style.display = 'block';
+
                 showNotification("Error al subir cash out.", "error");
             }
             cashoutPendiente = null;
@@ -822,7 +835,7 @@
                     const div = verificationQueue.querySelector(`[data-cashout-id="${item.row}"]`);
                     if (div && item.cashoutChecking) {
                         const cro = div.querySelector('.cronometro-live');
-                        if (cro) cro.textContent = `⏱️ ${calcularTiempoTranscurrido(item.cashoutChecking)}`;
+                        if (cro) cro.textContent = `⏱️ ${calcularTiempoTranscurrido(item.row, item.cashoutChecking)}`;
                     }
                 });
                 return;
@@ -839,7 +852,7 @@
                     div.setAttribute('data-cashout-id', item.row);
 
                     const obsHtml = item.observacion ? `<div class="observacion-tag">📝 Observación: ${item.observacion}</div>` : '';
-                    const tiempoHtml = item.cashoutChecking ? `<div class="cronometro-live">⏱️ ${calcularTiempoTranscurrido(item.cashoutChecking)}</div>` : '';
+                    const tiempoHtml = item.cashoutChecking ? `<div class="cronometro-live">⏱️ ${calcularTiempoTranscurrido(item.row, item.cashoutChecking)}</div>` : '';
 
                     div.innerHTML = `
                         <div><strong>${item.operationCode}</strong> <span>${item.company}</span></div>
