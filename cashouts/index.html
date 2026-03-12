@@ -21,10 +21,12 @@
 
         <aside class="sidebar">
             <button onclick="window.location.href='/'"
-                style="background: rgba(38, 70, 83, 0.1); color: var(--tertiary); width: 100%; border: 2px dashed rgba(42, 157, 143, 0.3); padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; transition: background 0.2s, border-color 0.2s;"
-                onmouseover="this.style.background='rgba(38, 70, 83, 0.2)'; this.style.borderColor='rgba(42, 157, 143, 0.6)';"
-                onmouseout="this.style.background='rgba(38, 70, 83, 0.1)'; this.style.borderColor='rgba(42, 157, 143, 0.3)';">
-                🏠 Volver al Hub
+                style="background: linear-gradient(135deg, rgba(38, 70, 83, 0.05) 0%, rgba(42, 157, 143, 0.15) 100%); color: var(--tertiary); width: 100%; border: 1px solid rgba(42, 157, 143, 0.4); padding: 14px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; margin-bottom: 25px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05), inset 0 2px 4px rgba(255, 255, 255, 0.5); backdrop-filter: blur(5px);"
+                onmouseover="this.style.background='linear-gradient(135deg, rgba(38, 70, 83, 0.1) 0%, rgba(42, 157, 143, 0.25) 100%)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(42, 157, 143, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.6)'; this.style.borderColor='rgba(42, 157, 143, 0.6)';"
+                onmouseout="this.style.background='linear-gradient(135deg, rgba(38, 70, 83, 0.05) 0%, rgba(42, 157, 143, 0.15) 100%)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0, 0, 0, 0.05), inset 0 2px 4px rgba(255, 255, 255, 0.5)'; this.style.borderColor='rgba(42, 157, 143, 0.4)';">
+                <img src="../imgs/dashboard.png" alt="Hub"
+                    style="width: 22px; height: 22px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+                Volver al Hub
             </button>
             <!-- Indicador de Supervisor/Revisor de Turno -->
             <div id="supervisorTurnoGlobal" class="supervisor-turno-global" style="display:none;">
@@ -38,25 +40,39 @@
             </div>
 
             <div class="role-selector">
-                <button class="role-btn operator active" id="operatorBtn">Submit a Cashout</button>
+                <button class="role-btn operator active" id="operatorBtn">
+                    <span class="icon"><img src="../imgs/cashouts/Sidebar/submit.png" alt="Submit"
+                            style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;"></span>
+                    Submit a Cashout
+                </button>
 
                 <button class="role-btn supervisor" id="reviewBtn">
-                    <span class="icon">🔍</span> Review a Cashout
+                    <span class="icon"><img src="../imgs/cashouts/Sidebar/review%20a%20cashout.png" alt="Review"
+                            style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;"></span>
+                    Review a Cashout
                 </button>
 
                 <button class="role-btn rules" id="rulesBtn">
-                    <span class="icon">📜</span> Cashout Rules
+                    <span class="icon"><img src="../imgs/cashouts/Sidebar/rules.png" alt="Rules"
+                            style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;"></span>
+                    Cashout Rules
                 </button>
                 <button class="role-btn leaderboard" id="leaderboardBtn">
-                    <span class="icon">🏆</span> Leaderboard
+                    <span class="icon"><img src="../imgs/cashouts/Sidebar/leaderboard.png" alt="Leaderboard"
+                            style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;"></span>
+                    Leaderboard
                 </button>
                 <button class="role-btn stats" id="statsBtn">
-                    <span class="icon">📊</span> Stats
+                    <span class="icon"><img src="../imgs/cashouts/Sidebar/stats.png" alt="Stats"
+                            style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;"></span>
+                    Stats
                 </button>
 
                 <button class="role-btn" id="manageTeamBtn"
                     style="display: none; background: rgba(38, 70, 83, 0.1); color: var(--tertiary);">
-                    <span class="icon">👥</span> Manage Team
+                    <span class="icon"><img src="../imgs/cashouts/Sidebar/manage%20team.png" alt="Manage Team"
+                            style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;"></span>
+                    Manage Team
                 </button>
             </div>
 
@@ -65,24 +81,24 @@
 
         <main class="main-content">
             <header>
-                <h1>🌴 Sistema de Registro de Cash Outs ☀️</h1>
+                <h1>Sistema de Registro de Cash Outs</h1>
                 <p>Registro y verificación de cash outs para múltiples compañías</p>
             </header>
 
             <!-- Sección operador -->
             <div id="operatorSection" class="form-section">
-                <h2>Subir un nuevo cash out</h2>
+                <h2>Submit a cashout</h2>
                 <form id="cashoutForm">
                     <div class="form-group">
-                        <label for="operationCode">Código de Operación *</label>
+                        <label for="operationCode">Código de Operación:</label>
                         <input type="text" id="operationCode" name="operationCode" required>
                     </div>
                     <div class="form-group">
-                        <label for="operatorName">Nombre del Operador *</label>
+                        <label for="operatorName">Nombre del Operador:</label>
                         <input type="text" id="operatorName" name="operatorName" required>
                     </div>
                     <div class="form-group">
-                        <label for="company">Compañía *</label>
+                        <label for="company">Compañía:</label>
                         <select id="company" name="company" required>
                             <option value="">Seleccione una compañía</option>
                         </select>
@@ -96,17 +112,10 @@
             </div>
 
             <div id="reviewSection" class="form-section" style="display: none;">
-                <h2>🔍 Cola de Revisión</h2>
+                <h2>Cola de Revisión</h2>
                 <p>Cash outs pendientes de verificación:</p>
                 <div id="verificationQueue" class="queue">
                     <p>Cargando cash outs pendientes...</p>
-                </div>
-
-
-                <div style="margin-top: 20px; text-align: center;">
-                    <button id="forceRefresh" style="width: auto; display: inline-block; padding: 10px 22px;">
-                        🔄 Actualizar Cola
-                    </button>
                 </div>
             </div>
 
@@ -116,7 +125,7 @@
 
                 <div
                     style="background: rgba(42, 157, 143, 0.05); padding: 20px; border-radius: 12px; border: 1px dashed var(--primary); margin-bottom: 25px;">
-                    <h3 style="margin-top:0; color: var(--primary);">+ Crear Nuevo Usuario</h3>
+
                     <div
                         style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
                         <input type="text" id="newFullName" placeholder="Nombre Completo (Ej. Juan Perez)">
@@ -155,7 +164,7 @@
 
             <!-- Sección Reglas -->
             <div id="rulesSection" class="form-section" style="display: none; max-width: 1200px;">
-                <h2>📜 Reglas de Cashout por Compañía</h2>
+                <h2>Reglas de Cashout por Compañía</h2>
                 <p>Consulta el procedimiento específico para cada plataforma:</p>
 
                 <div id="newCompanyContainer"
@@ -170,7 +179,7 @@
                 </div>
 
                 <div style="width: 100%; margin-bottom: 20px;">
-                    <input type="text" id="searchRules" placeholder="🔍 Buscar compañía por nombre..."
+                    <input type="text" id="searchRules" placeholder="Buscar compañía por nombre..."
                         style="width: 100%; padding: 14px; border-radius: 10px; border: 2px solid rgba(42, 157, 143, 0.3); font-size: 16px; background: white; text-align: left;">
                 </div>
 
@@ -292,7 +301,7 @@
                     <!-- RANKING POR OPERADOR -->
                     <div
                         style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(42, 157, 143, 0.2);">
-                        <h3 style="color: var(--primary); margin-bottom: 15px;">🏆 Ranking por Operador</h3>
+                        <h3 style="color: var(--primary); margin-bottom: 15px;">Ranking por Operador</h3>
                         <div style="overflow-x: auto;">
                             <table id="rankingTable" style="width: 100%; border-collapse: collapse;">
                                 <thead
@@ -490,7 +499,7 @@
     <div id="leaderboardModal" class="modal-overlay" style="display: none;">
         <div class="modal-content leaderboard-modal">
             <div class="leaderboard-header">
-                <h2 class="leaderboard-title">🏆 LEADERBOARD</h2>
+                <h2 class="leaderboard-title">LEADERBOARD</h2>
                 <button id="cerrarLeaderboard" class="btn-close-leaderboard">✕</button>
             </div>
 
@@ -754,7 +763,7 @@
             }
 
             await enviarCashout();
-            
+
             if (btnSubmit) {
                 btnSubmit.disabled = false;
                 btnSubmit.textContent = 'Empezar verificación!'; // O el texto original
@@ -799,7 +808,7 @@
             }
         }
 
-        document.getElementById('forceRefresh').addEventListener('click', cargarCola);
+
 
         async function cargarCola() {
             try {
