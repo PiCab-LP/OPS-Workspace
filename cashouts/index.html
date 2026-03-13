@@ -52,6 +52,12 @@
                     Review a Cashout
                 </button>
 
+                <button class="role-btn companies" id="companiesBtn">
+                    <span class="icon"><img src="../imgs/cashouts/Sidebar/companies.png" alt="Companies"
+                            style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;"></span>
+                    Companies
+                </button>
+
                 <button class="role-btn rules" id="rulesBtn">
                     <span class="icon"><img src="../imgs/cashouts/Sidebar/rules.png" alt="Rules"
                             style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;"></span>
@@ -80,14 +86,14 @@
         </aside>
 
         <main class="main-content">
-            <header>
-                <h1>Sistema de Registro de Cash Outs</h1>
-                <p>Registro y verificación de cash outs para múltiples compañías</p>
-            </header>
-
             <!-- Sección operador -->
             <div id="operatorSection" class="form-section">
+                <header>
+                    <h1>Sistema de Registro de Cash Outs</h1>
+                    <p>Registro y verificación de cash outs para múltiples compañías</p>
+                </header>
                 <h2>Submit a cashout</h2>
+
                 <form id="cashoutForm">
                     <div class="form-group">
                         <label for="operationCode">Código de Operación:</label>
@@ -120,7 +126,7 @@
             </div>
 
             <div id="manageTeamSection" class="form-section" style="display: none; max-width: 900px;">
-                <h2>👥 Gestión de Equipo</h2>
+                <h2>Gestión de Equipo</h2>
                 <p>Crea o elimina cuentas de acceso para tus analistas.</p>
 
                 <div
@@ -167,20 +173,9 @@
                 <h2>Reglas de Cashout por Compañía</h2>
                 <p>Consulta el procedimiento específico para cada plataforma:</p>
 
-                <div id="newCompanyContainer"
-                    style="display: none; margin-bottom: 25px; padding: 20px; background: rgba(42, 157, 143, 0.05); border-radius: 12px; border: 1px dashed var(--primary); text-align: center;">
-                    <h3 style="color: var(--primary); margin-top: 0; font-size: 1.1em;">+ Agregar Nueva Compañía</h3>
-                    <div style="display: flex; gap: 10px; max-width: 500px; margin: 0 auto;">
-                        <input type="text" id="newCompanyName" placeholder="Nombre de la nueva compañía"
-                            style="flex: 1;">
-                        <button id="btnCreateCompany"
-                            style="width: auto; padding: 10px 20px; margin-top: 0;">Guardar</button>
-                    </div>
-                </div>
-
                 <div style="width: 100%; margin-bottom: 20px;">
                     <input type="text" id="searchRules" placeholder="Buscar compañía por nombre..."
-                        style="width: 100%; padding: 14px; border-radius: 10px; border: 2px solid rgba(42, 157, 143, 0.3); font-size: 16px; background: white; text-align: left;">
+                        style="width: 100%; padding: 14px; border-radius: 10px; border: 2px solid rgba(42, 143, 143, 0.3); font-size: 16px; background: white; text-align: left;">
                 </div>
 
                 <div id="rulesLoading"
@@ -191,6 +186,32 @@
                 <div id="rulesGrid" class="rules-grid">
                 </div>
             </div>
+
+            <!-- Sección Compañías -->
+            <div id="companiesSection" class="form-section" style="display: none; max-width: 1000px;">
+                <h2 style="color: var(--primary); font-size: 2em; margin-bottom: 15px;">Compañías Activas</h2>
+
+                <div id="newCompanyContainer"
+                    style="display: none; margin-bottom: 25px; padding: 20px; background: rgba(42, 143, 143, 0.05); border-radius: 12px; border: 1px dashed var(--primary); text-align: center;">
+                    <h3 style="color: var(--primary); margin-top: 0; font-size: 1.1em;">+ Agregar Nueva Compañía</h3>
+                    <div style="display: flex; gap: 10px; max-width: 500px; margin: 0 auto;">
+                        <input type="text" id="newCompanyName" placeholder="Nombre de la nueva compañía"
+                            style="flex: 1;">
+                        <button id="btnCreateCompany"
+                            style="width: auto; padding: 10px 20px; margin-top: 0;">Guardar</button>
+                    </div>
+                </div>
+
+                <div id="companiesLoading"
+                    style="text-align: center; color: var(--primary); font-weight: bold; display: none;">
+                    ⏳ Cargando directorio de compañías...
+                </div>
+
+                <div id="companiesGrid" class="rules-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
+                    <!-- Las compañías se cargarán aquí -->
+                </div>
+            </div>
+
 
             <!-- ✅ MODAL STATS -->
             <div id="statsModal" class="modal-overlay" style="display: none;">
@@ -553,6 +574,7 @@
         // Elementos del Menú
         const operatorBtn = document.getElementById('operatorBtn');
         const reviewBtn = document.getElementById('reviewBtn');
+        const companiesBtn = document.getElementById('companiesBtn');
         const rulesBtn = document.getElementById('rulesBtn');
         const leaderboardBtn = document.getElementById('leaderboardBtn');
         const statsBtn = document.getElementById('statsBtn');
@@ -561,6 +583,7 @@
         // Secciones
         const operatorSection = document.getElementById('operatorSection');
         const reviewSection = document.getElementById('reviewSection');
+        const companiesSection = document.getElementById('companiesSection');
         const rulesSection = document.getElementById('rulesSection');
         const manageTeamSection = document.getElementById('manageTeamSection');
 
@@ -654,8 +677,12 @@
         // ========================================
 
         function desactivarBotones() {
-            [operatorBtn, reviewBtn, rulesBtn, leaderboardBtn, statsBtn, manageTeamBtn].forEach(b => b.classList.remove('active'));
-            [operatorSection, reviewSection, rulesSection, manageTeamSection].forEach(s => s.style.display = 'none');
+            [operatorBtn, reviewBtn, companiesBtn, rulesBtn, leaderboardBtn, statsBtn, manageTeamBtn].forEach(b => {
+                if (b) b.classList.remove('active');
+            });
+            [operatorSection, reviewSection, companiesSection, rulesSection, manageTeamSection].forEach(s => {
+                if (s) s.style.display = 'none';
+            });
             detenerAutoRefresh();
         }
 
@@ -671,6 +698,13 @@
             reviewSection.style.display = 'block';
             cargarCola();
             iniciarAutoRefresh();
+        });
+
+        companiesBtn.addEventListener('click', () => {
+            desactivarBotones();
+            companiesBtn.classList.add('active');
+            companiesSection.style.display = 'block';
+            cargarCompaniesDirectorio();
         });
 
         rulesBtn.addEventListener('click', () => {
@@ -1089,8 +1123,9 @@
                     showNotification("¡Compañía agregada con éxito!");
                     document.getElementById('newCompanyName').value = '';
 
-                    // Recargamos la lista para que aparezca la nueva
-                    cargarReglasDesdeBD();
+                    // Recargamos ambas listas para que aparezca la nueva
+                    cargarReglasDesdeBD(true);
+                    cargarCompaniesDirectorio();
                 } catch (e) {
                     showNotification(e.message, "error");
                 } finally {
@@ -1132,6 +1167,48 @@
                     </div>
                 `).join('');
             } catch (e) { console.error(e); }
+        }
+
+        async function cargarCompaniesDirectorio() {
+            const grid = document.getElementById('companiesGrid');
+            const loading = document.getElementById('companiesLoading');
+            if (grid) grid.innerHTML = '';
+            if (loading) loading.style.display = 'block';
+
+            try {
+                const res = await apiFetch(`/rules`);
+                const json = await res.json();
+                const companies = json.data;
+
+                if (loading) loading.style.display = 'none';
+
+                if (!companies || companies.length === 0) {
+                    if (grid) grid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; padding: 40px; opacity: 0.6;">No hay compañías registradas aún.</p>';
+                    return;
+                }
+
+                if (grid) {
+                    grid.innerHTML = companies.map(comp => `
+                        <div class="rule-card" style="display: flex; align-items: center; justify-content: center; min-height: 70px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%); cursor: default; position: relative; overflow: hidden; padding: 10px;"
+                             onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(42, 157, 143, 0.15)';"
+                             onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 15px rgba(38, 70, 83, 0.1)';">
+                            
+                            <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary);"></div>
+                            
+                            <div style="text-align: center; width: 100%;">
+                                <div style="font-size: 1.1em; font-weight: 800; color: var(--tertiary); word-break: break-word;">${comp.name}</div>
+                            </div>
+                            
+                            <!-- Decoración sutil de fondo -->
+                            <div style="position: absolute; bottom: -8px; right: -8px; font-size: 30px; opacity: 0.05; transform: rotate(-15deg);">🏦</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                if (loading) loading.style.display = 'none';
+                if (grid) grid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; color: var(--error);">Error al cargar el directorio.</p>';
+                console.error(e);
+            }
         }
 
         window.toggleEditRegla = (id) => {
