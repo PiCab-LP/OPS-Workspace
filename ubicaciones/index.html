@@ -323,9 +323,11 @@
     <script>
       const API_BASE = "https://general-cashouts.onrender.com/api";
       let token = localStorage.getItem("token");
+      let user = JSON.parse(localStorage.getItem("user") || "null");
       let usuariosData = []; 
 
       if (!token || token === "null") window.location.href = "/";
+      if (!user || user.role !== "supervisor") window.location.href = "/";
 
       // ===== CUSTOM MODAL FUNCTIONS =====
       function closeModal() {

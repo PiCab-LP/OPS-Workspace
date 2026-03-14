@@ -452,11 +452,14 @@
             const cardCashouts = document.getElementById('card-cashouts');
             const cardOperapedia = document.getElementById('card-operapedia');
             const cardBalance = document.getElementById('card-balance');
+            const cardLocations = document.getElementById('card-locations');
+            const cardHelpDesk = document.getElementById('card-helpdesk');
 
             // 1. Reseteamos la vista por defecto (mostrar todas)
             if(cardCashouts) cardCashouts.style.display = 'flex';
             if(cardOperapedia) cardOperapedia.style.display = 'flex';
             if(cardBalance) cardBalance.style.display = 'flex';
+            if(cardLocations) cardLocations.style.display = 'none';
 
             if(cardHelpDesk) cardHelpDesk.style.display = 'none';
 
@@ -467,6 +470,7 @@
                 roleBadge.style.border = '1px solid rgba(94, 106, 210, 0.3)';
 
                 if(cardHelpDesk) cardHelpDesk.style.display = 'flex';
+                if(cardLocations) cardLocations.style.display = 'flex';
                 
             } else if (user.role === 'analista') {
                 roleBadge.style.background = 'rgba(46, 204, 113, 0.15)';
