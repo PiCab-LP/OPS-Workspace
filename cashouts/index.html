@@ -204,7 +204,7 @@
 
                 <div id="companiesLoading"
                     style="text-align: center; color: var(--primary); font-weight: bold; display: none;">
-                    ⏳ Cargando directorio de compañías...
+                    Cargando compañías...
                 </div>
 
                 <div id="companiesGrid" class="rules-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
@@ -1009,8 +1009,8 @@
                             </span>
                         </td>
                         <td style="padding: 12px; text-align: center;">
-                            <button onclick="cambiarPasswordUsuario('${u._id}', '${u.username}')" style="background: var(--accent); padding: 5px 10px; width: auto; font-size: 12px; margin-right: 5px;">🔑 Clave</button>
-                            <button onclick="eliminarUsuario('${u._id}')" style="background: var(--error); padding: 5px 10px; width: auto; font-size: 12px;" ${u.username === 'admin' ? 'disabled' : ''}>🗑️ Borrar</button>
+                            <button onclick="cambiarPasswordUsuario('${u._id}', '${u.username}')" style="background: var(--accent); padding: 5px 10px; width: auto; font-size: 12px; margin-right: 5px;">Contraseña</button>
+                            <button onclick="eliminarUsuario('${u._id}')" style="background: var(--error); padding: 5px 10px; width: auto; font-size: 12px;" ${u.username === 'admin' ? 'disabled' : ''}>Eliminar</button>
                         </td>
                     </tr>
                 `).join('');
@@ -1154,14 +1154,14 @@
                     <div class="rule-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px dashed rgba(42, 157, 143, 0.2); padding-bottom: 10px;">
                             <h3 style="margin: 0;">${rule.name}</h3>
-                            ${isSupervisor ? `<button onclick="toggleEditRegla('${rule._id}')" style="width: auto; padding: 6px 14px; font-size: 13px; margin: 0; background: var(--accent); border-radius: 8px;">✏️ Editar</button>` : ''}
+                            ${isSupervisor ? `<button onclick="toggleEditRegla('${rule._id}')" style="width: auto; padding: 6px 14px; font-size: 13px; margin: 0; background: var(--accent); border-radius: 8px;"><img src="../imgs/cashouts/edit.png" alt="Editar" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"> Editar</button>` : ''}
                         </div>
                         <div id="view-mode-${rule._id}" style="background: rgba(0,0,0,0.02); white-space: pre-wrap; color: var(--tertiary); padding: 15px; border-radius: 10px; min-height: 60px;">${rule.ruleText ? rule.ruleText : '<i>Sin reglas.</i>'}</div>
                         <div id="edit-mode-${rule._id}" style="display: none;">
                             <textarea class="rule-text" id="rule-text-${rule._id}">${rule.ruleText || ''}</textarea>
                             <div style="display: flex; gap: 10px; margin-top: 10px;">
-                                <button onclick="guardarEdicionRegla('${rule._id}')" id="btn-save-${rule._id}" style="width:auto; padding:8px 15px;">💾 Guardar</button>
-                                <button onclick="toggleEditRegla('${rule._id}')" style="width:auto; padding:8px 15px; background: var(--error);">❌ Cancelar</button>
+                                <button onclick="guardarEdicionRegla('${rule._id}')" id="btn-save-${rule._id}" style="width:auto; padding:8px 15px;">Guardar</button>
+                                <button onclick="toggleEditRegla('${rule._id}')" style="width:auto; padding:8px 15px; background: var(--error);">Cancelar</button>
                             </div>
                         </div>
                     </div>
@@ -1199,8 +1199,6 @@
                                 <div style="font-size: 1.1em; font-weight: 800; color: var(--tertiary); word-break: break-word;">${comp.name}</div>
                             </div>
                             
-                            <!-- Decoración sutil de fondo -->
-                            <div style="position: absolute; bottom: -8px; right: -8px; font-size: 30px; opacity: 0.05; transform: rotate(-15deg);">🏦</div>
                         </div>
                     `).join('');
                 }
