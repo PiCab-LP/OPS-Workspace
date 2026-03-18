@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentTab = 'credenciales';
   let selectedCompanyId = null;
   let adminLoggedIn = localStorage.getItem('credentialsAdminLoggedIn') === 'true';
-  const ADMIN_PASSWORD = 'superctrl2023';
 
   const companiesList = document.getElementById('companiesList');
   const gamesGrid = document.getElementById('gamesGrid');
@@ -17,6 +16,35 @@ document.addEventListener('DOMContentLoaded', () => {
   const editModeBtn = document.getElementById('editModeBtn');
   const tabsContainer = document.getElementById('tabsContainer');
 
+
+  // ==================== CONFIGURACIÓN API (MONGODB) ====================
+  const API_BASE = "https://general-cashouts.onrender.com/api";
+  let token = localStorage.getItem("token");
+
+  // Motor central para comunicarnos con el backend
+  async function apiFetch(endpoint, options = {}) {
+    const headers = { 
+      Accept: "application/json", 
+      Authorization: `Bearer ${token}`, 
+      ...options.headers 
+    };
+    
+    // Si enviamos datos, le decimos que es en formato JSON
+    if (options.body) headers["Content-Type"] = "application/json";
+
+    const response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+    
+    // Si el token expiró o no es válido, lo botamos al login
+    if (response.status === 401 || response.status === 403) {
+      localStorage.removeItem("token");
+      window.location.href = "/";
+      throw new Error("Sesión expirada o sin permisos");
+    }
+    
+    return response;
+  }
+  // =====================================================================
+  
   // ==================== CUSTOM CONFIRM MODAL ====================
   const showConfirmModal = (title, message, acceptText = 'Aceptar', cancelText = 'Cancelar') => {
     return new Promise(resolve => {
@@ -53,84 +81,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  // ==================== CUSTOM PASSWORD MODAL ====================
-  const showPasswordModal = (title, message) => {
-    return new Promise(resolve => {
-      const existing = document.getElementById('customConfirmModal');
-      if (existing) existing.remove();
-
-      const overlay = document.createElement('div');
-      overlay.id = 'customConfirmModal';
-      overlay.className = 'confirm-overlay';
-      overlay.innerHTML = `
-        <div class="confirm-box">
-          <div class="confirm-icon">🔒</div>
-          <h3 class="confirm-title">${title}</h3>
-          <p class="confirm-message">${message}</p>
-          <input type="password" class="confirm-password-input" placeholder="Contraseña" autocomplete="off" />
-          <div class="confirm-actions">
-            <button class="confirm-btn confirm-btn-cancel">Cancelar</button>
-            <button class="confirm-btn confirm-btn-accept">Confirmar</button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-      requestAnimationFrame(() => overlay.classList.add('show'));
-
-      const input = overlay.querySelector('.confirm-password-input');
-      setTimeout(() => input.focus(), 100);
-
-      const close = (result) => {
-        overlay.classList.remove('show');
-        setTimeout(() => overlay.remove(), 200);
-        resolve(result);
-      };
-
-      overlay.querySelector('.confirm-btn-accept').addEventListener('click', () => close(input.value));
-      overlay.querySelector('.confirm-btn-cancel').addEventListener('click', () => close(null));
-
-      input.addEventListener('keydown', e => { if (e.key === 'Enter') close(input.value); });
-    });
-  };
 
   // ==================== GAME CATALOG ====================
   let gameCatalog = []; // [{id, name, link}]
 
-  // Load catalog from Firebase
-  if (window.gameCatalogRef && window.firebaseOnValue) {
-    window.firebaseOnValue(window.gameCatalogRef, snapshot => {
-      const data = snapshot.val() || {};
-      gameCatalog = Object.entries(data).map(([key, val]) => ({
-        id: val.id ?? key,
-        name: val.name || '',
-        link: val.link || ''
-      }));
-    });
-  }
 
   // Catalog modal
-  const catalogBtn = document.getElementById('catalogBtn');
+const catalogBtn = document.getElementById('catalogBtn');
   if (catalogBtn) {
     catalogBtn.addEventListener('click', async () => {
-      // Require admin
+      // Validamos usando la variable de sesión
       if (!adminLoggedIn) {
-        const storedAdmin = localStorage.getItem('credentialsAdminLoggedIn');
-        adminLoggedIn = storedAdmin === 'true';
-        if (!adminLoggedIn) {
-          const pwd = await showPasswordModal(
-            'Acceso de administrador',
-            'Introduce la contraseña para gestionar el catálogo.'
-          );
-          if (!pwd) return;
-          if (pwd !== ADMIN_PASSWORD) {
-            toast.textContent = '❌ Contraseña incorrecta';
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
-            return;
-          }
-          adminLoggedIn = true;
-          localStorage.setItem('credentialsAdminLoggedIn', 'true');
-        }
+        toast.textContent = '❌ Solo los supervisores pueden gestionar el catálogo';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+        return;
       }
       openCatalogModal();
     });
@@ -164,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     document.body.appendChild(overlay);
 
-    let localCatalog = gameCatalog.map(g => ({ ...g }));
+let localCatalog = gameCatalog.map(g => ({ ...g }));
 
     const listContainer = overlay.querySelector('#catalogList');
 
@@ -215,27 +180,47 @@ document.addEventListener('DOMContentLoaded', () => {
       if (inputs.length) inputs[inputs.length - 1].focus();
     });
 
-    // Save
+    // ==========================================
+    // ✅ SAVE (ADAPTADO A MONGODB)
+    // ==========================================
     overlay.querySelector('#saveCatalogBtn').addEventListener('click', async () => {
-      const valid = localCatalog.filter(g => g.name.trim());
-      const catalogObj = {};
-      valid.forEach((g, idx) => {
-        catalogObj[idx] = { id: idx, name: g.name.trim(), link: g.link.trim() };
-      });
+      // 1. Filtramos los vacíos y estructuramos como un arreglo limpio
+      const valid = localCatalog
+        .filter(g => g.name.trim())
+        .map((g, idx) => ({ 
+            id: idx, 
+            name: g.name.trim(), 
+            link: g.link.trim() 
+        }));
+
+      const saveBtn = overlay.querySelector('#saveCatalogBtn');
+
       try {
-        await window.firebaseSet(
-          window.firebaseRef(window.db, 'gameCatalog'),
-          catalogObj
-        );
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Guardando...';
+
+        // 2. Enviamos el arreglo directamente a nuestra API
+        await apiFetch('/catalog', {
+          method: 'PUT',
+          body: JSON.stringify({ games: valid })
+        });
+        
+        // 3. Actualizamos la variable global para que Operapedia lo sepa
+        gameCatalog = valid;
+
         toast.textContent = `✅ Catálogo guardado (${valid.length} juegos)`;
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 2000);
         closeModal();
+
       } catch (err) {
         console.error('Error saving catalog:', err);
         toast.textContent = '❌ Error al guardar catálogo';
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 2000);
+        
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Guardar catálogo';
       }
     });
 
@@ -244,9 +229,9 @@ document.addEventListener('DOMContentLoaded', () => {
       overlay.classList.remove('show');
       setTimeout(() => overlay.remove(), 200);
     };
+    
     overlay.querySelector('#closeCatalogBtn').addEventListener('click', closeModal);
     overlay.querySelector('#cancelCatalogBtn').addEventListener('click', closeModal);
-
 
     requestAnimationFrame(() => overlay.classList.add('show'));
   };
@@ -440,40 +425,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ========= FIREBASE (toggles remotos) =========
-  const applyRemoteSettings = () => {
-    if (!window.gamesRef || !window.firebaseOnValue) return;
 
-    window.firebaseOnValue(window.gamesRef, snapshot => {
-      const data = snapshot.val();
-      if (!data) return;
 
-      Object.values(data).forEach(s => {
-        const company = companies.find(c => String(c.id) === String(s.companyId));
-        if (!company) return;
-        const game = company.games.find(g => String(g.id) === String(s.gameId));
-        if (!game) return;
-        game.active = s.active;
-        if (s.lastModified) game.lastModified = s.lastModified;
+// ========= MONGO: TOGGLE JUEGO =========
+  const updateRemoteToggle = async (company, game) => {
+    try {
+      await apiFetch(`/companies/${company.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ games: company.games }) // Enviamos el array de juegos actualizado
       });
-
-      renderCompanies();
-      if (currentCompany && currentTab === 'credenciales' && !isEditMode) {
-        renderGames(currentCompany.games, gameSearch.value);
-      }
-    });
-  };
-
-  const updateRemoteToggle = (company, game) => {
-    if (!window.db || !window.firebaseRef || !window.firebaseSet) return;
-    const key = `${company.id}_${game.id}`;
-    const nodeRef = window.firebaseRef(window.db, `gamesConfig/${key}`);
-    window.firebaseSet(nodeRef, {
-      companyId: company.id,
-      gameId: game.id,
-      active: game.active,
-      lastModified: game.lastModified
-    });
+    } catch (e) {
+      console.error("Error al cambiar estado del juego:", e);
+    }
   };
 
 
@@ -591,15 +554,16 @@ document.addEventListener('DOMContentLoaded', () => {
       partnerBadge.replaceWith(sel);
       sel.focus();
 
-      const finishEdit = async () => {
+const finishEdit = async () => {
         const newPartner = sel.value;
         company.partner = newPartner || '';
         try {
-          await window.firebaseSet(
-            window.firebaseRef(window.db, `companies/${company.id}/partner`),
-            newPartner || ''
-          );
+          await apiFetch(`/companies/${company.id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ partner: company.partner })
+          });
         } catch (e) { console.error('Error saving partner', e); }
+        
         sel.replaceWith(partnerBadge);
         updatePartnerBadge();
         renderCompanies();
@@ -630,26 +594,17 @@ document.addEventListener('DOMContentLoaded', () => {
       );
       if (!confirmed) return;
 
-      // Ask for supervisor password
-      const pwd = await showPasswordModal(
-        'Contraseña de supervisor',
-        'Ingresa la contraseña de supervisor para confirmar la eliminación.'
-      );
-      if (!pwd) return;
-      if (pwd !== ADMIN_PASSWORD) {
-        toast.textContent = '❌ Contraseña incorrecta';
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2000);
-        return;
-      }
-
       try {
         const deletedName = currentCompany.name;
-        // Remove from Firebase
-        await window.firebaseSet(
-          window.firebaseRef(window.db, `companies/${currentCompany.id}`),
-          null
-        );
+// ==========================================
+        // ✅ ELIMINAR EN MONGODB (Adiós Firebase)
+        // ==========================================
+        await apiFetch(`/companies/${currentCompany.id}`, { 
+            method: 'DELETE' 
+        });
+
+        // Recargamos la lista desde la base de datos para que desaparezca
+        await loadCompaniesFromMongo();
 
         // Reset UI
         currentCompany = null;
@@ -1492,83 +1447,72 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // ========= GUARDAR CAMBIOS POR TAB =========
+// ========= GUARDAR CAMBIOS POR TAB (100% MONGODB) =========
   const saveCurrentTab = async () => {
     if (!currentCompany) return;
 
     const companyIndex = companies.findIndex(c => c.id === currentCompany.id);
     if (companyIndex === -1) return;
 
+    let updateData = {}; // Aquí empacaremos lo que enviaremos a Mongo
+
     try {
       switch (currentTab) {
         case 'credenciales':
+          updateData.games = currentCompany.games;
           break;
 
         case 'deposito':
           const depositoContainer = document.getElementById('depositoContent');
           const metodosDeposito = [];
           depositoContainer.querySelectorAll('.edit-metodo-card').forEach((card) => {
-            const metodo = card.querySelector('[data-field="metodo"]').value;
-            const proveedor = card.querySelector('[data-field="proveedor"]').value;
-            const montoMinimo = card.querySelector('[data-field="montoMinimo"]').value;
-            const montoMaximo = card.querySelector('[data-field="montoMaximo"]').value;
-            metodosDeposito.push({ metodo, proveedor, montoMinimo, montoMaximo });
+            metodosDeposito.push({
+              metodo: card.querySelector('[data-field="metodo"]').value,
+              proveedor: card.querySelector('[data-field="proveedor"]').value,
+              montoMinimo: card.querySelector('[data-field="montoMinimo"]').value,
+              montoMaximo: card.querySelector('[data-field="montoMaximo"]').value
+            });
           });
+          updateData.metodosDeposito = metodosDeposito;
           currentCompany.metodosDeposito = metodosDeposito;
-          await window.firebaseSet(
-            window.firebaseRef(window.db, `companies/${currentCompany.id}/metodosDeposito`),
-            metodosDeposito
-          );
           break;
 
         case 'cashout':
           const cashoutContainer = document.getElementById('cashoutContent');
           const metodosCashout = [];
           cashoutContainer.querySelectorAll('.edit-metodo-card').forEach((card) => {
-            const metodo = card.querySelector('[data-field="metodo"]').value;
-            const proveedor = card.querySelector('[data-field="proveedor"]').value;
-            const montoMinimo = card.querySelector('[data-field="montoMinimo"]').value;
-            const montoMaximo = card.querySelector('[data-field="montoMaximo"]').value;
-            metodosCashout.push({ metodo, proveedor, montoMinimo, montoMaximo });
+            metodosCashout.push({
+              metodo: card.querySelector('[data-field="metodo"]').value,
+              proveedor: card.querySelector('[data-field="proveedor"]').value,
+              montoMinimo: card.querySelector('[data-field="montoMinimo"]').value,
+              montoMaximo: card.querySelector('[data-field="montoMaximo"]').value
+            });
           });
+          updateData.metodosCashout = metodosCashout;
           currentCompany.metodosCashout = metodosCashout;
-          await window.firebaseSet(
-            window.firebaseRef(window.db, `companies/${currentCompany.id}/metodosCashout`),
-            metodosCashout
-          );
           break;
 
         case 'consideraciones':
-          const consideracionesValue = document.getElementById('consideracionesTextarea').value;
-          currentCompany.consideracionesCashout = consideracionesValue;
-          await window.firebaseSet(
-            window.firebaseRef(window.db, `companies/${currentCompany.id}/consideracionesCashout`),
-            consideracionesValue
-          );
+          updateData.consideracionesCashout = document.getElementById('consideracionesTextarea').value;
+          currentCompany.consideracionesCashout = updateData.consideracionesCashout;
           break;
 
         case 'promociones':
           const promocionesContainer = document.getElementById('promocionesContent');
           const promociones = [];
           promocionesContainer.querySelectorAll('.edit-metodo-card').forEach((card) => {
-            const titulo = card.querySelector('[data-field="titulo"]').value;
-            const descripcion = card.querySelector('[data-field="descripcion"]').value;
-            promociones.push({ titulo, descripcion });
+            promociones.push({
+              titulo: card.querySelector('[data-field="titulo"]').value,
+              descripcion: card.querySelector('[data-field="descripcion"]').value
+            });
           });
+          updateData.promociones = promociones;
           currentCompany.promociones = promociones;
-          await window.firebaseSet(
-            window.firebaseRef(window.db, `companies/${currentCompany.id}/promociones`),
-            promociones
-          );
           break;
 
         case 'terminos':
-          const terminosValue = document.getElementById('terminosInput').value;
-          currentCompany.terminosLink = terminosValue;
-          await window.firebaseSet(
-            window.firebaseRef(window.db, `companies/${currentCompany.id}/terminosLink`),
-            terminosValue
-          );
+          updateData.terminosLink = document.getElementById('terminosInput').value;
+          currentCompany.terminosLink = updateData.terminosLink;
           break;
 
         case 'canales':
@@ -1577,11 +1521,8 @@ document.addEventListener('DOMContentLoaded', () => {
           canalesContainer.querySelectorAll('.edit-canal-card input').forEach((input) => {
             if (input.value.trim()) canales.push(input.value.trim());
           });
+          updateData.canales = canales;
           currentCompany.canales = canales;
-          await window.firebaseSet(
-            window.firebaseRef(window.db, `companies/${currentCompany.id}/canales`),
-            canales
-          );
           break;
 
         case 'notas':
@@ -1592,20 +1533,22 @@ document.addEventListener('DOMContentLoaded', () => {
               currentCompany.notas[index].texto = textarea.value.trim();
             }
           });
-
-          await window.firebaseSet(
-            window.firebaseRef(window.db, `companies/${currentCompany.id}/notas`),
-            currentCompany.notas || []
-          );
+          updateData.notas = currentCompany.notas;
           break;
       }
+
+      // ✅ EL ÚNICO LLAMADO A MONGODB PARA GUARDAR LA PESTAÑA ACTUAL
+      await apiFetch(`/companies/${currentCompany.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(updateData)
+      });
 
       toast.textContent = '✅ Cambios guardados correctamente';
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 2000);
 
     } catch (error) {
-      console.error('Error al guardar:', error);
+      console.error('Error al guardar en MongoDB:', error);
       toast.textContent = '❌ Error al guardar cambios';
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 2000);
@@ -2057,21 +2000,19 @@ document.addEventListener('DOMContentLoaded', () => {
     return maxId + 1;
   };
 
-  const deleteGameFromCompany = (companyId, gameId) => {
+// ========= MONGO: ELIMINAR JUEGO =========
+  const deleteGameFromCompany = async (companyId, gameId) => {
     const company = companies.find(c => String(c.id) === String(companyId));
     if (!company) return;
 
-    company.games = company.games.filter(
-      g => String(g.id) !== String(gameId)
-    );
+    company.games = company.games.filter(g => String(g.id) !== String(gameId));
 
-    if (window.db && window.firebaseRef && window.firebaseSet) {
-      const nodeRef = window.firebaseRef(
-        window.db,
-        `companies/${companyId}/games/${gameId}`
-      );
-      window.firebaseSet(nodeRef, null);
-    }
+    try {
+      await apiFetch(`/companies/${companyId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ games: company.games })
+      });
+    } catch (e) { console.error("Error eliminando juego:", e); }
 
     renderCompanies();
     if (currentCompany && String(currentCompany.id) === String(companyId)) {
@@ -2079,6 +2020,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+// ========= MONGO: AGREGAR JUEGO =========
   const addGameToCurrentCompany = async () => {
     if (!currentCompany) return;
 
@@ -2089,7 +2031,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!userInput || !linkInput) return;
 
-    // Get name from select or custom input
     let name = '';
     if (gameSelect && gameSelect.value && gameSelect.value !== '__custom__') {
       name = gameSelect.options[gameSelect.selectedIndex].textContent.trim();
@@ -2110,37 +2051,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const newId = getNextGameId(currentCompany);
     const today = new Date().toISOString().split('T')[0];
 
-    const newGame = {
-      id: newId,
-      name,
-      username,
-      link,
-      active: true,
-      lastModified: today
-    };
+    const newGame = { id: newId, name, username, link, active: true, lastModified: today };
 
     const ok = await showConfirmModal(
       '¿Crear juego?',
       `Estás a punto de crear el juego "${name}" en ${currentCompany.name}. ¿Quieres proceder?`,
-      'Crear',
-      'Cancelar'
+      'Crear', 'Cancelar'
     );
     if (!ok) return;
 
     currentCompany.games.push(newGame);
 
-    if (window.db && window.firebaseRef && window.firebaseSet) {
-      const nodeRef = window.firebaseRef(
-        window.db,
-        `companies/${currentCompany.id}/games/${newId}`
-      );
-      window.firebaseSet(nodeRef, newGame);
-    }
+    try {
+      await apiFetch(`/companies/${currentCompany.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ games: currentCompany.games })
+      });
+    } catch(e) { console.error("Error agregando juego:", e); }
 
     renderCompanies();
     renderGames(currentCompany.games, gameSearch.value);
 
-    nameInput.value = '';
+    if(nameInput) nameInput.value = '';
     userInput.value = '';
     linkInput.value = '';
 
@@ -2149,8 +2081,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => toast.classList.remove('show'), 1200);
   };
 
-  // ========= EVENTOS GRID (CREDENCIALES) =========
-  gamesGrid.addEventListener('click', e => {
+// ========= EVENTOS GRID (CREDENCIALES) =========
+  gamesGrid.addEventListener('click', async e => { // <-- Se agregó "async" aquí
     if (!companies || !companies.length) return;
 
     const copyBtn = e.target.closest('.copy-btn');
@@ -2223,25 +2155,39 @@ document.addEventListener('DOMContentLoaded', () => {
       );
       if (!okEdit) return;
 
+      // Actualizamos los datos en la memoria local
       game.username = newUsername;
       game.link = newLink;
       game.lastModified = new Date().toISOString().split('T')[0];
 
-      if (window.db && window.firebaseRef && window.firebaseSet) {
-        const nodeRef = window.firebaseRef(
-          window.db,
-          `companies/${companyId}/games/${gameId}`
-        );
-        window.firebaseSet(nodeRef, {
-          ...game
+      // ===============================================
+      // ✅ NUEVA LLAMADA A MONGODB (Reemplaza a Firebase)
+      // ===============================================
+      try {
+        saveBtn.textContent = "Guardando...";
+        saveBtn.disabled = true;
+
+        await apiFetch(`/companies/${companyId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ games: company.games }) // Enviamos la lista de juegos actualizada
         });
+
+        // Refrescamos la vista de la cuadrícula
+        renderGames(currentCompany.games, gameSearch.value);
+
+        toast.textContent = 'Cambios guardados';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 1200);
+
+      } catch (error) {
+        console.error("Error al guardar edición de juego:", error);
+        saveBtn.textContent = "Guardar";
+        saveBtn.disabled = false;
+        toast.textContent = '❌ Error al guardar';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 1500);
       }
-
-      renderGames(currentCompany.games, gameSearch.value);
-
-      toast.textContent = 'Cambios guardados';
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 1200);
+      // ===============================================
 
       return;
     }
@@ -2465,7 +2411,6 @@ if (editModeBtn) {
     updateAddCompanyBtnVisibility();
 
     loadLocalFilter();
-    applyRemoteSettings();
     renderLocalFilterList();
     renderCompanies();
 
@@ -2781,19 +2726,16 @@ if (editModeBtn) {
         : 0;
       const newId = maxId + 1;
 
-      // Build games object from modal list
-      const gamesObj = {};
+// Build games ARRAY (No un objeto, MongoDB usa Arrays)
       const validGames = modalGamesList.filter(g => g.name.trim());
-      validGames.forEach((g, idx) => {
-        gamesObj[idx] = {
+      const gamesArray = validGames.map((g, idx) => ({
           id: idx,
           name: g.name.trim(),
           username: g.username || '',
           link: g.link || '',
           active: true,
           lastModified: new Date().toISOString().split('T')[0]
-        };
-      });
+      }));
 
       // Crear estructura completa
       const newCompany = {
@@ -2821,11 +2763,16 @@ if (editModeBtn) {
         createBtn.disabled = true;
         createBtn.textContent = 'Creando...';
 
-        // Guardar en Firebase
-        await window.firebaseSet(
-          window.firebaseRef(window.db, `companies/${newId}`),
-          newCompany
-        );
+// ==========================================
+        // ✅ GUARDAR EN MONGODB (Adiós Firebase)
+        // ==========================================
+        await apiFetch('/companies', {
+            method: 'POST',
+            body: JSON.stringify(newCompany)
+        });
+
+        // Recargamos todas las compañías desde el backend para ver la nueva
+        await loadCompaniesFromMongo();
 
         updateAddCompanyBtnVisibility();
 
@@ -2848,7 +2795,7 @@ if (editModeBtn) {
 
     modal.classList.add('show');
     nameInput.focus();
-  };
+  }; // Cierra openAddCompanyModal
 
   // Event listener del botón
   if (addCompanyBtn) {
@@ -2866,33 +2813,62 @@ if (editModeBtn) {
   // Llamar después de login admin
   updateAddCompanyBtnVisibility();
 
+// ========= CARGA INICIAL UNIFICADA (MONGO) =========
+  const loadInitialData = async () => {
+    try {
+      // Pedimos las compañías y el catálogo AL MISMO TIEMPO
+      const [compRes, catRes] = await Promise.all([
+        apiFetch('/companies'),
+        apiFetch('/catalog')
+      ]);
 
-  // Cargar companies desde Firebase y arrancar
-  if (window.companiesRef && window.firebaseOnValue) {
-    window.firebaseOnValue(window.companiesRef, snapshot => {
+      const compJson = await compRes.json();
+      const catJson = await catRes.json();
+
+      if (compJson.success && compJson.data) {
+        companies = compJson.data;
+      }
+      
+      // Aseguramos que el catálogo cargue ANTES de arrancar la interfaz
+      if (catJson.success && catJson.data) {
+        gameCatalog = catJson.data;
+      }
 
       const storedAdmin = localStorage.getItem('credentialsAdminLoggedIn');
       adminLoggedIn = storedAdmin === 'true';
 
-      const data = snapshot.val() || {};
+      // Ahora sí, arrancamos la interfaz con todos los datos listos
+      initApp(); 
+      
+    } catch (error) {
+      console.error('Error cargando bases de datos:', error);
+      toast.textContent = '❌ Error de conexión con el servidor';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+  };
 
-      companies = Object.entries(data).map(([companyKey, companyValue]) => {
-        const gamesObj = companyValue.games || {};
-        const gamesArray = Object.entries(gamesObj).map(([gameKey, gameValue]) => ({
-          id: gameValue.id ?? gameKey,
-          ...gameValue
-        }));
+  // 1. Ejecutar carga inicial maestra
+  loadInitialData();
 
-        return {
-          id: companyValue.id ?? companyKey,
-          ...companyValue,
-          games: gamesArray
-        };
-      });
+  // 2. Auto-refrescar cada 30 segundos (Silencioso)
+  setInterval(async () => {
+    if (!isEditMode) {
+      try {
+        const res = await apiFetch('/companies');
+        const json = await res.json();
 
-      initApp();
-    });
-  } else {
-    console.error('Firebase no está inicializado o companiesRef no existe.');
-  }
+        if (json.success && json.data) {
+          companies = json.data;
+          if (currentCompany) {
+            currentCompany = companies.find(c => c.id === currentCompany.id) || currentCompany;
+          }
+          renderCompanies();
+        }
+      } catch (e) {
+        console.error("Error en auto-refresh:", e);
+      }
+    }
+  }, 300000);
+
 });
