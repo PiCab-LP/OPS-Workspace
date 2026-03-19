@@ -236,29 +236,24 @@ let localCatalog = gameCatalog.map(g => ({ ...g }));
     requestAnimationFrame(() => overlay.classList.add('show'));
   };
 
-  // ==================== THEME TOGGLE ====================
-  let currentTheme = localStorage.getItem('operapediaTheme') || 'dark';
-  const themeToggleInput = document.getElementById('themeToggle');
-
+  // ==================== THEME SYNC ====================
   const applyTheme = (theme) => {
     document.documentElement.setAttribute('data-theme', theme);
-    if (themeToggleInput) {
-      themeToggleInput.checked = theme === 'light';
+  };
+
+  const syncThemeWithWorkspace = () => {
+    const workspaceTheme = localStorage.getItem('workspaceTheme') || 'dark';
+    applyTheme(workspaceTheme);
+  };
+
+  syncThemeWithWorkspace();
+
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'workspaceTheme') {
+      applyTheme(e.newValue || 'dark');
     }
-  };
-
-  const toggleTheme = () => {
-    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    applyTheme(currentTheme);
-    localStorage.setItem('operapediaTheme', currentTheme);
-  };
-
-  if (themeToggleInput) {
-    themeToggleInput.addEventListener('change', toggleTheme);
-  }
-
-  applyTheme(currentTheme);
-  // ==================== FIN THEME TOGGLE ====================
+  });
+  // ==================== FIN THEME SYNC ====================
 
   // ==================== SIDEBAR COMPANY SEARCH ====================
   const sidebarSearch = document.getElementById('sidebarSearch');
@@ -1717,6 +1712,7 @@ const finishEdit = async () => {
     }
 
     const results = [];
+    const shouldSearch = (category) => activeCategoryFilters.length === 0 || activeCategoryFilters.includes(category);
 
     companies.forEach(company => {
       // Company filter: check omnibar company pills + local filter + partner filter
@@ -1744,8 +1740,8 @@ const finishEdit = async () => {
 
       let hasMatches = false;
 
-      // 1. BUSCAR EN CREDENCIALES (juegos) — only if category active
-      if (activeCategoryFilters.includes('credenciales')) {
+      // 1. BUSCAR EN CREDENCIALES (juegos)
+      if (shouldSearch('credenciales')) {
         company.games.forEach(g => {
           if (
             g.name.toLowerCase().includes(t) ||
@@ -1759,7 +1755,7 @@ const finishEdit = async () => {
       }
 
       // 2. BUSCAR EN MÉTODOS DE DEPÓSITO
-      if (activeCategoryFilters.includes('deposito') && Array.isArray(company.metodosDeposito)) {
+      if (shouldSearch('deposito') && Array.isArray(company.metodosDeposito)) {
         company.metodosDeposito.forEach(m => {
           const searchText = `${m.metodo || ''} ${m.proveedor || ''} ${m.montoMinimo || ''} ${m.montoMaximo || ''}`.toLowerCase();
           if (searchText.includes(t)) {
@@ -1770,7 +1766,7 @@ const finishEdit = async () => {
       }
 
       // 3. BUSCAR EN MÉTODOS DE CASHOUT
-      if (activeCategoryFilters.includes('cashout') && Array.isArray(company.metodosCashout)) {
+      if (shouldSearch('cashout') && Array.isArray(company.metodosCashout)) {
         company.metodosCashout.forEach(m => {
           const searchText = `${m.metodo || ''} ${m.proveedor || ''} ${m.montoMinimo || ''} ${m.montoMaximo || ''}`.toLowerCase();
           if (searchText.includes(t)) {
@@ -1781,7 +1777,7 @@ const finishEdit = async () => {
       }
 
       // 4. BUSCAR EN CONSIDERACIONES
-      if (activeCategoryFilters.includes('consideraciones')) {
+      if (shouldSearch('consideraciones')) {
         const consideraciones = company.consideracionesCashout || '';
         if (consideraciones.toLowerCase().includes(t)) {
           matches.consideraciones = consideraciones;
@@ -1790,7 +1786,7 @@ const finishEdit = async () => {
       }
 
       // 5. BUSCAR EN PROMOCIONES
-      if (activeCategoryFilters.includes('promociones') && Array.isArray(company.promociones)) {
+      if (shouldSearch('promociones') && Array.isArray(company.promociones)) {
         company.promociones.forEach(p => {
           const searchText = `${p.titulo || ''} ${p.descripcion || ''}`.toLowerCase();
           if (searchText.includes(t)) {
@@ -1801,7 +1797,7 @@ const finishEdit = async () => {
       }
 
       // 6. BUSCAR EN TÉRMINOS
-      if (activeCategoryFilters.includes('terminos')) {
+      if (shouldSearch('terminos')) {
         const terminos = company.terminosLink || company.terminosCondiciones || '';
         if (terminos.toLowerCase().includes(t)) {
           matches.terminos = terminos;
@@ -1810,7 +1806,7 @@ const finishEdit = async () => {
       }
 
       // 7. BUSCAR EN CANALES
-      if (activeCategoryFilters.includes('canales')) {
+      if (shouldSearch('canales')) {
         const canales = company.canales || company.canalesAtencion || [];
         canales.forEach(c => {
           const searchText = typeof c === 'string' ? c : `${c.nombre || ''} ${c.contacto || ''}`;
@@ -1822,7 +1818,7 @@ const finishEdit = async () => {
       }
 
       // 8. BUSCAR EN NOTAS
-      if (activeCategoryFilters.includes('notas') && Array.isArray(company.notas)) {
+      if (shouldSearch('notas') && Array.isArray(company.notas)) {
         company.notas.forEach(n => {
           if (n.texto.toLowerCase().includes(t)) {
             matches.notas.push(n);
