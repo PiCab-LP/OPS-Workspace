@@ -276,6 +276,12 @@
                 <p class="app-desc">Panel de credenciales, métodos de pago, promociones y catálogo de juegos de nuestras compañías.</p>
             </a>
 
+            <a href="/kyc/" class="app-card" id="card-kyc">
+                <img src="./imgs/KYC.png" alt="KYC" style="width: 40px; height: 40px; object-fit: contain;">
+                <h3 class="app-title">Customers KYC</h3>
+                <p class="app-desc">Base de datos de clientes, verificación de identidad y documentos.</p>
+            </a>
+
             <a href="/balance-monitor/" class="app-card" id="card-balance">
                 <img src="./imgs/statistics.png" alt="Balances" style="width: 40px; height: 40px; object-fit: contain;">
                 <h3 class="app-title">Balance Monitor</h3>
@@ -451,6 +457,7 @@
 
             const cardCashouts = document.getElementById('card-cashouts');
             const cardOperapedia = document.getElementById('card-operapedia');
+            const cardKyc = document.getElementById('card-kyc');
             const cardBalance = document.getElementById('card-balance');
             const cardLocations = document.getElementById('card-locations');
             const cardHelpDesk = document.getElementById('card-helpdesk');
@@ -458,6 +465,7 @@
             // 1. Reseteamos la vista por defecto (mostrar todas)
             if(cardCashouts) cardCashouts.style.display = 'flex';
             if(cardOperapedia) cardOperapedia.style.display = 'flex';
+            if(cardKyc) cardKyc.style.display = 'none'; // Exclusivo de supervisor
             if(cardBalance) cardBalance.style.display = 'flex';
             if(cardLocations) cardLocations.style.display = 'none';
 
@@ -471,6 +479,7 @@
 
                 if(cardHelpDesk) cardHelpDesk.style.display = 'flex';
                 if(cardLocations) cardLocations.style.display = 'flex';
+                if(cardKyc) cardKyc.style.display = 'flex';
                 
             } else if (user.role === 'analista') {
                 roleBadge.style.background = 'rgba(46, 204, 113, 0.15)';

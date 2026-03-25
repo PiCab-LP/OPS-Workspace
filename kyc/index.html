@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directorio KYC - Workspace</title>
+    <!-- CSS del workspace principal -->
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" type="image/png" href="../imgs/dashboard.png">
+    <style>
+        .kyc-layout {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(22, 24, 29, 0.7);
+            backdrop-filter: blur(12px);
+            padding: 15px 25px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        /* Nav light mode corrections */
+        body.light-mode .navbar {
+            background-color: var(--bg-card); 
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); 
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-hub {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 7px 14px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-hub:hover {
+            background: var(--bg-input);
+        }
+
+        body.light-mode .btn-hub {
+            color: #1f2937;
+        }
+
+        body.light-mode .btn-hub:hover {
+            background: rgba(0, 0, 0, 0.05); /* Light hover background */
+        }
+
+        /* Database Table Card */
+        .db-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(12px);
+        }
+
+        body.light-mode .db-card {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .db-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .db-header h2 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 24px;
+        }
+
+        .kyc-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .kyc-table th {
+            padding: 15px;
+            border-bottom: 2px solid var(--border);
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .kyc-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .kyc-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        body.light-mode .kyc-table tr:hover {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .photo-btn {
+            background: rgba(94, 106, 210, 0.15);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: 1px solid rgba(94, 106, 210, 0.3);
+            display: inline-block;
+        }
+
+        .photo-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+        }
+
+        .modal-header h3 {
+            margin: 0 0 20px 0;
+            color: var(--text-primary);
+            font-size: 22px;
+        }
+
+        /* Form inside modal */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-grid input {
+            margin-bottom: 0;
+        }
+
+        select {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border 0.2s;
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+        
+        select:focus { border-color: var(--accent); }
+
+        textarea {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 14px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 15px;
+            outline: none;
+            resize: vertical;
+            min-height: 80px;
+            transition: border 0.2s;
+        }
+
+        textarea:focus { border-color: var(--accent); }
+        
+        body.light-mode input,
+        body.light-mode select,
+        body.light-mode textarea {
+            background-color: #f4f6f8 !important; 
+            color: #1f2937 !important;           
+            border: 1px solid rgba(0, 0, 0, 0.15) !important; 
+        }
+
+        body.light-mode input::placeholder,
+        body.light-mode textarea::placeholder {
+            color: #6b7280 !important;
+        }
+
+        /* Image Viewer */
+        .viewer-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            max-height: 65vh;
+            overflow-y: auto;
+            margin-top: 15px;
+            padding: 10px;
+        }
+
+        .viewer-img {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.1);
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            animation: slideInRight 0.3s ease forwards;
+            min-width: 250px;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+        
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+        
+        .toast.warning {
+            border-left: 4px solid #f59e0b; /* Amber or warning color */
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast-fadeOut {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+
+        /* Action Buttons */
+        .btn-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            color: var(--text-primary);
+        }
+        .btn-action:hover {
+            background: rgba(0,0,0,0.05);
+        }
+        body.light-mode .btn-action:hover {
+            background: rgba(0,0,0,0.1);
+        }
+
+        /* Drag & Drop Zone */
+        .drop-zone {
+            margin-top: 15px;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .drop-zone.dragover {
+            border-color: var(--accent);
+            background: rgba(94, 106, 210, 0.1);
+        }
+
+        .drop-zone input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0; left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .drop-zone-text {
+            color: var(--text-secondary);
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .drop-zone-text span {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        #file-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .preview-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .btn-new-client {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: none; /* Oculto por defecto hasta validar rol supervisor */
+        }
+
+        .btn-new-client:hover {
+            background: var(--accent-hover);
+        }
+
+        .preview-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .btn-remove-img {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+    </style>
+    <!-- Particles JS -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+</head>
+<body>
+    <!-- Efecto Nodos Background -->
+    <div id="particles-js" style="position: fixed; width: 100vw; height: 100vh; top: 0; left: 0; z-index: -1; pointer-events: auto;"></div>
+
+    <div class="kyc-layout">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="nav-left">
+                <a href="/" class="btn-hub">
+                    <span style="font-size: 16px; margin: 0; line-height: 1;">🏠</span>
+                    <span>Volver al Hub</span>
+                </a>
+                <div style="font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px;">
+                    Directorio KYC
+                </div>
+            </div>
+            <div class="nav-right">
+                <button id="btnOpenModal" class="btn-new-client">➕ Registrar Nuevo Cliente</button>
+            </div>
+        </nav>
+
+        <!-- Database Section -->
+        <div class="db-card">
+            <div class="db-header">
+                <h2>Base de Datos de Clientes</h2>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="kyc-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Compañía</th>
+                            <th>Teléfono</th>
+                            <th>Registro</th>
+                            <th>Documentos</th>
+                            <th id="thActions" style="display:none; text-align:center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kycTableBody">
+                        <tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">Cargando clientes...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Form -->
+    <div class="modal-overlay" id="kycModal" style="display: none;">
+        <div class="modal-content">
+            <button class="modal-close" id="btnCloseModal">✖</button>
+            <div class="modal-header">
+                <h3 id="modalTitle">Registrar Nuevo Cliente</h3>
+            </div>
+            <form id="kycForm">
+                <input type="hidden" id="kycId">
+                <div class="form-grid">
+                    <input type="text" id="kycName" placeholder="Nombre Completo" required>
+                    <input type="text" id="kycPhone" placeholder="Teléfono" oninput="this.value=this.value.replace(/[^0-9]/g,'')" maxlength="10" required>
+                    <input type="email" id="kycEmail" placeholder="Correo Electrónico" required>
+                    <select id="kycCompany" required>
+                        <option value="">Cargando compañías...</option>
+                    </select>
+                </div>
+                <textarea id="kycNotes" placeholder="Notas adicionales..." maxlength="100"></textarea>
+                
+                <div class="drop-zone" id="dropZone">
+                    <input type="file" id="kycPhotos" multiple accept="image/*">
+                    <div class="drop-zone-text">
+                        Arrastra tus imágenes aquí, <span>haz clic para buscar</span>, o pega desde el portapapeles (Ctrl+V)
+                    </div>
+                </div>
+                <!-- Preview zone -->
+                <div id="file-preview"></div>
+                
+                <button type="submit" id="btnSubmitKyc" class="btn-primary" style="margin-top: 20px; width: 100%;">Guardar Cliente</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Image Viewer Modal -->
+    <div class="modal-overlay" id="imageViewerModal" style="display: none;">
+        <div class="modal-content" style="max-width: 800px;">
+            <button class="modal-close" id="btnCloseViewer">✖</button>
+            <div class="modal-header">
+                <h3>Documentos de Identidad</h3>
+            </div>
+            <div class="viewer-grid" id="viewerGrid">
+                <!-- Imagenes inyectadas dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay" id="confirmModal" style="display: none; z-index: 20000;">
+        <div class="modal-content" style="max-width: 400px; text-align: center; padding: 30px;">
+            <div style="font-size: 40px; margin-bottom: 15px;">⚠️</div>
+            <h3 style="margin-bottom: 15px; color: var(--text-primary);">¿Estás seguro?</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 25px;">¿Deseas eliminar este cliente y todas sus fotos permanentemente?</p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button id="btnCancelDelete" style="background: transparent; border: 1px solid var(--border); color: var(--text-primary); padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.2s;">Cancelar</button>
+                <button id="btnConfirmDelete" style="background: var(--danger); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor Toast -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script>
+        const API_BASE = "https://general-cashouts-production.up.railway.app/api";
+        const userStr = localStorage.getItem('user');
+        
+        let selectedFiles = []; // Fotos arrastradas
+        let deletedPhotos = []; // IDs de fotos viejas a eliminar
+        let existingPhotosCount = 0; // Conteo
+        
+        // Función general de la app
+
+        // ================= INICIALIZACIÓN Y SEGURIDAD =================
+        if (!userStr) {
+            window.location.href = '/'; // Si no está logueado, lo patea al Hub
+        } else {
+            const user = JSON.parse(userStr);
+            // Seguridad estricta: Solo los supervisores pueden estar en esta ruta
+            if (user.role !== 'supervisor') {
+                window.location.href = '/'; // Lo patea al Hub principal
+            } else {
+                // Configurar entorno de supervisor
+                document.getElementById('btnOpenModal').style.display = 'block';
+                loadCompanies();
+                loadClients();
+            }
+        }
+
+        async function loadCompanies() {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE}/rules`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                const select = document.getElementById('kycCompany');
+                select.innerHTML = '<option value="">Selecciona Compañía</option>';
+                if(data.data) {
+                    data.data.forEach(company => {
+                        const opt = document.createElement('option');
+                        opt.value = company.name;
+                        opt.textContent = company.name;
+                        select.appendChild(opt);
+                    });
+                }
+            } catch(err) {
+                console.error("Error cargando compañias:", err);
+            }
+        }
+
+        // ================= FONDO PARTICULAS (NODOS) =================
+        if(typeof particlesJS !== 'undefined') {
+            particlesJS("particles-js", {
+              "particles": {
+                "number": { "value": 60, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#5e6ad2" },
+                "shape": { "type": "circle" },
+                "opacity": { "value": 0.3, "random": false },
+                "size": { "value": 3, "random": true },
+                "line_linked": { 
+                    "enable": true, 
+                    "distance": 150, 
+                    "color": "#5e6ad2", 
+                    "opacity": 0.2, 
+                    "width": 1 
+                },
+                "move": { 
+                    "enable": true, 
+                    "speed": 1.5, 
+                    "direction": "none", 
+                    "random": false, 
+                    "straight": false, 
+                    "out_mode": "out", 
+                    "bounce": false 
+                }
+              },
+              "interactivity": {
+                "detect_on": "window",
+                "events": {
+                  "onhover": { "enable": true, "mode": "grab" },
+                  "onclick": { "enable": true, "mode": "push" },
+                  "resize": true
+                },
+                "modes": {
+                  "grab": { "distance": 200, "line_linked": { "opacity": 0.6 } },
+                  "push": { "particles_nb": 4 }
+                }
+              },
+              "retina_detect": true
+            });
+        }
+
+        // ================= MODO CLARO / OSCURO =================
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('workspaceTheme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+            }
+        }
+        loadTheme();
+
+        // ================= LÓGICA MODAL =================
+        const modal = document.getElementById('kycModal');
+        const btnOpen = document.getElementById('btnOpenModal');
+        const btnClose = document.getElementById('btnCloseModal');
+
+        if(btnOpen) {
+            btnOpen.addEventListener('click', () => {
+                document.getElementById('kycForm').reset();
+                document.getElementById('kycId').value = '';
+                document.getElementById('modalTitle').textContent = 'Registrar Nuevo Cliente';
+                selectedFiles = [];
+                deletedPhotos = [];
+                existingPhotosCount = 0;
+                previewContainer.innerHTML = '';
+                modal.style.display = 'flex';
+            });
+        }
+
+        btnClose.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        // El modal solo se cerrará desde el botón X (btnCloseModal)
+
+        // ================= FUNCIÓN TOAST (NOTIFICACIONES) =================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            // Icono simple dependiendo del tipo
+            let icon = '✅';
+            if(type === 'error') icon = '❌';
+            if(type === 'warning') icon = '⚠️';
+            
+            toast.innerHTML = `
+                <span style="font-size: 1.2rem;">${icon}</span>
+                <span style="flex-grow: 1; font-weight: 500;">${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Auto eliminar después de 3.5 segundos con remoción segura del DOM
+            setTimeout(() => {
+                toast.classList.add('toast-fadeOut');
+                setTimeout(() => toast.remove(), 400); // 400ms is slightly longer than the 0.3s CSS transition
+            }, 3500);
+        }
+
+        // ================= LÓGICA VISOR DE IMÁGENES =================
+        const viewerModal = document.getElementById('imageViewerModal');
+        const btnCloseViewer = document.getElementById('btnCloseViewer');
+
+        btnCloseViewer.addEventListener('click', () => {
+            viewerModal.style.display = 'none';
+        });
+
+        function openImageViewer(photosJson) {
+            const photos = JSON.parse(decodeURIComponent(photosJson));
+            const grid = document.getElementById('viewerGrid');
+            grid.innerHTML = ''; // Limpiar
+
+            if(photos && photos.length > 0) {
+                photos.forEach(photo => {
+                    const img = document.createElement('img');
+                    img.src = photo.url;
+                    img.className = 'viewer-img';
+                    grid.appendChild(img);
+                });
+            } else {
+                grid.innerHTML = '<p style="color: var(--text-secondary);">No hay imágenes disponibles.</p>';
+            }
+
+            viewerModal.style.display = 'flex';
+        }
+
+        // ================= DRAG & DROP Y PASTE FRONTEND =================
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('kycPhotos');
+        const previewContainer = document.getElementById('file-preview');
+
+        // Función para procesar y previsualizar archivos
+        function handleFiles(files) {
+            for(let file of files) {
+                if(selectedFiles.length + existingPhotosCount >= 5) {
+                    showToast("Se admiten un máximo total de 5 fotos.", 'warning');
+                    break;
+                }
+                
+                if(file.type.startsWith('image/')) {
+                    selectedFiles.push(file);
+                    
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'preview-wrapper';
+                    
+                    const img = document.createElement('img');
+                    img.className = 'preview-img';
+                    img.title = file.name;
+                    
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'btn-remove-img';
+                    removeBtn.innerHTML = '✖';
+                    removeBtn.type = 'button';
+                    
+                    // Lógica para borrar foto
+                    removeBtn.onclick = () => {
+                        const index = selectedFiles.indexOf(file);
+                        if(index !== -1) {
+                            selectedFiles.splice(index, 1);
+                        }
+                        wrapper.remove();
+                    };
+                    
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        img.src = e.target.result;
+                        wrapper.appendChild(img);
+                        wrapper.appendChild(removeBtn);
+                        previewContainer.appendChild(wrapper);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        // Eventos del Drop Zone
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        // Selección por el input clásico
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        // Evento de Pegado en todo el documento (si el modal está abierto)
+        document.addEventListener('paste', (e) => {
+            if (modal.style.display === 'flex') {
+                const items = e.clipboardData.items;
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].type.indexOf('image') !== -1) {
+                        const file = items[i].getAsFile();
+                        handleFiles([file]);
+                    }
+                }
+            }
+        });
+
+        // ================= API CALLS =================
+        async function loadClients() {
+            try {
+                const res = await fetch(`${API_BASE}/clients/all`);
+                const data = await res.json();
+                
+                const tbody = document.getElementById('kycTableBody');
+                tbody.innerHTML = ''; // Limpiar
+
+                const user = JSON.parse(userStr);
+                const isSupervisor = user && user.role === 'supervisor';
+                const thActions = document.getElementById('thActions');
+                if (isSupervisor && thActions) thActions.style.display = 'table-cell';
+
+                if(data.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-secondary);">No hay clientes registrados aún</td></tr>';
+                    return;
+                }
+
+                data.data.forEach(client => {
+                    let btnFotos = '<span style="color: var(--text-secondary); font-size: 13px;">Sin fotos</span>';
+                    if(client.kycPhotos && client.kycPhotos.length > 0) {
+                        const photosJson = encodeURIComponent(JSON.stringify(client.kycPhotos));
+                        btnFotos = `<button onclick="openImageViewer('${photosJson}')" class="photo-btn" style="border:none; cursor:pointer;">Ver ID (${client.kycPhotos.length})</button>`;
+                    }
+
+                    let tdActions = '';
+                    if (isSupervisor) {
+                        const clientStr = encodeURIComponent(JSON.stringify(client));
+                        tdActions = `
+                            <td style="text-align:center; min-width: 80px;">
+                                <button class="btn-action" title="Editar" onclick="editClient('${clientStr}')">✏️</button>
+                                <button class="btn-action" title="Eliminar" onclick="deleteClient('${client._id}')">🗑️</button>
+                            </td>
+                        `;
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="font-weight: 600;">${client.fullName}</td>
+                        <td>${client.company}</td>
+                        <td>${client.phone}</td>
+                        <td style="font-size: 12px; color: var(--text-secondary);">${new Date(client.createdAt).toLocaleDateString()}</td>
+                        <td>${btnFotos}</td>
+                        ${tdActions}
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch(err) {
+                console.error("Error cargando clientes:", err);
+            }
+        }
+
+        // ================= ELIMINAR Y EDITAR =================
+        let clientToDeleteId = null;
+        const confirmModal = document.getElementById('confirmModal');
+        const btnCancelDelete = document.getElementById('btnCancelDelete');
+        const btnConfirmDelete = document.getElementById('btnConfirmDelete');
+
+        btnCancelDelete.onclick = () => {
+            confirmModal.style.display = 'none';
+            clientToDeleteId = null;
+        };
+
+        btnConfirmDelete.onclick = async () => {
+            if (!clientToDeleteId) return;
+            const id = clientToDeleteId;
+            confirmModal.style.display = 'none';
+            btnConfirmDelete.textContent = "Eliminando...";
+            
+            try {
+                const res = await fetch(`${API_BASE}/clients/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if(data.success) {
+                    showToast('Cliente eliminado correctamente', 'success');
+                    loadClients();
+                } else {
+                    showToast('Error al eliminar: ' + data.message, 'error');
+                }
+            } catch(e) {
+                console.error(e);
+                showToast('Falla de red al eliminar', 'error');
+            } finally {
+                btnConfirmDelete.textContent = "Eliminar";
+                clientToDeleteId = null;
+            }
+        };
+
+        function deleteClient(id) {
+            clientToDeleteId = id;
+            confirmModal.style.display = 'flex';
+        }
+
+        function editClient(clientStr) {
+            const client = JSON.parse(decodeURIComponent(clientStr));
+            
+            // Llenar campos
+            document.getElementById('kycId').value = client._id;
+            document.getElementById('kycName').value = client.fullName || '';
+            document.getElementById('kycPhone').value = client.phone || '';
+            document.getElementById('kycEmail').value = client.email || '';
+            document.getElementById('kycCompany').value = client.company || '';
+            document.getElementById('kycNotes').value = client.notes || '';
+            
+            document.getElementById('modalTitle').textContent = 'Editar Cliente';
+            
+            selectedFiles = [];
+            deletedPhotos = [];
+            existingPhotosCount = client.kycPhotos ? client.kycPhotos.length : 0;
+            previewContainer.innerHTML = '';
+
+            // Mostrar fotos existentes
+            if (client.kycPhotos && client.kycPhotos.length > 0) {
+                client.kycPhotos.forEach(photo => {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'preview-wrapper';
+                    
+                    const img = document.createElement('img');
+                    img.className = 'preview-img';
+                    img.src = photo.url;
+                    
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'btn-remove-img';
+                    removeBtn.innerHTML = '✖';
+                    removeBtn.type = 'button';
+                    
+                    removeBtn.onclick = () => {
+                        deletedPhotos.push(photo.public_id);
+                        existingPhotosCount--;
+                        wrapper.remove();
+                    };
+                    
+                    wrapper.appendChild(img);
+                    wrapper.appendChild(removeBtn);
+                    previewContainer.appendChild(wrapper);
+                });
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        // Envío de Formulario
+        document.getElementById('kycForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if(selectedFiles.length === 0 && existingPhotosCount === 0) {
+                showToast("Debes tener al menos una foto (DNI/Selfie).", 'warning');
+                return;
+            }
+
+            const btn = document.getElementById('btnSubmitKyc');
+            btn.textContent = "Subiendo datos y fotos...";
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('fullName', document.getElementById('kycName').value);
+            formData.append('phone', document.getElementById('kycPhone').value);
+            formData.append('email', document.getElementById('kycEmail').value);
+            formData.append('company', document.getElementById('kycCompany').value);
+            formData.append('notes', document.getElementById('kycNotes').value);
+            
+            const user = JSON.parse(localStorage.getItem('user'));
+            formData.append('uploadedBy', user.fullName);
+
+            for (let i = 0; i < selectedFiles.length; i++) {
+                formData.append('photos', selectedFiles[i]);
+            }
+            if (deletedPhotos.length > 0) {
+                formData.append('deletedPhotos', JSON.stringify(deletedPhotos));
+            }
+
+            const kycId = document.getElementById('kycId').value;
+            const url = kycId ? `${API_BASE}/clients/${kycId}` : `${API_BASE}/clients/register`;
+            const method = kycId ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    body: formData
+                });
+                
+                const data = await res.json();
+                if(data.success) {
+                    showToast(kycId ? 'Cliente actualizado' : 'Cliente registrado', 'success');
+                    document.getElementById('kycForm').reset();
+                    document.getElementById('kycId').value = '';
+                    selectedFiles = []; // Limpiar array
+                    deletedPhotos = [];
+                    existingPhotosCount = 0;
+                    previewContainer.innerHTML = ''; // Limpiar previews
+                    modal.style.display = 'none'; // Cerrar Modal
+                    loadClients(); // Recargar la tabla
+                } else {
+                    showToast('Error: ' + data.message, 'error');
+                }
+            } catch(err) {
+                showToast('Fallo en la conexión al subir.', 'error');
+                console.error(err);
+            } finally {
+                btn.textContent = "Guardar Cliente";
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
