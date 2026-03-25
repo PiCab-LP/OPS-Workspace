@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ==================== CONFIGURACIÓN API (MONGODB) ====================
-  const API_BASE = "https://general-cashouts.onrender.com/api";
+  const API_BASE = "https://general-cashouts-production.up.railway.app/api";
   let token = localStorage.getItem("token");
 
   // Motor central para comunicarnos con el backend
