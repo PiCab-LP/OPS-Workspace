@@ -468,6 +468,15 @@
             <div class="db-header">
                 <h2>Base de Datos de Clientes</h2>
             </div>
+            
+            <div class="filters-container" style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                <input type="text" id="filterName" placeholder="Buscar por Nombre..." oninput="filterClients()" style="flex: 1; min-width: 200px; margin: 0;">
+                <select id="filterCompany" onchange="filterClients()" style="flex: 1; min-width: 200px; margin: 0;">
+                    <option value="">Todas las Compañías</option>
+                </select>
+                <input type="text" id="filterPhone" placeholder="Buscar por Teléfono..." oninput="filterClients()" style="flex: 1; min-width: 200px; margin: 0;">
+            </div>
+
             <div style="overflow-x: auto;">
                 <table class="kyc-table">
                     <thead>
@@ -565,11 +574,11 @@
             window.location.href = '/'; // Si no está logueado, lo patea al Hub
         } else {
             const user = JSON.parse(userStr);
-            // Seguridad estricta: Solo los supervisores pueden estar en esta ruta
-            if (user.role !== 'supervisor') {
+            // Seguridad estricta: Solo supervisores o chats pueden estar en esta ruta
+            if (user.role !== 'supervisor' && user.role !== 'chats') {
                 window.location.href = '/'; // Lo patea al Hub principal
             } else {
-                // Configurar entorno de supervisor
+                // Configurar entorno (supervisor y chats pueden ver esto)
                 document.getElementById('btnOpenModal').style.display = 'block';
                 loadCompanies();
                 loadClients();
@@ -584,13 +593,22 @@
                 });
                 const data = await res.json();
                 const select = document.getElementById('kycCompany');
-                select.innerHTML = '<option value="">Selecciona Compañía</option>';
+                const filterSelect = document.getElementById('filterCompany');
+                
+                if(select) select.innerHTML = '<option value="">Selecciona Compañía</option>';
+                if(filterSelect) filterSelect.innerHTML = '<option value="">Todas las Compañías</option>';
+
                 if(data.data) {
                     data.data.forEach(company => {
                         const opt = document.createElement('option');
                         opt.value = company.name;
                         opt.textContent = company.name;
-                        select.appendChild(opt);
+                        if(select) select.appendChild(opt);
+
+                        const optFilter = document.createElement('option');
+                        optFilter.value = company.name;
+                        optFilter.textContent = company.name;
+                        if(filterSelect) filterSelect.appendChild(optFilter);
                     });
                 }
             } catch(err) {
@@ -810,58 +828,84 @@
             }
         });
 
-        // ================= API CALLS =================
+        // ================= API CALLS Y TABLA =================
+        let allClientsData = [];
+
         async function loadClients() {
             try {
                 const res = await fetch(`${API_BASE}/clients/all`);
                 const data = await res.json();
-                
-                const tbody = document.getElementById('kycTableBody');
-                tbody.innerHTML = ''; // Limpiar
-
-                const user = JSON.parse(userStr);
-                const isSupervisor = user && user.role === 'supervisor';
-                const thActions = document.getElementById('thActions');
-                if (isSupervisor && thActions) thActions.style.display = 'table-cell';
-
-                if(data.data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-secondary);">No hay clientes registrados aún</td></tr>';
-                    return;
-                }
-
-                data.data.forEach(client => {
-                    let btnFotos = '<span style="color: var(--text-secondary); font-size: 13px;">Sin fotos</span>';
-                    if(client.kycPhotos && client.kycPhotos.length > 0) {
-                        const photosJson = encodeURIComponent(JSON.stringify(client.kycPhotos));
-                        btnFotos = `<button onclick="openImageViewer('${photosJson}')" class="photo-btn" style="border:none; cursor:pointer;">Ver ID (${client.kycPhotos.length})</button>`;
-                    }
-
-                    let tdActions = '';
-                    if (isSupervisor) {
-                        const clientStr = encodeURIComponent(JSON.stringify(client));
-                        tdActions = `
-                            <td style="text-align:center; min-width: 80px;">
-                                <button class="btn-action" title="Editar" onclick="editClient('${clientStr}')">✏️</button>
-                                <button class="btn-action" title="Eliminar" onclick="deleteClient('${client._id}')">🗑️</button>
-                            </td>
-                        `;
-                    }
-
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td style="font-weight: 600;">${client.fullName}</td>
-                        <td>${client.company}</td>
-                        <td>${client.phone}</td>
-                        <td style="font-size: 12px; color: var(--text-secondary);">${new Date(client.createdAt).toLocaleDateString()}</td>
-                        <td>${btnFotos}</td>
-                        ${tdActions}
-                    `;
-                    tbody.appendChild(tr);
-                });
-
+                allClientsData = data.data || [];
+                renderClients(allClientsData);
             } catch(err) {
                 console.error("Error cargando clientes:", err);
             }
+        }
+
+        function filterClients() {
+            const name = document.getElementById('filterName').value.toLowerCase();
+            const company = document.getElementById('filterCompany').value.toLowerCase();
+            const phone = document.getElementById('filterPhone').value.toLowerCase();
+
+            const filtered = allClientsData.filter(c => {
+                const matchName = (c.fullName || '').toLowerCase().includes(name);
+                const matchCompany = (c.company || '').toLowerCase().includes(company) || company === '';
+                const matchPhone = (c.phone || '').toLowerCase().includes(phone);
+
+                return matchName && matchCompany && matchPhone;
+            });
+
+            renderClients(filtered);
+        }
+
+        function renderClients(clientsArray) {
+            const tbody = document.getElementById('kycTableBody');
+            tbody.innerHTML = ''; // Limpiar
+
+            const user = JSON.parse(userStr);
+            const isPrivileged = user && (user.role === 'supervisor' || user.role === 'chats');
+            const isSupervisor = user && user.role === 'supervisor';
+            
+            const thActions = document.getElementById('thActions');
+            if (isPrivileged && thActions) thActions.style.display = 'table-cell';
+
+            if(clientsArray.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-secondary);">No se encontraron clientes</td></tr>';
+                return;
+            }
+
+            clientsArray.forEach(client => {
+                let btnFotos = '<span style="color: var(--text-secondary); font-size: 13px;">Sin fotos</span>';
+                if(client.kycPhotos && client.kycPhotos.length > 0) {
+                    const photosJson = encodeURIComponent(JSON.stringify(client.kycPhotos));
+                    btnFotos = `<button onclick="openImageViewer('${photosJson}')" class="photo-btn" style="border:none; cursor:pointer;">Ver ID (${client.kycPhotos.length})</button>`;
+                }
+
+                let tdActions = '';
+                if (isPrivileged) {
+                    const clientStr = encodeURIComponent(JSON.stringify(client));
+                    const btnEdit = `<button class="btn-action" title="Editar" onclick="editClient('${clientStr}')">✏️</button>`;
+                    const btnDelete = isSupervisor ? `<button class="btn-action" title="Eliminar" onclick="deleteClient('${client._id}')">🗑️</button>` : '';
+                    
+                    tdActions = `
+                        <td style="text-align:center; min-width: 80px;">
+                            ${btnEdit}
+                            ${btnDelete}
+                        </td>
+                    `;
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 600;">${client.fullName}</td>
+                    <td>${client.company}</td>
+                    <td>${client.phone}</td>
+                    <td style="font-size: 12px; color: var(--text-secondary);">${new Date(client.createdAt).toLocaleDateString()}</td>
+                    <td>${btnFotos}</td>
+                    ${tdActions}
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
         // ================= ELIMINAR Y EDITAR =================
