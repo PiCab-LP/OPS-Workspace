@@ -470,11 +470,12 @@
             </div>
             
             <div class="filters-container" style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-                <input type="text" id="filterName" placeholder="Buscar por Nombre..." oninput="filterClients()" style="flex: 1; min-width: 200px; margin: 0;">
-                <select id="filterCompany" onchange="filterClients()" style="flex: 1; min-width: 200px; margin: 0;">
+                <input type="text" id="filterName" placeholder="Buscar por Nombre..." oninput="filterClients()" style="flex: 1; min-width: 150px; margin: 0;">
+                <input type="text" id="filterEmail" placeholder="Buscar por Correo..." oninput="filterClients()" style="flex: 1; min-width: 150px; margin: 0;">
+                <select id="filterCompany" onchange="filterClients()" style="flex: 1; min-width: 150px; margin: 0;">
                     <option value="">Todas las Compañías</option>
                 </select>
-                <input type="text" id="filterPhone" placeholder="Buscar por Teléfono..." oninput="filterClients()" style="flex: 1; min-width: 200px; margin: 0;">
+                <input type="text" id="filterPhone" placeholder="Buscar por Teléfono..." oninput="filterClients()" style="flex: 1; min-width: 150px; margin: 0;">
             </div>
 
             <div style="overflow-x: auto;">
@@ -482,6 +483,7 @@
                     <thead>
                         <tr>
                             <th>Nombre</th>
+                            <th>Correo</th>
                             <th>Compañía</th>
                             <th>Teléfono</th>
                             <th>Registro</th>
@@ -844,15 +846,17 @@
 
         function filterClients() {
             const name = document.getElementById('filterName').value.toLowerCase();
+            const email = document.getElementById('filterEmail').value.toLowerCase();
             const company = document.getElementById('filterCompany').value.toLowerCase();
             const phone = document.getElementById('filterPhone').value.toLowerCase();
 
             const filtered = allClientsData.filter(c => {
                 const matchName = (c.fullName || '').toLowerCase().includes(name);
+                const matchEmail = (c.email || '').toLowerCase().includes(email);
                 const matchCompany = (c.company || '').toLowerCase().includes(company) || company === '';
                 const matchPhone = (c.phone || '').toLowerCase().includes(phone);
 
-                return matchName && matchCompany && matchPhone;
+                return matchName && matchEmail && matchCompany && matchPhone;
             });
 
             renderClients(filtered);
@@ -898,6 +902,7 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="font-weight: 600;">${client.fullName}</td>
+                    <td>${client.email}</td>
                     <td>${client.company}</td>
                     <td>${client.phone}</td>
                     <td style="font-size: 12px; color: var(--text-secondary);">${new Date(client.createdAt).toLocaleDateString()}</td>
