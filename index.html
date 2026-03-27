@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +14,7 @@
             max-width: 800px;
             margin: 0 auto;
         }
-        
+
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -55,8 +56,9 @@
             border-radius: 12px;
             padding: 15px;
             width: 240px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            display: none; /* Oculto por defecto */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            display: none;
+            /* Oculto por defecto */
             flex-direction: column;
             z-index: 100;
         }
@@ -84,7 +86,7 @@
             font-weight: 600;
             transition: 0.2s;
         }
-        
+
         .btn-logout:hover {
             background: rgba(231, 76, 60, 0.2);
         }
@@ -100,9 +102,9 @@
 
         /* ================= CORRECCIONES NAVBAR MODO CLARO ================= */
         body.light-mode .navbar {
-            background-color: var(--bg-card); 
+            background-color: var(--bg-card);
             border: 1px solid var(--border);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
         }
 
         body.light-mode .logo-text,
@@ -153,8 +155,11 @@
         .theme-switch .slider {
             position: absolute;
             cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(255, 255, 255, 0.05); 
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
             border-radius: 32px;
             transition: 0.4s;
@@ -171,9 +176,9 @@
             width: 24px;
             left: 3px;
             bottom: 3px;
-            background-color: #5e6ad2; 
+            background-color: #5e6ad2;
             border-radius: 50%;
-            transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+            transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             z-index: 2;
         }
 
@@ -185,19 +190,20 @@
         }
 
         body.light-mode .theme-switch .slider {
-            background-color: rgba(0, 0, 0, 0.05); 
+            background-color: rgba(0, 0, 0, 0.05);
         }
 
-        .theme-switch input:checked + .slider::before {
+        .theme-switch input:checked+.slider::before {
             transform: translateX(32px);
-            background-color: #1f2937; 
+            background-color: #1f2937;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 </head>
+
 <body>
     <div id="particles-js"></div>
-    
+
     <div id="login-view" style="position: relative;">
         <label class="theme-switch" style="position: absolute; top: 20px; right: 20px;" title="Cambiar Tema">
             <input type="checkbox" class="theme-checkbox" onchange="toggleTheme()">
@@ -209,7 +215,7 @@
 
         <div class="logo-text">OPS Workspace</div>
         <p style="color: var(--text-secondary); margin-bottom: 25px;"></p>
-        
+
         <form id="loginForm">
             <input type="text" id="username" placeholder="Usuario" required>
             <input type="password" id="password" placeholder="Contraseña" required>
@@ -219,14 +225,15 @@
     </div>
 
     <div id="dashboard-view" style="display: none;">
-        
+
         <div class="navbar">
             <div class="logo-text" style="margin: 0; font-size: 20px; display: flex; align-items: center; gap: 8px;">
                 <img src="./imgs/categories (1).png" alt="Logo" class="logo-dark" style="height: 28px; width: auto;">
-                <img src="./imgs/categories.png" alt="Logo" class="logo-light" style="height: 28px; width: auto; display: none;">
+                <img src="./imgs/categories.png" alt="Logo" class="logo-light"
+                    style="height: 28px; width: auto; display: none;">
                 Workspace
             </div>
-            
+
             <div style="display: flex; align-items: center; gap: 15px;">
                 <label class="theme-switch" title="Cambiar Tema">
                     <input type="checkbox" class="theme-checkbox" onchange="toggleTheme()">
@@ -238,18 +245,24 @@
 
                 <div class="profile-menu">
                     <div class="profile-trigger" id="profileTrigger" onclick="toggleProfileMenu()">
-                        <img src="./imgs/user (1).png" alt="Perfil" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
-                        <span id="triggerName" style="font-weight: 600; font-size: 14px; color: var(--text-primary);">Cargando...</span>
+                        <img src="./imgs/user (1).png" alt="Perfil"
+                            style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                        <span id="triggerName"
+                            style="font-weight: 600; font-size: 14px; color: var(--text-primary);">Cargando...</span>
                         <span style="font-size: 10px; opacity: 0.5;">▼</span>
                     </div>
 
                     <div class="profile-dropdown" id="profileDropdown">
                         <div class="dropdown-header">
-                            <div id="profileFullName" style="font-weight: bold; font-size: 16px; margin-bottom: 4px;">Nombre</div>
-                            <div id="profileUsername" style="color: var(--text-secondary); font-size: 13px; margin-bottom: 10px;">@usuario</div>
-                            <span class="badge" id="profileRole" style="font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 700; letter-spacing: 0.5px;">ROL</span>
+                            <div id="profileFullName" style="font-weight: bold; font-size: 16px; margin-bottom: 4px;">
+                                Nombre</div>
+                            <div id="profileUsername"
+                                style="color: var(--text-secondary); font-size: 13px; margin-bottom: 10px;">@usuario
+                            </div>
+                            <span class="badge" id="profileRole"
+                                style="font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 700; letter-spacing: 0.5px;">ROL</span>
                         </div>
-                        
+
                         <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
                     </div>
                 </div>
@@ -261,19 +274,23 @@
             </h1>
             <p style="margin-top: 5px; color: var(--text-secondary); font-size: 15px;">¿Qué haremos el día de hoy?</p>
         </div>
-        <h2 style="margin-top: 30px; margin-bottom: 20px; font-size: 18px; color: var(--text-secondary); font-weight: 600;">Tus Aplicaciones</h2>
-        
+        <h2
+            style="margin-top: 30px; margin-bottom: 20px; font-size: 18px; color: var(--text-secondary); font-weight: 600;">
+            Tus Aplicaciones</h2>
+
         <div class="apps-grid">
             <a href="/cashouts/" class="app-card" id="card-cashouts">
                 <img src="./imgs/budget (1).png" alt="Cashouts" style="width: 40px; height: 40px; object-fit: contain;">
                 <h3 class="app-title">Cashouts</h3>
-                <p class="app-desc">Sistema de registro y verificación de cashouts en tiempo real con sincronización a Google Sheets.</p>
+                <p class="app-desc">Sistema de registro y verificación de cashouts en tiempo real con sincronización a
+                    Google Sheets.</p>
             </a>
 
             <a href="/operapedia/" class="app-card" id="card-operapedia">
                 <img src="./imgs/book.png" alt="Operapedia" style="width: 40px; height: 40px; object-fit: contain;">
                 <h3 class="app-title">Operapedia</h3>
-                <p class="app-desc">Panel de credenciales, métodos de pago, promociones y catálogo de juegos de nuestras compañías.</p>
+                <p class="app-desc">Panel de credenciales, métodos de pago, promociones y catálogo de juegos de nuestras
+                    compañías.</p>
             </a>
 
             <a href="/kyc/" class="app-card" id="card-kyc">
@@ -295,9 +312,10 @@
             </a>
 
             <a href="/Tierlock verifier/" class="app-card" id="card-tierlock">
-                <span style="font-size: 30px; display:flex; justify-content:center; align-items:center; width: 40px; height: 40px;">🛠️</span>
-                <h3 class="app-title">Tierlock Verifier</h3>
-                <p class="app-desc">Herramienta de verificación de depósitos y estado de jugadores en Tierlock.</p>
+                <span
+                    style="font-size: 30px; display:flex; justify-content:center; align-items:center; width: 40px; height: 40px;">🛠️</span>
+                <h3 class="app-title">Tierlock Tools</h3>
+                <p class="app-desc">Herramienta para la verificación de depósitos de jugadores en Tierlock.</p>
             </a>
 
             <div class="app-card" id="card-helpdesk" onclick="openHelpDeskModal()" style="cursor: pointer;">
@@ -307,28 +325,41 @@
             </div>
         </div>
     </div>
-<div id="helpDeskModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 9999; justify-content: center; align-items: center;">
-        <div style="background: var(--bg-card); padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); text-align: center; position: relative;">
-            
-            <button onclick="closeHelpDeskModal()" style="position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: var(--text-secondary); font-size: 18px; cursor: pointer; padding: 5px;">✖</button>
+    <div id="helpDeskModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 9999; justify-content: center; align-items: center;">
+        <div
+            style="background: var(--bg-card); padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); text-align: center; position: relative;">
 
-            <h3 style="margin-top: 0; margin-bottom: 10px; color: var(--text-primary); font-size: 22px;">¿Qué necesitas?</h3>
-            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 25px;">Selecciona el tipo de formulario que deseas llenar en Airtable.</p>
-            
+            <button onclick="closeHelpDeskModal()"
+                style="position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: var(--text-secondary); font-size: 18px; cursor: pointer; padding: 5px;">✖</button>
+
+            <h3 style="margin-top: 0; margin-bottom: 10px; color: var(--text-primary); font-size: 22px;">¿Qué necesitas?
+            </h3>
+            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 25px;">Selecciona el tipo de
+                formulario que deseas llenar en Airtable.</p>
+
             <div style="display: flex; flex-direction: column; gap: 15px;">
-                <a href="https://airtable.com/appI9YfF3gEZHSss7/pagSlhAHkerY3U3zH/form" target="_blank" style="display: flex; align-items: center; gap: 15px; background: rgba(231, 76, 60, 0.1); border: 1px solid rgba(231, 76, 60, 0.3); padding: 15px; border-radius: 12px; text-decoration: none; color: var(--text-primary); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                    <img src="./imgs/bug.png" alt="Ticket" style="width: 36px; height: 36px; object-fit: contain; flex-shrink: 0;">
+                <a href="https://airtable.com/appI9YfF3gEZHSss7/pagSlhAHkerY3U3zH/form" target="_blank"
+                    style="display: flex; align-items: center; gap: 15px; background: rgba(231, 76, 60, 0.1); border: 1px solid rgba(231, 76, 60, 0.3); padding: 15px; border-radius: 12px; text-decoration: none; color: var(--text-primary); transition: transform 0.2s;"
+                    onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    <img src="./imgs/bug.png" alt="Ticket"
+                        style="width: 36px; height: 36px; object-fit: contain; flex-shrink: 0;">
                     <div style="text-align: left;">
                         <div style="font-weight: bold; font-size: 16px;">Reportar un Error (Ticket)</div>
-                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Fallas, caídas del sistema o bugs.</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Fallas, caídas del
+                            sistema o bugs.</div>
                     </div>
                 </a>
 
-                <a href="https://airtable.com/appI9YfF3gEZHSss7/pagbKhZb9oTt6XSca/form" target="_blank" style="display: flex; align-items: center; gap: 15px; background: rgba(46, 204, 113, 0.1); border: 1px solid rgba(46, 204, 113, 0.3); padding: 15px; border-radius: 12px; text-decoration: none; color: var(--text-primary); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                    <img src="./imgs/implementation.png" alt="Idea" style="width: 36px; height: 36px; object-fit: contain; flex-shrink: 0;">
+                <a href="https://airtable.com/appI9YfF3gEZHSss7/pagbKhZb9oTt6XSca/form" target="_blank"
+                    style="display: flex; align-items: center; gap: 15px; background: rgba(46, 204, 113, 0.1); border: 1px solid rgba(46, 204, 113, 0.3); padding: 15px; border-radius: 12px; text-decoration: none; color: var(--text-primary); transition: transform 0.2s;"
+                    onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    <img src="./imgs/implementation.png" alt="Idea"
+                        style="width: 36px; height: 36px; object-fit: contain; flex-shrink: 0;">
                     <div style="text-align: left;">
                         <div style="font-weight: bold; font-size: 16px;">Nueva Solicitud</div>
-                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Solicitar nuevas funciones o herramientas.</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Solicitar nuevas
+                            funciones o herramientas.</div>
                     </div>
                 </a>
             </div>
@@ -336,51 +367,51 @@
     </div>
     <script>
         const API_BASE = "https://general-cashouts-production.up.railway.app/api";
-        
+
         const loginView = document.getElementById('login-view');
         const dashboardView = document.getElementById('dashboard-view');
         const loginForm = document.getElementById('loginForm');
         const errorMsg = document.getElementById('error-msg');
 
         // ✅ INICIALIZAR EL FONDO TECNOLÓGICO (NODOS)
-        if(typeof particlesJS !== 'undefined') {
+        if (typeof particlesJS !== 'undefined') {
             particlesJS("particles-js", {
-              "particles": {
-                "number": { "value": 60, "density": { "enable": true, "value_area": 800 } },
-                "color": { "value": "#5e6ad2" },
-                "shape": { "type": "circle" },
-                "opacity": { "value": 0.3, "random": false },
-                "size": { "value": 3, "random": true },
-                "line_linked": { 
-                    "enable": true, 
-                    "distance": 150, 
-                    "color": "#5e6ad2", 
-                    "opacity": 0.2, 
-                    "width": 1 
+                "particles": {
+                    "number": { "value": 60, "density": { "enable": true, "value_area": 800 } },
+                    "color": { "value": "#5e6ad2" },
+                    "shape": { "type": "circle" },
+                    "opacity": { "value": 0.3, "random": false },
+                    "size": { "value": 3, "random": true },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#5e6ad2",
+                        "opacity": 0.2,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 1.5,
+                        "direction": "none",
+                        "random": false,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false
+                    }
                 },
-                "move": { 
-                    "enable": true, 
-                    "speed": 1.5, 
-                    "direction": "none", 
-                    "random": false, 
-                    "straight": false, 
-                    "out_mode": "out", 
-                    "bounce": false 
-                }
-              },
-              "interactivity": {
-                "detect_on": "window",
-                "events": {
-                  "onhover": { "enable": true, "mode": "grab" },
-                  "onclick": { "enable": true, "mode": "push" },
-                  "resize": true
+                "interactivity": {
+                    "detect_on": "window",
+                    "events": {
+                        "onhover": { "enable": true, "mode": "grab" },
+                        "onclick": { "enable": true, "mode": "push" },
+                        "resize": true
+                    },
+                    "modes": {
+                        "grab": { "distance": 200, "line_linked": { "opacity": 0.6 } },
+                        "push": { "particles_nb": 4 }
+                    }
                 },
-                "modes": {
-                  "grab": { "distance": 200, "line_linked": { "opacity": 0.6 } },
-                  "push": { "particles_nb": 4 }
-                }
-              },
-              "retina_detect": true
+                "retina_detect": true
             });
         }
 
@@ -390,7 +421,7 @@
         }
 
         // Cierra el menú si haces clic fuera de él
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (!event.target.closest('.profile-menu')) {
                 const dropdown = document.getElementById('profileDropdown');
                 if (dropdown && dropdown.classList.contains('active')) {
@@ -403,7 +434,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('token');
             const userStr = localStorage.getItem('user');
-            
+
             if (token && userStr) {
                 const user = JSON.parse(userStr);
                 mostrarDashboard(user);
@@ -433,7 +464,7 @@
 
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
-                
+
                 mostrarDashboard(data.user);
             } catch (err) {
                 errorMsg.textContent = err.message;
@@ -448,16 +479,16 @@
         function mostrarDashboard(user) {
             loginView.style.display = 'none';
             dashboardView.style.display = 'block';
-            
+
             const primerNombre = user.fullName.split(' ')[0];
             document.getElementById('triggerName').textContent = primerNombre;
 
             const welcomeName = document.getElementById('welcomeName');
-            if(welcomeName) welcomeName.textContent = primerNombre;
+            if (welcomeName) welcomeName.textContent = primerNombre;
 
             document.getElementById('profileFullName').textContent = user.fullName;
             document.getElementById('profileUsername').textContent = '@' + user.username;
-            
+
             const roleBadge = document.getElementById('profileRole');
             roleBadge.textContent = user.role.toUpperCase();
 
@@ -470,14 +501,14 @@
             const cardTierlock = document.getElementById('card-tierlock');
 
             // 1. Reseteamos la vista por defecto (mostrar todas)
-            if(cardCashouts) cardCashouts.style.display = 'flex';
-            if(cardOperapedia) cardOperapedia.style.display = 'flex';
-            if(cardKyc) cardKyc.style.display = 'none'; // Exclusivo de supervisor
-            if(cardBalance) cardBalance.style.display = 'flex';
-            if(cardLocations) cardLocations.style.display = 'none';
-            if(cardTierlock) cardTierlock.style.display = 'none'; // Exclusivo de supervisor/analista
+            if (cardCashouts) cardCashouts.style.display = 'flex';
+            if (cardOperapedia) cardOperapedia.style.display = 'flex';
+            if (cardKyc) cardKyc.style.display = 'none'; // Exclusivo de supervisor
+            if (cardBalance) cardBalance.style.display = 'flex';
+            if (cardLocations) cardLocations.style.display = 'none';
+            if (cardTierlock) cardTierlock.style.display = 'none'; // Exclusivo de supervisor/analista
 
-            if(cardHelpDesk) cardHelpDesk.style.display = 'none';
+            if (cardHelpDesk) cardHelpDesk.style.display = 'none';
 
             // 2. Colores y permisos según el rol
             if (user.role === 'supervisor') {
@@ -485,35 +516,35 @@
                 roleBadge.style.color = '#6f7bf0';
                 roleBadge.style.border = '1px solid rgba(94, 106, 210, 0.3)';
 
-                if(cardHelpDesk) cardHelpDesk.style.display = 'flex';
-                if(cardLocations) cardLocations.style.display = 'flex';
-                if(cardKyc) cardKyc.style.display = 'flex';
-                if(cardTierlock) cardTierlock.style.display = 'flex';
-                
+                if (cardHelpDesk) cardHelpDesk.style.display = 'flex';
+                if (cardLocations) cardLocations.style.display = 'flex';
+                if (cardKyc) cardKyc.style.display = 'flex';
+                if (cardTierlock) cardTierlock.style.display = 'flex';
+
             } else if (user.role === 'analista') {
                 roleBadge.style.background = 'rgba(46, 204, 113, 0.15)';
                 roleBadge.style.color = '#2ecc71';
                 roleBadge.style.border = '1px solid rgba(46, 204, 113, 0.3)';
-                
-                if(cardBalance) cardBalance.style.display = 'none';
-                if(cardTierlock) cardTierlock.style.display = 'flex';
-                
+
+                if (cardBalance) cardBalance.style.display = 'none';
+                if (cardTierlock) cardTierlock.style.display = 'flex';
+
             } else if (user.role === 'chats') {
                 roleBadge.style.background = 'rgba(243, 156, 18, 0.15)';
                 roleBadge.style.color = '#f39c12';
                 roleBadge.style.border = '1px solid rgba(243, 156, 18, 0.3)';
-                
-                if(cardCashouts) cardCashouts.style.display = 'none';
-                if(cardBalance) cardBalance.style.display = 'none';
-                if(cardKyc) cardKyc.style.display = 'flex'; // Role 'chats' puede ver KYC
+
+                if (cardCashouts) cardCashouts.style.display = 'none';
+                if (cardBalance) cardBalance.style.display = 'none';
+                if (cardKyc) cardKyc.style.display = 'flex'; // Role 'chats' puede ver KYC
 
             } else if (user.role === 'asistente') {
                 roleBadge.style.background = 'rgba(52, 152, 219, 0.15)';
                 roleBadge.style.color = '#3498db';
                 roleBadge.style.border = '1px solid rgba(52, 152, 219, 0.3)';
-                
-                if(cardCashouts) cardCashouts.style.display = 'none';
-                if(cardOperapedia) cardOperapedia.style.display = 'none';
+
+                if (cardCashouts) cardCashouts.style.display = 'none';
+                if (cardOperapedia) cardOperapedia.style.display = 'none';
             }
         }
 
@@ -523,19 +554,19 @@
             location.reload();
         }
         // ================= LÓGICA MODAL HELP DESK =================
-                function openHelpDeskModal() {
-                    document.getElementById('helpDeskModal').style.display = 'flex';
-                }
+        function openHelpDeskModal() {
+            document.getElementById('helpDeskModal').style.display = 'flex';
+        }
 
-                function closeHelpDeskModal() {
-                    document.getElementById('helpDeskModal').style.display = 'none';
-                }
+        function closeHelpDeskModal() {
+            document.getElementById('helpDeskModal').style.display = 'none';
+        }
         // ================= LÓGICA MODO CLARO / OSCURO (SWITCH) =================
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const isLight = document.body.classList.contains('light-mode');
             localStorage.setItem('workspaceTheme', isLight ? 'light' : 'dark');
-            
+
             // Sincronizar el estado del switch en Login y Dashboard
             const checkboxes = document.querySelectorAll('.theme-checkbox');
             checkboxes.forEach(chk => chk.checked = isLight);
@@ -544,17 +575,18 @@
         function loadTheme() {
             const savedTheme = localStorage.getItem('workspaceTheme');
             const isLight = savedTheme === 'light';
-            
+
             if (isLight) {
                 document.body.classList.add('light-mode');
             }
-            
+
             // Marcar los checkboxes correctamente al cargar la página
             const checkboxes = document.querySelectorAll('.theme-checkbox');
             checkboxes.forEach(chk => chk.checked = isLight);
         }
-        
+
         loadTheme();
     </script>
 </body>
+
 </html>
