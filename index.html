@@ -294,6 +294,12 @@
                 <p class="app-desc">Monitorea las estaciones de los operadores y sus breaks</p>
             </a>
 
+            <a href="/Tierlock verifier/" class="app-card" id="card-tierlock">
+                <span style="font-size: 30px; display:flex; justify-content:center; align-items:center; width: 40px; height: 40px;">🛠️</span>
+                <h3 class="app-title">Tierlock Verifier</h3>
+                <p class="app-desc">Herramienta de verificación de depósitos y estado de jugadores en Tierlock.</p>
+            </a>
+
             <div class="app-card" id="card-helpdesk" onclick="openHelpDeskModal()" style="cursor: pointer;">
                 <img src="./imgs/it-support.png" alt="Cashouts" style="width: 40px; height: 40px; object-fit: contain;">
                 <h3 class="app-title">Soporte TI</h3>
@@ -461,6 +467,7 @@
             const cardBalance = document.getElementById('card-balance');
             const cardLocations = document.getElementById('card-locations');
             const cardHelpDesk = document.getElementById('card-helpdesk');
+            const cardTierlock = document.getElementById('card-tierlock');
 
             // 1. Reseteamos la vista por defecto (mostrar todas)
             if(cardCashouts) cardCashouts.style.display = 'flex';
@@ -468,6 +475,7 @@
             if(cardKyc) cardKyc.style.display = 'none'; // Exclusivo de supervisor
             if(cardBalance) cardBalance.style.display = 'flex';
             if(cardLocations) cardLocations.style.display = 'none';
+            if(cardTierlock) cardTierlock.style.display = 'none'; // Exclusivo de supervisor/analista
 
             if(cardHelpDesk) cardHelpDesk.style.display = 'none';
 
@@ -480,6 +488,7 @@
                 if(cardHelpDesk) cardHelpDesk.style.display = 'flex';
                 if(cardLocations) cardLocations.style.display = 'flex';
                 if(cardKyc) cardKyc.style.display = 'flex';
+                if(cardTierlock) cardTierlock.style.display = 'flex';
                 
             } else if (user.role === 'analista') {
                 roleBadge.style.background = 'rgba(46, 204, 113, 0.15)';
@@ -487,6 +496,7 @@
                 roleBadge.style.border = '1px solid rgba(46, 204, 113, 0.3)';
                 
                 if(cardBalance) cardBalance.style.display = 'none';
+                if(cardTierlock) cardTierlock.style.display = 'flex';
                 
             } else if (user.role === 'chats') {
                 roleBadge.style.background = 'rgba(243, 156, 18, 0.15)';
