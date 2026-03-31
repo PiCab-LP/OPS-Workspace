@@ -46,6 +46,7 @@
 
 [data-theme="dark"] {
   /* DARK THEME */
+  color-scheme: dark;
   --bg-app: #0f1115;
   --bg-navbar: rgba(22, 24, 29, 0.82);
   --bg-sidebar: #0f1115;
@@ -293,6 +294,11 @@ textarea {
   cursor: pointer;
 }
 
+select option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
 .local-filter-item:hover {
   background: var(--bg-card-hover);
 }
@@ -451,13 +457,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .table-header.important {
-  border-top: 3px solid var(--orange);
-  color: var(--orange);
+  border-top: 3px solid #E33258;
+  color: #E33258;
 }
 
 .table-header.pending {
-  border-top: 3px solid var(--blue);
-  color: var(--blue);
+  border-top: 3px solid var(--orange);
+  color: var(--orange);
 }
 
 .table-header.resolved {

@@ -85,6 +85,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupNavigation();
     setupModal();
     setupDrawer();
+
+    let isSupervisor = false;
+    try {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            const userObj = JSON.parse(userStr);
+            if (userObj.role && userObj.role.toLowerCase() === 'supervisor') {
+                isSupervisor = true;
+            }
+        }
+    } catch (e) {}
+    
+    if (!isSupervisor) {
+        if (btnNewCategory) btnNewCategory.style.display = 'none';
+    }
     
     showLoader();
     await populateSelects();
@@ -316,17 +331,19 @@ function createTable(title, data, cssClass) {
     // 💡 REPARTO EXACTO DEL 100% PARA EVITAR QUE SE AMONTONEN
     let headersHTML = isResolvedTable
         ? `<th style="width: 10%">Time / Shift</th>
-           <th style="width: 15%">Company / Category</th>
+           <th style="width: 10%">Company</th>
+           <th style="width: 10%">Category</th>
            <th style="width: 10%">Reported By</th>
-           <th style="width: 20%">Description</th>
-           <th style="width: 20%">Action Taken</th>
+           <th style="width: 18%">Description</th>
+           <th style="width: 17%">Action Taken</th>
            <th style="width: 15%">Resolution Info</th>
            <th style="width: 10%">Log Actions</th>`
         : `<th style="width: 10%">Time / Shift</th>
-           <th style="width: 15%">Company / Category</th>
+           <th style="width: 10%">Company</th>
+           <th style="width: 10%">Category</th>
            <th style="width: 10%">Reported By</th>
-           <th style="width: 25%">Description</th>
-           <th style="width: 25%">Action Taken</th>
+           <th style="width: 22%">Description</th>
+           <th style="width: 23%">Action Taken</th>
            <th style="width: 15%">Log Actions</th>`;
 
     let tableHTML = `
@@ -343,8 +360,13 @@ function createTable(title, data, cssClass) {
 
     data.forEach(inc => {
         const dateStr = inc.createdAt || new Date().toISOString();
-        const timeFormatted = new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-        const dateFormatted = new Date(dateStr).toISOString().substring(0, 10);
+        const d = new Date(dateStr);
+        const timeFormatted = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        const dateFormatted = `${yyyy}-${mm}-${dd}`;
 
         tableHTML += `
                 <tr>
@@ -354,8 +376,10 @@ function createTable(title, data, cssClass) {
                         <span style="font-size:11px; color:var(--text-tertiary)">${inc.shift}</span>
                     </td>
                     <td>
-                        <span class="badge-company">${inc.company}</span><br>
-                        <span style="font-size:11px; color:var(--text-secondary)">${inc.category}</span>
+                        <span class="badge-company">${inc.company}</span>
+                    </td>
+                    <td>
+                        <span style="font-size:12px; font-weight:500; color:var(--text-secondary); background: var(--bg-card); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border);">${inc.category}</span>
                     </td>
                     <td>
                         <div style="display:flex; align-items:center; gap:6px;">
@@ -516,14 +540,25 @@ async function renderLogs() {
 async function renderCategories() {
     const categories = await window.db.getCategories();
 
+    let isSupervisor = false;
+    try {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            const userObj = JSON.parse(userStr);
+            if (userObj.role && userObj.role.toLowerCase() === 'supervisor') {
+                isSupervisor = true;
+            }
+        }
+    } catch (e) {}
+
     categoriesContainer.innerHTML = categories.map(c => `
         <div class="company-hub-card" style="display:flex; justify-content:space-between; align-items:center;">
             <div>
                 <h3 style="font-size:16px; color:var(--text-primary); margin:0;">${c.name}</h3>
             </div>
-            <button class="btn-mini delete" onclick="deleteSystemCategory('${c.name}')" style="width:auto; padding:0 8px; gap:4px; font-size:11px; font-weight:600;">
+            ${isSupervisor ? `<button class="btn-mini delete" onclick="deleteSystemCategory('${c.name}')" style="width:auto; padding:0 8px; gap:4px; font-size:11px; font-weight:600;">
                 <i data-lucide="trash-2" style="width:14px; height:14px;"></i> Delete
-            </button>
+            </button>` : ''}
         </div>
     `).join('');
     lucide.createIcons();
