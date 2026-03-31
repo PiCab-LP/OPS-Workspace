@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShiftLog</title>
+    <!-- Modern Fonts as specified -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        const savedTheme = localStorage.getItem('workspaceTheme') || 'dark';
+        if (savedTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+
+        // Validación de Seguridad de Rol (Solo Supervisor, Analista o Chats)
+        const token = localStorage.getItem('token');
+        const userStr = localStorage.getItem('user');
+        if (!token || !userStr) {
+            window.location.href = '../index.html';
+        } else {
+            try {
+                const userObj = JSON.parse(userStr);
+                const role = userObj.role ? userObj.role.toLowerCase() : '';
+                if (role !== 'supervisor' && role !== 'analista' && role !== 'chats') {
+                    window.location.replace('../index.html'); // Kick if not authorized
+                }
+            } catch (e) {
+                window.location.replace('../index.html');
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="../imgs/dashboard.png">
+</head>
+
+<body>
+
+    <!-- NAVBAR (Top fixed) -->
+    <nav class="navbar" style="position: relative; display: flex; justify-content: center; align-items: center;">
+        <div class="navbar-left" style="position: absolute; left: 20px;">
+            <a href="../index.html" class="btn-hub">
+                <span style="font-size: 16px; margin: 0; line-height: 1;">🏠</span>
+                <span>Volver al Hub</span>
+            </a>
+        </div>
+        <div class="navbar-brand">
+            <i data-lucide="shield-check" class="brand-icon"></i>
+            <span class="brand-text">SHIFTLOG</span>
+        </div>
+        <div class="navbar-center">
+            <!-- Optional global search can go here if needed -->
+        </div>
+    </nav>
+
+    <div class="app-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <!-- Nav Menu -->
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Views</div>
+                <div class="nav-menu">
+                    <div class="nav-item active" data-tab="dashboard">
+                        <i data-lucide="layout-dashboard" style="width: 16px; height: 16px;"></i>
+                        <span>Incidents</span>
+                    </div>
+
+                    <div class="nav-item" data-tab="categories">
+                        <i data-lucide="tags" style="width: 16px; height: 16px;"></i>
+                        <span>Categories</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- Dashboard View -->
+            <div id="tab-dashboard" class="tab-pane active">
+                <header class="main-header">
+                    <div>
+                        <div class="breadcrumb">
+                            <span class="breadcrumb-item">Workspace</span>
+                            <span class="breadcrumb-separator">/</span>
+                            <span class="breadcrumb-current">Incidents</span>
+                        </div>
+                        <div class="company-title-row">
+                            <div class="company-title-bar" style="background: var(--accent);"></div>
+                            <h1 class="company-title">Incidents</h1>
+                        </div>
+                    </div>
+                    <button class="add-new-btn" id="btn-new-incident"
+                        style="display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="plus" style="width: 16px; height: 16px;"></i> Report Incident
+                    </button>
+                </header>
+
+                <!-- Filters -->
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Filters</div>
+                    <div class="filter-pills">
+                        <div class="local-filter-item">
+                            <select id="filter-company">
+                                <option value="">All Companies</option>
+                            </select>
+                        </div>
+                        <div class="local-filter-item">
+                            <select id="filter-category">
+                                <option value="">All Categories</option>
+                            </select>
+                        </div>
+                        <div class="local-filter-item">
+                            <input type="text" id="filter-search" placeholder="Search keywords..."
+                                style="background:transparent; border:none; color:var(--text-primary); outline:none; font-size:12px; width:100%;">
+                        </div>
+                        <div class="local-filter-item" style="flex: 1; min-width: 200px;">
+                            <input type="date" id="filter-date"
+                                style="background:transparent; border:none; color:var(--text-primary); outline:none; font-size:12px; width:100%;">
+                        </div>
+                    </div>
+                </div>
+                <div class="content-area">
+                    <div id="incidents-container">
+                        <!-- Tables injected here -->
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Categories View -->
+            <div id="tab-categories" class="tab-pane">
+                <header class="main-header">
+                    <div>
+                        <div class="breadcrumb">
+                            <span class="breadcrumb-item">Workspace</span>
+                            <span class="breadcrumb-separator">/</span>
+                            <span class="breadcrumb-current">Categories</span>
+                        </div>
+                        <div class="company-title-row">
+                            <div class="company-title-bar" style="background: var(--blue);"></div>
+                            <h1 class="company-title">Manage Categories</h1>
+                        </div>
+                    </div>
+                    <button class="add-new-btn" id="btn-new-category"
+                        style="display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="plus" style="width: 16px; height: 16px;"></i> Add Category
+                    </button>
+                </header>
+
+                <div class="content-area">
+                    <div id="categories-container" class="company-hub-grid">
+                        <!-- injected here -->
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- FLOATING ACTIVITY BUTTON -->
+    <button class="floating-log-btn" id="open-log-btn">
+        <i data-lucide="history" style="width: 18px; height: 18px;"></i>
+        Activity <span class="count" id="log-count">0</span>
+    </button>
+
+    <!-- DRAWER FOR LOGS -->
+    <div class="drawer-overlay" id="drawer-overlay"></div>
+    <div class="drawer-panel" id="activity-drawer">
+        <div class="drawer-header">
+            <h3 style="font-size: 15px; font-weight: 600;">System Activity</h3>
+            <button class="modal-close" id="close-drawer-btn"><i data-lucide="x"
+                    style="width: 18px; height: 18px;"></i></button>
+        </div>
+        <div class="drawer-body" id="activity-log-container">
+            <!-- Logs injected -->
+        </div>
+    </div>
+
+    <!-- MODAL: ADD/EDIT INCIDENT -->
+    <div class="modal-overlay" id="incident-form-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="inc-modal-title">Report New Incident</h2>
+                <button class="modal-close" id="close-modal-btn"><i data-lucide="x"
+                        style="width: 18px; height: 18px;"></i></button>
+            </div>
+            <form id="incident-form">
+                <input type="hidden" id="inc-id" value="">
+                <div class="modal-body">
+                    <div class="modal-field">
+                        <label>Company</label>
+                        <select id="inc-company" required>
+                            <option value="">Select Company...</option>
+                        </select>
+                    </div>
+                    <div class="modal-field">
+                        <label>Category</label>
+                        <select id="inc-category" required>
+                            <option value="">Select Category...</option>
+                        </select>
+                    </div>
+                    <div class="modal-field">
+                        <label>Shift Time</label>
+                        <select id="inc-shift" required>
+                            <option value="Morning">Morning</option>
+                            <option value="Afternoon">Afternoon</option>
+                            <option value="Night">Night</option>
+                        </select>
+                    </div>
+                    <div class="modal-field">
+                        <label>Incident Description</label>
+                        <textarea id="inc-desc" placeholder="Brief description..." rows="3" required></textarea>
+                    </div>
+                    <div class="modal-field">
+                        <label>Action Taken</label>
+                        <textarea id="inc-action" placeholder="What was the resolution?" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="modal-btn modal-btn-secondary" id="cancel-modal-btn">Cancel</button>
+                    <button type="submit" class="modal-btn modal-btn-primary" id="inc-submit-btn">Save Incident</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="resolution-modal-overlay">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Finalize Resolution</h2>
+                <button class="modal-close" id="close-res-btn"><i data-lucide="x"
+                        style="width: 18px; height: 18px;"></i></button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Por favor, indique cómo
+                    se resolvió este incidente:</p>
+                <div class="modal-field">
+                    <input type="text" id="res-input-text" placeholder="Resolution details..." required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn modal-btn-secondary" id="cancel-res-btn">Cancelar</button>
+                <button type="button" class="modal-btn modal-btn-primary" id="save-res-btn">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: DELETE CONFIRMATION -->
+    <div class="modal-overlay" id="delete-modal-overlay">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <div class="modal-body" style="padding-top: 10px;">
+                <div
+                    style="width: 48px; height: 48px; border-radius: 50%; background: var(--red-soft); color: var(--red); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                    <i data-lucide="alert-triangle" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3 style="font-size: 16px; margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">Delete
+                    Incident Record?</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">This action cannot be
+                    undone. This incident and its details will be permanently completely removed from the log forever.
+                </p>
+            </div>
+            <div class="modal-footer" style="margin-top: 24px; border-top: none; padding-top: 0;">
+                <button type="button" class="modal-btn modal-btn-secondary" id="cancel-delete-btn">Cancel</button>
+                <button type="button" class="modal-btn" style="background: var(--red); color: white;"
+                    id="confirm-delete-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD CATEGORY -->
+    <div class="modal-overlay" id="add-category-modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Create New Category</h2>
+                <button class="modal-close" id="close-cat-btn"><i data-lucide="x"
+                        style="width: 18px; height: 18px;"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-field">
+                    <label>Category Title</label>
+                    <input type="text" id="cat-input-text" placeholder="e.g. VIP Issues..." required maxlength="20">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn modal-btn-secondary" id="cancel-cat-btn">Cancel</button>
+                <button type="button" class="modal-btn modal-btn-primary" id="save-cat-btn">Create Category</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: DELETE CATEGORY CONFIRMATION -->
+    <div class="modal-overlay" id="delete-cat-modal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <div class="modal-body" style="padding-top: 10px;">
+                <div
+                    style="width: 48px; height: 48px; border-radius: 50%; background: var(--red-soft); color: var(--red); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                    <i data-lucide="alert-triangle" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3 style="font-size: 16px; margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">Delete
+                    Category?</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">This action cannot be
+                    undone. You are removing a system category. Existing incidents using it won't be deleted but the
+                    category won't be selectable anymore.</p>
+            </div>
+            <div class="modal-footer" style="margin-top: 24px; border-top: none; padding-top: 0;">
+                <button type="button" class="modal-btn modal-btn-secondary" id="cancel-delcat-btn">Cancel</button>
+                <button type="button" class="modal-btn" style="background: var(--red); color: white;"
+                    id="confirm-delcat-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor Toast y Loader Global -->
+    <div id="toastContainer" class="toast-container"></div>
+    <div id="globalLoader" class="global-loader" style="display:none;">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
