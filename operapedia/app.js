@@ -599,7 +599,12 @@ const finishEdit = async () => {
         });
 
         // Recargamos la lista desde la base de datos para que desaparezca
-        await loadCompaniesFromMongo();
+        const compRes = await apiFetch('/companies');
+        const compJson = await compRes.json();
+        if (compJson.success && compJson.data) {
+          companies = compJson.data;
+          renderCompanies();
+        }
 
         // Reset UI
         currentCompany = null;
@@ -2739,7 +2744,7 @@ if (editModeBtn) {
         name: name,
         color: color,
         partner: partner,
-        games: gamesObj,
+        games: gamesArray,
         metodosDeposito: [],
         metodosCashout: [],
         consideracionesCashout: '',
@@ -2768,7 +2773,12 @@ if (editModeBtn) {
         });
 
         // Recargamos todas las compañías desde el backend para ver la nueva
-        await loadCompaniesFromMongo();
+        const compRes = await apiFetch('/companies');
+        const compJson = await compRes.json();
+        if (compJson.success && compJson.data) {
+          companies = compJson.data;
+          renderCompanies();
+        }
 
         updateAddCompanyBtnVisibility();
 
