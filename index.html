@@ -1,495 +1,400 @@
 <!doctype html>
 <html lang="es">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OPS Workspace</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" type="image/png" href="./imgs/dashboard.png" />
     <style>
-      /* === AJUSTES DEL DASHBOARD Y MENU DESPLEGABLE === */
-      #dashboard-view {
-        width: 100%;
-        max-width: 800px;
-        margin: 0 auto;
-      }
+        /* === AJUSTES DEL DASHBOARD Y MENU DESPLEGABLE === */
+        #dashboard-view {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
-      .navbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-      /* Contenedor del menú de perfil */
-      .profile-menu {
-        position: relative;
-        display: inline-block;
-      }
+        /* Contenedor del menú de perfil */
+        .profile-menu {
+            position: relative;
+            display: inline-block;
+        }
 
-      /* El botón redondo de arriba a la derecha */
-      .profile-trigger {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--border);
-        padding: 8px 16px;
-        border-radius: 30px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        user-select: none;
-      }
+        /* El botón redondo de arriba a la derecha */
+        .profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
 
-      .profile-trigger:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.2);
-      }
+        .profile-trigger:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
 
-      /* La cajita flotante con la información */
-      .profile-dropdown {
-        position: absolute;
-        top: 120%;
-        right: 0;
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 15px;
-        width: 240px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-        display: none;
-        /* Oculto por defecto */
-        flex-direction: column;
-        z-index: 100;
-      }
+        /* La cajita flotante con la información */
+        .profile-dropdown {
+            position: absolute;
+            top: 120%;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            width: 240px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            display: none;
+            /* Oculto por defecto */
+            flex-direction: column;
+            z-index: 100;
+        }
 
-      /* Clase para mostrar el menú */
-      .profile-dropdown.active {
-        display: flex;
-      }
+        /* Clase para mostrar el menú */
+        .profile-dropdown.active {
+            display: flex;
+        }
 
-      .dropdown-header {
-        border-bottom: 1px solid var(--border);
-        padding-bottom: 15px;
-        margin-bottom: 10px;
-      }
+        .dropdown-header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+            margin-bottom: 10px;
+        }
 
-      .btn-logout {
-        width: 100%;
-        text-align: center;
-        background: rgba(231, 76, 60, 0.1);
-        color: var(--danger);
-        border: 1px solid rgba(231, 76, 60, 0.2);
-        padding: 10px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: 0.2s;
-      }
+        .btn-logout {
+            width: 100%;
+            text-align: center;
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
 
-      .btn-logout:hover {
-        background: rgba(231, 76, 60, 0.2);
-      }
+        .btn-logout:hover {
+            background: rgba(231, 76, 60, 0.2);
+        }
 
-      /* ================= ESTILOS MODO CLARO / OSCURO ================= */
-      body.light-mode {
-        --bg-app: #f4f6f8;
-        --bg-card: #ffffff;
-        --text-primary: #1f2937;
-        --text-secondary: #6b7280;
-        --border: rgba(0, 0, 0, 0.1);
-      }
+        /* ================= ESTILOS MODO CLARO / OSCURO ================= */
+        body.light-mode {
+            --bg-app: #f4f6f8;
+            --bg-card: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border: rgba(0, 0, 0, 0.1);
+        }
 
-      /* ================= CORRECCIONES NAVBAR MODO CLARO ================= */
-      body.light-mode .navbar {
-        background-color: var(--bg-card);
-        border: 1px solid var(--border);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-      }
+        /* ================= CORRECCIONES NAVBAR MODO CLARO ================= */
+        body.light-mode .navbar {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        }
 
-      body.light-mode .logo-text,
-      body.light-mode .logo-text * {
-        color: #1f2937 !important;
-        background: none !important;
-        -webkit-text-fill-color: #1f2937 !important;
-        text-shadow: none !important;
-      }
+        body.light-mode .logo-text,
+        body.light-mode .logo-text * {
+            color: #1f2937 !important;
+            background: none !important;
+            -webkit-text-fill-color: #1f2937 !important;
+            text-shadow: none !important;
+        }
 
-      body.light-mode .profile-trigger {
-        background: rgba(0, 0, 0, 0.04);
-        border: 1px solid var(--border);
-      }
+        body.light-mode .profile-trigger {
+            background: rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border);
+        }
 
-      body.light-mode .profile-trigger:hover {
-        background: rgba(0, 0, 0, 0.08);
-      }
+        body.light-mode .profile-trigger:hover {
+            background: rgba(0, 0, 0, 0.08);
+        }
 
-      body.light-mode .profile-trigger,
-      body.light-mode .profile-trigger span {
-        color: #1f2937 !important;
-      }
+        body.light-mode .profile-trigger,
+        body.light-mode .profile-trigger span {
+            color: #1f2937 !important;
+        }
 
-      /* ================= INTERCAMBIO DE LOGOS ================= */
-      body.light-mode .logo-dark {
-        display: none !important;
-      }
+        /* ================= INTERCAMBIO DE LOGOS ================= */
+        body.light-mode .logo-dark {
+            display: none !important;
+        }
 
-      body.light-mode .logo-light {
-        display: block !important;
-      }
+        body.light-mode .logo-light {
+            display: block !important;
+        }
 
-      /* ================= SWITCH DE TEMA ESTILO IOS ================= */
-      .theme-switch {
-        position: relative;
-        display: inline-block;
-        width: 64px;
-        height: 32px;
-      }
+        /* ================= SWITCH DE TEMA ESTILO IOS ================= */
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 64px;
+            height: 32px;
+        }
 
-      .theme-switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
 
-      .theme-switch .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--border);
-        border-radius: 32px;
-        transition: 0.4s;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 6px;
-      }
+        .theme-switch .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            transition: 0.4s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6px;
+        }
 
-      .theme-switch .slider::before {
-        position: absolute;
-        content: "";
-        height: 24px;
-        width: 24px;
-        left: 3px;
-        bottom: 3px;
-        background-color: #5e6ad2;
-        border-radius: 50%;
-        transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        z-index: 2;
-      }
+        .theme-switch .slider::before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #5e6ad2;
+            border-radius: 50%;
+            transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 2;
+        }
 
-      .theme-switch .switch-icon {
-        height: 14px;
-        width: 14px;
-        z-index: 1;
-        object-fit: contain;
-      }
+        .theme-switch .switch-icon {
+            height: 14px;
+            width: 14px;
+            z-index: 1;
+            object-fit: contain;
+        }
 
-      body.light-mode .theme-switch .slider {
-        background-color: rgba(0, 0, 0, 0.05);
-      }
+        body.light-mode .theme-switch .slider {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
 
-      .theme-switch input:checked + .slider::before {
-        transform: translateX(32px);
-        background-color: #1f2937;
-      }
+        .theme-switch input:checked+.slider::before {
+            transform: translateX(32px);
+            background-color: #1f2937;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-  </head>
+</head>
 
-  <body>
+<body>
     <div id="particles-js"></div>
 
     <div id="login-view" style="position: relative">
-      <label
-        class="theme-switch"
-        style="position: absolute; top: 20px; right: 20px"
-        title="Cambiar Tema"
-      >
-        <input
-          type="checkbox"
-          class="theme-checkbox"
-          onchange="toggleTheme()"
-        />
-        <span class="slider">
-          <img src="./imgs/daylight.png" alt="Dark" class="switch-icon" />
-          <img src="./imgs/moon (2).png" alt="Light" class="switch-icon" />
-        </span>
-      </label>
+        <label class="theme-switch" style="position: absolute; top: 20px; right: 20px" title="Cambiar Tema">
+            <input type="checkbox" class="theme-checkbox" onchange="toggleTheme()" />
+            <span class="slider">
+                <img src="./imgs/daylight.png" alt="Dark" class="switch-icon" />
+                <img src="./imgs/moon (2).png" alt="Light" class="switch-icon" />
+            </span>
+        </label>
 
-      <div class="logo-text">OPS Workspace</div>
-      <p style="color: var(--text-secondary); margin-bottom: 25px"></p>
+        <div class="logo-text">OPS Workspace</div>
+        <p style="color: var(--text-secondary); margin-bottom: 25px"></p>
 
-      <form id="loginForm">
-        <input type="text" id="username" placeholder="Usuario" required />
-        <input
-          type="password"
-          id="password"
-          placeholder="Contraseña"
-          required
-        />
-        <button type="submit" class="btn-primary" id="loginBtn">
-          Ingresar
-        </button>
-      </form>
-      <div
-        id="error-msg"
-        style="
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Usuario" required />
+            <input type="password" id="password" placeholder="Contraseña" required />
+            <button type="submit" class="btn-primary" id="loginBtn">
+                Ingresar
+            </button>
+        </form>
+        <div id="error-msg" style="
           color: var(--danger);
           margin-top: 15px;
           font-size: 14px;
           display: none;
-        "
-      ></div>
+        "></div>
     </div>
 
     <div id="dashboard-view" style="display: none">
-      <div class="navbar">
-        <div
-          class="logo-text"
-          style="
+        <div class="navbar">
+            <div class="logo-text" style="
             margin: 0;
             font-size: 20px;
             display: flex;
             align-items: center;
             gap: 8px;
-          "
-        >
-          <img
-            src="./imgs/categories (1).png"
-            alt="Logo"
-            class="logo-dark"
-            style="height: 28px; width: auto"
-          />
-          <img
-            src="./imgs/categories.png"
-            alt="Logo"
-            class="logo-light"
-            style="height: 28px; width: auto; display: none"
-          />
-          Workspace
-        </div>
+          ">
+                <img src="./imgs/categories (1).png" alt="Logo" class="logo-dark" style="height: 28px; width: auto" />
+                <img src="./imgs/categories.png" alt="Logo" class="logo-light"
+                    style="height: 28px; width: auto; display: none" />
+                Workspace
+            </div>
 
-        <div style="display: flex; align-items: center; gap: 15px">
-          <label class="theme-switch" title="Cambiar Tema">
-            <input
-              type="checkbox"
-              class="theme-checkbox"
-              onchange="toggleTheme()"
-            />
-            <span class="slider">
-              <img src="./imgs/daylight.png" alt="Dark" class="switch-icon" />
-              <img src="./imgs/moon (2).png" alt="Light" class="switch-icon" />
-            </span>
-          </label>
+            <div style="display: flex; align-items: center; gap: 15px">
+                <label class="theme-switch" title="Cambiar Tema">
+                    <input type="checkbox" class="theme-checkbox" onchange="toggleTheme()" />
+                    <span class="slider">
+                        <img src="./imgs/daylight.png" alt="Dark" class="switch-icon" />
+                        <img src="./imgs/moon (2).png" alt="Light" class="switch-icon" />
+                    </span>
+                </label>
 
-          <div class="profile-menu">
-            <div
-              class="profile-trigger"
-              id="profileTrigger"
-              onclick="toggleProfileMenu()"
-            >
-              <img
-                src="./imgs/user (1).png"
-                alt="Perfil"
-                style="
+                <div class="profile-menu">
+                    <div class="profile-trigger" id="profileTrigger" onclick="toggleProfileMenu()">
+                        <img src="./imgs/user (1).png" alt="Perfil" style="
                   width: 24px;
                   height: 24px;
                   border-radius: 50%;
                   object-fit: cover;
-                "
-              />
-              <span
-                id="triggerName"
-                style="
+                " />
+                        <span id="triggerName" style="
                   font-weight: 600;
                   font-size: 14px;
                   color: var(--text-primary);
-                "
-                >Cargando...</span
-              >
-              <span style="font-size: 10px; opacity: 0.5">▼</span>
-            </div>
+                ">Cargando...</span>
+                        <span style="font-size: 10px; opacity: 0.5">▼</span>
+                    </div>
 
-            <div class="profile-dropdown" id="profileDropdown">
-              <div class="dropdown-header">
-                <div
-                  id="profileFullName"
-                  style="font-weight: bold; font-size: 16px; margin-bottom: 4px"
-                >
-                  Nombre
-                </div>
-                <div
-                  id="profileUsername"
-                  style="
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="dropdown-header">
+                            <div id="profileFullName" style="font-weight: bold; font-size: 16px; margin-bottom: 4px">
+                                Nombre
+                            </div>
+                            <div id="profileUsername" style="
                     color: var(--text-secondary);
                     font-size: 13px;
                     margin-bottom: 10px;
-                  "
-                >
-                  @usuario
-                </div>
-                <span
-                  class="badge"
-                  id="profileRole"
-                  style="
+                  ">
+                                @usuario
+                            </div>
+                            <span class="badge" id="profileRole" style="
                     font-size: 11px;
                     padding: 4px 10px;
                     border-radius: 12px;
                     font-weight: 700;
                     letter-spacing: 0.5px;
-                  "
-                  >ROL</span
-                >
-              </div>
+                  ">ROL</span>
+                        </div>
 
-              <button class="btn-logout" onclick="logout()">
-                Cerrar Sesión
-              </button>
+                        <button class="btn-logout" onclick="logout()">
+                            Cerrar Sesión
+                        </button>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-      <div style="margin-top: 40px; margin-bottom: 10px">
-        <h1
-          style="
+        <div style="margin-top: 40px; margin-bottom: 10px">
+            <h1 style="
             margin: 0;
             font-size: 28px;
             color: var(--text-primary);
             font-weight: 700;
-          "
-        >
-          Hola de nuevo,
-          <span id="welcomeName" style="color: #5e6ad2">...</span>!
-        </h1>
-        <p
-          style="margin-top: 5px; color: var(--text-secondary); font-size: 15px"
-        >
-          ¿Qué haremos el día de hoy?
-        </p>
-      </div>
-      <h2
-        style="
+          ">
+                Hola de nuevo,
+                <span id="welcomeName" style="color: #5e6ad2">...</span>!
+            </h1>
+            <p style="margin-top: 5px; color: var(--text-secondary); font-size: 15px">
+                ¿Qué haremos el día de hoy?
+            </p>
+        </div>
+        <h2 style="
           margin-top: 30px;
           margin-bottom: 20px;
           font-size: 18px;
           color: var(--text-secondary);
           font-weight: 600;
-        "
-      >
-        Tus Aplicaciones
-      </h2>
+        ">
+            Tus Aplicaciones
+        </h2>
 
-      <div class="apps-grid">
-        <a href="/cashouts/" class="app-card" id="card-cashouts">
-          <img
-            src="./imgs/budget (1).png"
-            alt="Cashouts"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">Cashouts</h3>
-          <p class="app-desc">
-            Sistema de registro y verificación de cashouts en tiempo real con
-            sincronización a Google Sheets.
-          </p>
-        </a>
+        <div class="apps-grid">
+            <a href="/cashouts/" class="app-card" id="card-cashouts">
+                <img src="./imgs/budget (1).png" alt="Cashouts"
+                    style="width: 40px; height: 40px; object-fit: contain" />
+                <h3 class="app-title">Cashouts</h3>
+                <p class="app-desc">
+                    Sistema de registro y verificación de cashouts en tiempo real con
+                    sincronización a Google Sheets.
+                </p>
+            </a>
 
-        <a href="/operapedia/" class="app-card" id="card-operapedia">
-          <img
-            src="./imgs/book.png"
-            alt="Operapedia"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">Operapedia</h3>
-          <p class="app-desc">
-            Panel de credenciales, métodos de pago, promociones y catálogo de
-            juegos de nuestras compañías.
-          </p>
-        </a>
+            <a href="/operapedia/" class="app-card" id="card-operapedia">
+                <img src="./imgs/book.png" alt="Operapedia" style="width: 40px; height: 40px; object-fit: contain" />
+                <h3 class="app-title">Operapedia</h3>
+                <p class="app-desc">
+                    Panel de credenciales, métodos de pago, promociones y catálogo de
+                    juegos de nuestras compañías.
+                </p>
+            </a>
 
-        <a href="/kyc/" class="app-card" id="card-kyc">
-          <img
-            src="./imgs/KYC.png"
-            alt="KYC"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">Customers KYC</h3>
-          <p class="app-desc">
-            Base de datos de clientes, verificación de identidad y documentos.
-          </p>
-        </a>
+            <a href="/kyc/" class="app-card" id="card-kyc">
+                <img src="./imgs/KYC.png" alt="KYC" style="width: 40px; height: 40px; object-fit: contain" />
+                <h3 class="app-title">Customers KYC</h3>
+                <p class="app-desc">
+                    Base de datos de clientes, verificación de identidad y documentos.
+                </p>
+            </a>
 
-        <a href="/balance-monitor/" class="app-card" id="card-balance">
-          <img
-            src="./imgs/statistics.png"
-            alt="Balances"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">Balance Monitor</h3>
-          <p class="app-desc">
-            Monitoreo balances y movimientos. (Módulo Externo)
-          </p>
-        </a>
+            <a href="/balance-monitor/" class="app-card" id="card-balance">
+                <img src="./imgs/statistics.png" alt="Balances"
+                    style="width: 40px; height: 40px; object-fit: contain" />
+                <h3 class="app-title">Balance Monitor</h3>
+                <p class="app-desc">
+                    Monitoreo balances y movimientos. (Módulo Externo)
+                </p>
+            </a>
 
-        <a href="/ubicaciones/" class="app-card" id="card-locations">
-          <img
-            src="./imgs/locations.png"
-            alt="Balances"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">Ubicaciones</h3>
-          <p class="app-desc">
-            Monitorea las estaciones de los operadores y sus breaks
-          </p>
-        </a>
+            <a href="/ubicaciones/" class="app-card" id="card-locations">
+                <img src="./imgs/locations.png" alt="Balances" style="width: 40px; height: 40px; object-fit: contain" />
+                <h3 class="app-title">Ubicaciones</h3>
+                <p class="app-desc">
+                    Monitorea las estaciones de los operadores y sus breaks
+                </p>
+            </a>
 
-        <a href="/Shiftlog/" class="app-card" id="card-shiftlog">
-          <img
-            src="./imgs/Shiftlogs.png"
-            alt="Shiftlog"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">ShiftLog</h3>
-          <p class="app-desc">Registro de incidentes y novedades del turno.</p>
-        </a>
+            <a href="/Shiftlog/" class="app-card" id="card-shiftlog">
+                <img src="./imgs/Shiftlogs.png" alt="Shiftlog" style="width: 40px; height: 40px; object-fit: contain" />
+                <h3 class="app-title">ShiftLog</h3>
+                <p class="app-desc">Registro de incidentes y novedades del turno.</p>
+            </a>
 
-        <a href="/Tierlock verifier/" class="app-card" id="card-tierlock">
-          <img
-            src="./imgs/tools.png"
-            alt="Tierlock Verifier"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">Tierlock Tools</h3>
-          <p class="app-desc">
-            Herramienta para la verificación de depósitos de jugadores en
-            Tierlock.
-          </p>
-        </a>
+            <a href="/Tierlock-verifier/" class="app-card" id="card-tierlock">
+                <img src="./imgs/tools.png" alt="Tierlock Verifier"
+                    style="width: 40px; height: 40px; object-fit: contain" />
+                <h3 class="app-title">Tierlock Tools</h3>
+                <p class="app-desc">
+                    Herramienta para la verificación de depósitos de jugadores en
+                    Tierlock.
+                </p>
+            </a>
 
-        <div
-          class="app-card"
-          id="card-helpdesk"
-          onclick="openHelpDeskModal()"
-          style="cursor: pointer"
-        >
-          <img
-            src="./imgs/it-support.png"
-            alt="Cashouts"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">Soporte TI</h3>
-          <p class="app-desc">
-            Reporta incidencias del sistema o solicita nuevas implementaciones
-          </p>
+            <div class="app-card" id="card-helpdesk" onclick="openHelpDeskModal()" style="cursor: pointer">
+                <img src="./imgs/it-support.png" alt="Cashouts"
+                    style="width: 40px; height: 40px; object-fit: contain" />
+                <h3 class="app-title">Soporte TI</h3>
+                <p class="app-desc">
+                    Reporta incidencias del sistema o solicita nuevas implementaciones
+                </p>
+            </div>
         </div>
-      </div>
     </div>
-    <div
-      id="helpDeskModal"
-      style="
+    <div id="helpDeskModal" style="
         display: none;
         position: fixed;
         top: 0;
@@ -501,10 +406,8 @@
         z-index: 9999;
         justify-content: center;
         align-items: center;
-      "
-    >
-      <div
-        style="
+      ">
+        <div style="
           background: var(--bg-card);
           padding: 30px;
           border-radius: 16px;
@@ -514,11 +417,8 @@
           box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
           text-align: center;
           position: relative;
-        "
-      >
-        <button
-          onclick="closeHelpDeskModal()"
-          style="
+        ">
+            <button onclick="closeHelpDeskModal()" style="
             position: absolute;
             top: 15px;
             right: 15px;
@@ -528,36 +428,28 @@
             font-size: 18px;
             cursor: pointer;
             padding: 5px;
-          "
-        >
-          ✖
-        </button>
+          ">
+                ✖
+            </button>
 
-        <h3
-          style="
+            <h3 style="
             margin-top: 0;
             margin-bottom: 10px;
             color: var(--text-primary);
             font-size: 22px;
-          "
-        >
-          ¿Qué necesitas?
-        </h3>
-        <p
-          style="
+          ">
+                ¿Qué necesitas?
+            </h3>
+            <p style="
             color: var(--text-secondary);
             font-size: 14px;
             margin-bottom: 25px;
-          "
-        >
-          Selecciona el tipo de formulario que deseas llenar en Airtable.
-        </p>
+          ">
+                Selecciona el tipo de formulario que deseas llenar en Airtable.
+            </p>
 
-        <div style="display: flex; flex-direction: column; gap: 15px">
-          <a
-            href="https://airtable.com/appI9YfF3gEZHSss7/pagSlhAHkerY3U3zH/form"
-            target="_blank"
-            style="
+            <div style="display: flex; flex-direction: column; gap: 15px">
+                <a href="https://airtable.com/appI9YfF3gEZHSss7/pagSlhAHkerY3U3zH/form" target="_blank" style="
               display: flex;
               align-items: center;
               gap: 15px;
@@ -568,40 +460,28 @@
               text-decoration: none;
               color: var(--text-primary);
               transition: transform 0.2s;
-            "
-            onmouseover="this.style.transform = 'scale(1.02)'"
-            onmouseout="this.style.transform = 'scale(1)'"
-          >
-            <img
-              src="./imgs/bug.png"
-              alt="Ticket"
-              style="
+            " onmouseover="this.style.transform = 'scale(1.02)'" onmouseout="this.style.transform = 'scale(1)'">
+                    <img src="./imgs/bug.png" alt="Ticket" style="
                 width: 36px;
                 height: 36px;
                 object-fit: contain;
                 flex-shrink: 0;
-              "
-            />
-            <div style="text-align: left">
-              <div style="font-weight: bold; font-size: 16px">
-                Reportar un Error (Ticket)
-              </div>
-              <div
-                style="
+              " />
+                    <div style="text-align: left">
+                        <div style="font-weight: bold; font-size: 16px">
+                            Reportar un Error (Ticket)
+                        </div>
+                        <div style="
                   font-size: 12px;
                   color: var(--text-secondary);
                   margin-top: 4px;
-                "
-              >
-                Fallas, caídas del sistema o bugs.
-              </div>
-            </div>
-          </a>
+                ">
+                            Fallas, caídas del sistema o bugs.
+                        </div>
+                    </div>
+                </a>
 
-          <a
-            href="https://airtable.com/appI9YfF3gEZHSss7/pagbKhZb9oTt6XSca/form"
-            target="_blank"
-            style="
+                <a href="https://airtable.com/appI9YfF3gEZHSss7/pagbKhZb9oTt6XSca/form" target="_blank" style="
               display: flex;
               align-items: center;
               gap: 15px;
@@ -612,263 +492,255 @@
               text-decoration: none;
               color: var(--text-primary);
               transition: transform 0.2s;
-            "
-            onmouseover="this.style.transform = 'scale(1.02)'"
-            onmouseout="this.style.transform = 'scale(1)'"
-          >
-            <img
-              src="./imgs/implementation.png"
-              alt="Idea"
-              style="
+            " onmouseover="this.style.transform = 'scale(1.02)'" onmouseout="this.style.transform = 'scale(1)'">
+                    <img src="./imgs/implementation.png" alt="Idea" style="
                 width: 36px;
                 height: 36px;
                 object-fit: contain;
                 flex-shrink: 0;
-              "
-            />
-            <div style="text-align: left">
-              <div style="font-weight: bold; font-size: 16px">
-                Nueva Solicitud
-              </div>
-              <div
-                style="
+              " />
+                    <div style="text-align: left">
+                        <div style="font-weight: bold; font-size: 16px">
+                            Nueva Solicitud
+                        </div>
+                        <div style="
                   font-size: 12px;
                   color: var(--text-secondary);
                   margin-top: 4px;
-                "
-              >
-                Solicitar nuevas funciones o herramientas.
-              </div>
+                ">
+                            Solicitar nuevas funciones o herramientas.
+                        </div>
+                    </div>
+                </a>
             </div>
-          </a>
         </div>
-      </div>
     </div>
     <script>
-      const API_BASE = "https://general-cashouts-production.up.railway.app/api";
+        const API_BASE = "https://general-cashouts-production.up.railway.app/api";
 
-      const loginView = document.getElementById("login-view");
-      const dashboardView = document.getElementById("dashboard-view");
-      const loginForm = document.getElementById("loginForm");
-      const errorMsg = document.getElementById("error-msg");
+        const loginView = document.getElementById("login-view");
+        const dashboardView = document.getElementById("dashboard-view");
+        const loginForm = document.getElementById("loginForm");
+        const errorMsg = document.getElementById("error-msg");
 
-      // ✅ INICIALIZAR EL FONDO TECNOLÓGICO (NODOS)
-      if (typeof particlesJS !== "undefined") {
-        particlesJS("particles-js", {
-          particles: {
-            number: { value: 60, density: { enable: true, value_area: 800 } },
-            color: { value: "#5e6ad2" },
-            shape: { type: "circle" },
-            opacity: { value: 0.3, random: false },
-            size: { value: 3, random: true },
-            line_linked: {
-              enable: true,
-              distance: 150,
-              color: "#5e6ad2",
-              opacity: 0.2,
-              width: 1,
-            },
-            move: {
-              enable: true,
-              speed: 1.5,
-              direction: "none",
-              random: false,
-              straight: false,
-              out_mode: "out",
-              bounce: false,
-            },
-          },
-          interactivity: {
-            detect_on: "window",
-            events: {
-              onhover: { enable: true, mode: "grab" },
-              onclick: { enable: true, mode: "push" },
-              resize: true,
-            },
-            modes: {
-              grab: { distance: 200, line_linked: { opacity: 0.6 } },
-              push: { particles_nb: 4 },
-            },
-          },
-          retina_detect: true,
+        // ✅ INICIALIZAR EL FONDO TECNOLÓGICO (NODOS)
+        if (typeof particlesJS !== "undefined") {
+            particlesJS("particles-js", {
+                particles: {
+                    number: { value: 60, density: { enable: true, value_area: 800 } },
+                    color: { value: "#5e6ad2" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.3, random: false },
+                    size: { value: 3, random: true },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: "#5e6ad2",
+                        opacity: 0.2,
+                        width: 1,
+                    },
+                    move: {
+                        enable: true,
+                        speed: 1.5,
+                        direction: "none",
+                        random: false,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false,
+                    },
+                },
+                interactivity: {
+                    detect_on: "window",
+                    events: {
+                        onhover: { enable: true, mode: "grab" },
+                        onclick: { enable: true, mode: "push" },
+                        resize: true,
+                    },
+                    modes: {
+                        grab: { distance: 200, line_linked: { opacity: 0.6 } },
+                        push: { particles_nb: 4 },
+                    },
+                },
+                retina_detect: true,
+            });
+        }
+
+        // Función para abrir/cerrar el menú de perfil
+        function toggleProfileMenu() {
+            document.getElementById("profileDropdown").classList.toggle("active");
+        }
+
+        // Cierra el menú si haces clic fuera de él
+        window.onclick = function (event) {
+            if (!event.target.closest(".profile-menu")) {
+                const dropdown = document.getElementById("profileDropdown");
+                if (dropdown && dropdown.classList.contains("active")) {
+                    dropdown.classList.remove("active");
+                }
+            }
+        };
+
+        // Al cargar la página
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("token");
+            const userStr = localStorage.getItem("user");
+
+            if (token && userStr) {
+                const user = JSON.parse(userStr);
+                mostrarDashboard(user);
+            }
         });
-      }
 
-      // Función para abrir/cerrar el menú de perfil
-      function toggleProfileMenu() {
-        document.getElementById("profileDropdown").classList.toggle("active");
-      }
+        // Formulario de login
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById("loginBtn");
+            btn.textContent = "Verificando...";
+            btn.disabled = true;
+            errorMsg.style.display = "none";
 
-      // Cierra el menú si haces clic fuera de él
-      window.onclick = function (event) {
-        if (!event.target.closest(".profile-menu")) {
-          const dropdown = document.getElementById("profileDropdown");
-          if (dropdown && dropdown.classList.contains("active")) {
-            dropdown.classList.remove("active");
-          }
-        }
-      };
+            try {
+                const res = await fetch(`${API_BASE}/auth/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        username: document.getElementById("username").value.trim(),
+                        password: document.getElementById("password").value,
+                    }),
+                });
 
-      // Al cargar la página
-      document.addEventListener("DOMContentLoaded", () => {
-        const token = localStorage.getItem("token");
-        const userStr = localStorage.getItem("user");
+                const data = await res.json();
+                if (!res.ok)
+                    throw new Error(data.error || "Credenciales incorrectas");
 
-        if (token && userStr) {
-          const user = JSON.parse(userStr);
-          mostrarDashboard(user);
-        }
-      });
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Formulario de login
-      loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById("loginBtn");
-        btn.textContent = "Verificando...";
-        btn.disabled = true;
-        errorMsg.style.display = "none";
+                mostrarDashboard(data.user);
+            } catch (err) {
+                errorMsg.textContent = err.message;
+                errorMsg.style.display = "block";
+            } finally {
+                btn.textContent = "Ingresar";
+                btn.disabled = false;
+            }
+        });
 
-        try {
-          const res = await fetch(`${API_BASE}/auth/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              username: document.getElementById("username").value.trim(),
-              password: document.getElementById("password").value,
-            }),
-          });
+        // Mostrar el dashboard y llenar los datos (CON ROLES ACTUALIZADOS)
+        function mostrarDashboard(user) {
+            loginView.style.display = "none";
+            dashboardView.style.display = "block";
 
-          const data = await res.json();
-          if (!res.ok)
-            throw new Error(data.error || "Credenciales incorrectas");
+            const primerNombre = user.fullName.split(" ")[0];
+            document.getElementById("triggerName").textContent = primerNombre;
 
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("user", JSON.stringify(data.user));
+            const welcomeName = document.getElementById("welcomeName");
+            if (welcomeName) welcomeName.textContent = primerNombre;
 
-          mostrarDashboard(data.user);
-        } catch (err) {
-          errorMsg.textContent = err.message;
-          errorMsg.style.display = "block";
-        } finally {
-          btn.textContent = "Ingresar";
-          btn.disabled = false;
-        }
-      });
+            document.getElementById("profileFullName").textContent = user.fullName;
+            document.getElementById("profileUsername").textContent =
+                "@" + user.username;
 
-      // Mostrar el dashboard y llenar los datos (CON ROLES ACTUALIZADOS)
-      function mostrarDashboard(user) {
-        loginView.style.display = "none";
-        dashboardView.style.display = "block";
+            const roleBadge = document.getElementById("profileRole");
+            roleBadge.textContent = user.role.toUpperCase();
 
-        const primerNombre = user.fullName.split(" ")[0];
-        document.getElementById("triggerName").textContent = primerNombre;
+            const cardCashouts = document.getElementById("card-cashouts");
+            const cardOperapedia = document.getElementById("card-operapedia");
+            const cardKyc = document.getElementById("card-kyc");
+            const cardBalance = document.getElementById("card-balance");
+            const cardLocations = document.getElementById("card-locations");
+            const cardHelpDesk = document.getElementById("card-helpdesk");
+            const cardTierlock = document.getElementById("card-tierlock");
+            const cardShiftlog = document.getElementById("card-shiftlog");
 
-        const welcomeName = document.getElementById("welcomeName");
-        if (welcomeName) welcomeName.textContent = primerNombre;
+            // 1. Reseteamos la vista por defecto (mostrar todas)
+            if (cardCashouts) cardCashouts.style.display = "flex";
+            if (cardOperapedia) cardOperapedia.style.display = "flex";
+            if (cardKyc) cardKyc.style.display = "none"; // Exclusivo de supervisor
+            if (cardBalance) cardBalance.style.display = "flex";
+            if (cardLocations) cardLocations.style.display = "none";
+            if (cardTierlock) cardTierlock.style.display = "none"; // Exclusivo de supervisor/analista
+            if (cardShiftlog) cardShiftlog.style.display = "none"; // Exclusivo de supervisor/analista/chats
 
-        document.getElementById("profileFullName").textContent = user.fullName;
-        document.getElementById("profileUsername").textContent =
-          "@" + user.username;
+            if (cardHelpDesk) cardHelpDesk.style.display = "none";
 
-        const roleBadge = document.getElementById("profileRole");
-        roleBadge.textContent = user.role.toUpperCase();
+            // 2. Colores y permisos según el rol
+            if (user.role === "supervisor") {
+                roleBadge.style.background = "rgba(94, 106, 210, 0.15)";
+                roleBadge.style.color = "#6f7bf0";
+                roleBadge.style.border = "1px solid rgba(94, 106, 210, 0.3)";
 
-        const cardCashouts = document.getElementById("card-cashouts");
-        const cardOperapedia = document.getElementById("card-operapedia");
-        const cardKyc = document.getElementById("card-kyc");
-        const cardBalance = document.getElementById("card-balance");
-        const cardLocations = document.getElementById("card-locations");
-        const cardHelpDesk = document.getElementById("card-helpdesk");
-        const cardTierlock = document.getElementById("card-tierlock");
-        const cardShiftlog = document.getElementById("card-shiftlog");
+                if (cardHelpDesk) cardHelpDesk.style.display = "flex";
+                if (cardLocations) cardLocations.style.display = "flex";
+                if (cardKyc) cardKyc.style.display = "flex";
+                if (cardTierlock) cardTierlock.style.display = "flex";
+                if (cardShiftlog) cardShiftlog.style.display = "flex";
+            } else if (user.role === "analista") {
+                roleBadge.style.background = "rgba(46, 204, 113, 0.15)";
+                roleBadge.style.color = "#2ecc71";
+                roleBadge.style.border = "1px solid rgba(46, 204, 113, 0.3)";
 
-        // 1. Reseteamos la vista por defecto (mostrar todas)
-        if (cardCashouts) cardCashouts.style.display = "flex";
-        if (cardOperapedia) cardOperapedia.style.display = "flex";
-        if (cardKyc) cardKyc.style.display = "none"; // Exclusivo de supervisor
-        if (cardBalance) cardBalance.style.display = "flex";
-        if (cardLocations) cardLocations.style.display = "none";
-        if (cardTierlock) cardTierlock.style.display = "none"; // Exclusivo de supervisor/analista
-        if (cardShiftlog) cardShiftlog.style.display = "none"; // Exclusivo de supervisor/analista/chats
+                if (cardBalance) cardBalance.style.display = "none";
+                if (cardTierlock) cardTierlock.style.display = "flex";
+                if (cardShiftlog) cardShiftlog.style.display = "flex";
+            } else if (user.role === "chats") {
+                roleBadge.style.background = "rgba(243, 156, 18, 0.15)";
+                roleBadge.style.color = "#f39c12";
+                roleBadge.style.border = "1px solid rgba(243, 156, 18, 0.3)";
 
-        if (cardHelpDesk) cardHelpDesk.style.display = "none";
+                if (cardCashouts) cardCashouts.style.display = "none";
+                if (cardBalance) cardBalance.style.display = "none";
+                if (cardKyc) cardKyc.style.display = "flex"; // Role 'chats' puede ver KYC
+                if (cardShiftlog) cardShiftlog.style.display = "flex";
+            } else if (user.role === "asistente") {
+                roleBadge.style.background = "rgba(52, 152, 219, 0.15)";
+                roleBadge.style.color = "#3498db";
+                roleBadge.style.border = "1px solid rgba(52, 152, 219, 0.3)";
 
-        // 2. Colores y permisos según el rol
-        if (user.role === "supervisor") {
-          roleBadge.style.background = "rgba(94, 106, 210, 0.15)";
-          roleBadge.style.color = "#6f7bf0";
-          roleBadge.style.border = "1px solid rgba(94, 106, 210, 0.3)";
-
-          if (cardHelpDesk) cardHelpDesk.style.display = "flex";
-          if (cardLocations) cardLocations.style.display = "flex";
-          if (cardKyc) cardKyc.style.display = "flex";
-          if (cardTierlock) cardTierlock.style.display = "flex";
-          if (cardShiftlog) cardShiftlog.style.display = "flex";
-        } else if (user.role === "analista") {
-          roleBadge.style.background = "rgba(46, 204, 113, 0.15)";
-          roleBadge.style.color = "#2ecc71";
-          roleBadge.style.border = "1px solid rgba(46, 204, 113, 0.3)";
-
-          if (cardBalance) cardBalance.style.display = "none";
-          if (cardTierlock) cardTierlock.style.display = "flex";
-          if (cardShiftlog) cardShiftlog.style.display = "flex";
-        } else if (user.role === "chats") {
-          roleBadge.style.background = "rgba(243, 156, 18, 0.15)";
-          roleBadge.style.color = "#f39c12";
-          roleBadge.style.border = "1px solid rgba(243, 156, 18, 0.3)";
-
-          if (cardCashouts) cardCashouts.style.display = "none";
-          if (cardBalance) cardBalance.style.display = "none";
-          if (cardKyc) cardKyc.style.display = "flex"; // Role 'chats' puede ver KYC
-          if (cardShiftlog) cardShiftlog.style.display = "flex";
-        } else if (user.role === "asistente") {
-          roleBadge.style.background = "rgba(52, 152, 219, 0.15)";
-          roleBadge.style.color = "#3498db";
-          roleBadge.style.border = "1px solid rgba(52, 152, 219, 0.3)";
-
-          if (cardCashouts) cardCashouts.style.display = "none";
-          if (cardOperapedia) cardOperapedia.style.display = "none";
-        }
-      }
-
-      function logout() {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        location.reload();
-      }
-      // ================= LÓGICA MODAL HELP DESK =================
-      function openHelpDeskModal() {
-        document.getElementById("helpDeskModal").style.display = "flex";
-      }
-
-      function closeHelpDeskModal() {
-        document.getElementById("helpDeskModal").style.display = "none";
-      }
-      // ================= LÓGICA MODO CLARO / OSCURO (SWITCH) =================
-      function toggleTheme() {
-        document.body.classList.toggle("light-mode");
-        const isLight = document.body.classList.contains("light-mode");
-        localStorage.setItem("workspaceTheme", isLight ? "light" : "dark");
-
-        // Sincronizar el estado del switch en Login y Dashboard
-        const checkboxes = document.querySelectorAll(".theme-checkbox");
-        checkboxes.forEach((chk) => (chk.checked = isLight));
-      }
-
-      function loadTheme() {
-        const savedTheme = localStorage.getItem("workspaceTheme");
-        const isLight = savedTheme === "light";
-
-        if (isLight) {
-          document.body.classList.add("light-mode");
+                if (cardCashouts) cardCashouts.style.display = "none";
+                if (cardOperapedia) cardOperapedia.style.display = "none";
+            }
         }
 
-        // Marcar los checkboxes correctamente al cargar la página
-        const checkboxes = document.querySelectorAll(".theme-checkbox");
-        checkboxes.forEach((chk) => (chk.checked = isLight));
-      }
+        function logout() {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            location.reload();
+        }
+        // ================= LÓGICA MODAL HELP DESK =================
+        function openHelpDeskModal() {
+            document.getElementById("helpDeskModal").style.display = "flex";
+        }
 
-      loadTheme();
+        function closeHelpDeskModal() {
+            document.getElementById("helpDeskModal").style.display = "none";
+        }
+        // ================= LÓGICA MODO CLARO / OSCURO (SWITCH) =================
+        function toggleTheme() {
+            document.body.classList.toggle("light-mode");
+            const isLight = document.body.classList.contains("light-mode");
+            localStorage.setItem("workspaceTheme", isLight ? "light" : "dark");
+
+            // Sincronizar el estado del switch en Login y Dashboard
+            const checkboxes = document.querySelectorAll(".theme-checkbox");
+            checkboxes.forEach((chk) => (chk.checked = isLight));
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem("workspaceTheme");
+            const isLight = savedTheme === "light";
+
+            if (isLight) {
+                document.body.classList.add("light-mode");
+            }
+
+            // Marcar los checkboxes correctamente al cargar la página
+            const checkboxes = document.querySelectorAll(".theme-checkbox");
+            checkboxes.forEach((chk) => (chk.checked = isLight));
+        }
+
+        loadTheme();
     </script>
-  </body>
+</body>
+
 </html>
