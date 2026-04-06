@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tierlock Verifier - Workspace</title>
-    <!-- CSS del workspace principal -->
     <link rel="stylesheet" href="../style.css">
     <link rel="icon" type="image/png" href="../imgs/dashboard.png">
     <style>
@@ -277,17 +276,17 @@
 
             <div class="search-box">
                 <div class="field">
-                    <label>Email del Usuario</label>
+                    <label>Email</label>
                     <input type="email" id="email" placeholder="cliente@example.com">
                 </div>
                 <div class="field">
-                    <label>Compañía / Tenant</label>
+                    <label>Compañía</label>
                     <select id="company"></select>
                 </div>
                 <button id="btnConsultar">Consultar</button>
             </div>
 
-            <div id="loader">⚙️ Validando con APIs externas...</div>
+            <div id="loader">Validando depósitos...</div>
 
             <div id="resultHeader" class="result-header">
                 <strong>Usuario:</strong> <span id="resUser" style="color:var(--accent); font-weight: 600;"></span>
@@ -376,17 +375,14 @@
 
         // ================= LÓGICA DE APLICACIÓN =================
         const companies = [
-            "Play Play Play", "Lucky Lady", "Wise Gang", "Mushroom Kingdom", "Ballerz World of Gamez",
-            "Lucky Room", "Ocean Sluggerz", "The Fun Room", "Ultra Lounge", "Lucky Luxe",
-            "Mega Ultra Win", "Pandagod", "The Players Lounge", "JL Ent", "Slots Gone Wild",
-            "Lucky Buddy", "Snarcade", "JJs reels adventures", "Grabbin Cash", "BordersWay",
-            "The Players Club", "Devine Slots", "Token Tiger", "Innercore Games", "Fast Fortunes",
+            "Play Play Play", "Lucky Lady", "Mushroom Kingdom", "Ballerz World of Gamez",
+            "Pandagod", "Token Tiger", "Innercore Games", "Fast Fortunes",
             "Lucky Duck Lounge", "Simply Unmatched", "Lucky Shamrock", "Paper Route", "Crazy Coins",
-            "Dragons Den", "Club Vpower", "Game Lounge", "Lucky Fin", "House of LingLing",
+            "Lucky Fin", "House of LingLing",
             "Ms Lady Vegas", "Galaxy Entertainment", "Rapid Reloads", "The Hot Spot", "Best Fish Games",
             "Wager Island", "777 Twenty Four Seven", "Two City Takeover", "Luxury Slots",
             "Fast Play Slots", "Black Sheep Gameroom", "Slot Luck", "Wysaro", "Legendary Millions Casino",
-            "Lucky Waves Arcade", "The Penthouse", "Marathon Lounge"
+            "Lucky Waves Arcade", "The Penthouse", "Marathon Lounge", "Candy World", "Born Lucky Gameroom", "Royale Dynasty", "Jackpot Junction", "The Reel Deal"
         ];
 
         const select = document.getElementById('company');
