@@ -73,13 +73,6 @@
                             style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;"></span>
                     Stats
                 </button>
-
-                <button class="role-btn" id="manageTeamBtn"
-                    style="display: none; background: rgba(38, 70, 83, 0.1); color: var(--tertiary);">
-                    <span class="icon"><img src="../imgs/cashouts/Sidebar/manage%20team.png" alt="Manage Team"
-                            style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;"></span>
-                    Manage Team
-                </button>
             </div>
 
 
@@ -125,50 +118,6 @@
                 </div>
             </div>
 
-            <div id="manageTeamSection" class="form-section" style="display: none; max-width: 900px;">
-                <h2>Gestión de Equipo</h2>
-                <p>Crea o elimina cuentas de acceso para tus analistas.</p>
-
-                <div
-                    style="background: rgba(42, 157, 143, 0.05); padding: 20px; border-radius: 12px; border: 1px dashed var(--primary); margin-bottom: 25px;">
-
-                    <div
-                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
-                        <input type="text" id="newFullName" placeholder="Nombre Completo (Ej. Juan Perez)">
-                        <input type="text" id="newUsername" placeholder="Usuario de acceso (Ej. juan.perez)">
-                        <input type="password" id="newPassword" placeholder="Contraseña">
-                        <select id="newRole"
-                            style="padding: 10px; border-radius: 8px; border: 2px solid rgba(42, 157, 143, 0.3);">
-                            <option value="analista">Analista</option>
-                            <option value="supervisor">Supervisor</option>
-                            <option value="chats">Chats</option>
-                            <option value="asistente">Asistente Administrativo</option>
-                        </select>
-                    </div>
-                    <button id="btnCreateUser" style="width: auto; padding: 12px 30px;">Crear Cuenta</button>
-                </div>
-
-                <div style="overflow-x: auto;">
-                    <table
-                        style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; border: 2px solid rgba(42, 157, 143, 0.2);">
-                        <thead style="background: linear-gradient(135deg, var(--primary), #338f81); color: white;">
-                            <tr>
-                                <th style="padding: 15px; text-align: left;">Nombre</th>
-                                <th style="padding: 15px; text-align: left;">Usuario</th>
-                                <th style="padding: 15px; text-align: center;">Rol</th>
-                                <th style="padding: 15px; text-align: center;">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="usersTableBody">
-                            <tr>
-                                <td colspan="4" style="text-align:center; padding: 20px;">Cargando usuarios...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Sección Reglas -->
             <div id="rulesSection" class="form-section" style="display: none; max-width: 1200px;">
                 <h2>Reglas de Cashout por Compañía</h2>
                 <p>Consulta el procedimiento específico para cada plataforma:</p>
@@ -578,14 +527,12 @@
         const rulesBtn = document.getElementById('rulesBtn');
         const leaderboardBtn = document.getElementById('leaderboardBtn');
         const statsBtn = document.getElementById('statsBtn');
-        const manageTeamBtn = document.getElementById('manageTeamBtn');
 
         // Secciones
         const operatorSection = document.getElementById('operatorSection');
         const reviewSection = document.getElementById('reviewSection');
         const companiesSection = document.getElementById('companiesSection');
         const rulesSection = document.getElementById('rulesSection');
-        const manageTeamSection = document.getElementById('manageTeamSection');
 
         // UI General
         const cashoutForm = document.getElementById('cashoutForm');
@@ -655,13 +602,6 @@
                 operatorNameInput.readOnly = true;
             }
 
-            // Si es supervisor, mostramos el botón de Manage Team
-            if (currentUser.role === 'supervisor') {
-                manageTeamBtn.style.display = 'block';
-            } else {
-                manageTeamBtn.style.display = 'none';
-            }
-
             // Ocultar etiquetas antiguas de "Supervisor de Turno" si aún existen en tu HTML
             const supervisorTurnoGlobal = document.getElementById('supervisorTurnoGlobal');
             if (supervisorTurnoGlobal) supervisorTurnoGlobal.style.display = 'none';
@@ -677,10 +617,10 @@
         // ========================================
 
         function desactivarBotones() {
-            [operatorBtn, reviewBtn, companiesBtn, rulesBtn, leaderboardBtn, statsBtn, manageTeamBtn].forEach(b => {
+            [operatorBtn, reviewBtn, companiesBtn, rulesBtn, leaderboardBtn, statsBtn].forEach(b => {
                 if (b) b.classList.remove('active');
             });
-            [operatorSection, reviewSection, companiesSection, rulesSection, manageTeamSection].forEach(s => {
+            [operatorSection, reviewSection, companiesSection, rulesSection].forEach(s => {
                 if (s) s.style.display = 'none';
             });
             detenerAutoRefresh();
@@ -712,13 +652,6 @@
             rulesBtn.classList.add('active');
             rulesSection.style.display = 'block';
             cargarReglasDesdeBD();
-        });
-
-        manageTeamBtn.addEventListener('click', () => {
-            desactivarBotones();
-            manageTeamBtn.classList.add('active');
-            manageTeamSection.style.display = 'block';
-            cargarUsuarios();
         });
 
         // ========================================
@@ -984,114 +917,6 @@
                 revisionPendiente = null;
             }
         }
-
-        // ========================================
-        // ✅ 6. GESTIÓN DE EQUIPO (MANAGE TEAM)
-        // ========================================
-        async function cargarUsuarios() {
-            try {
-                const res = await apiFetch(`/users`);
-                const json = await res.json();
-                const tbody = document.getElementById('usersTableBody');
-
-                if (json.data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay usuarios</td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = json.data.map(u => `
-                    <tr style="border-bottom: 1px solid #eee;">
-                        <td style="padding: 12px; font-weight: bold;">${u.fullName}</td>
-                        <td style="padding: 12px; color: var(--tertiary);">${u.username}</td>
-                        <td style="padding: 12px; text-align: center;">
-                            <span style="background: ${u.role === 'supervisor' ? 'var(--primary)' : 'var(--accent)'}; color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; text-transform: uppercase;">
-                                ${u.role}
-                            </span>
-                        </td>
-                        <td style="padding: 12px; text-align: center;">
-                            <button onclick="cambiarPasswordUsuario('${u._id}', '${u.username}')" style="background: var(--accent); padding: 5px 10px; width: auto; font-size: 12px; margin-right: 5px;">Contraseña</button>
-                            <button onclick="eliminarUsuario('${u._id}')" style="background: var(--error); padding: 5px 10px; width: auto; font-size: 12px;" ${u.username === 'admin' ? 'disabled' : ''}>Eliminar</button>
-                        </td>
-                    </tr>
-                `).join('');
-            } catch (e) {
-                showNotification("Error cargando usuarios", "error");
-            }
-        }
-
-        document.getElementById('btnCreateUser').addEventListener('click', async () => {
-            const fullName = document.getElementById('newFullName').value.trim();
-            const username = document.getElementById('newUsername').value.trim();
-            const password = document.getElementById('newPassword').value;
-            const role = document.getElementById('newRole').value;
-
-            if (!fullName || !username || !password) return showNotification("Llena todos los campos", "error");
-
-            const btn = document.getElementById('btnCreateUser');
-            btn.disabled = true;
-            btn.textContent = "Creando...";
-
-            try {
-                const res = await apiFetch(`/users`, {
-                    method: 'POST',
-                    body: JSON.stringify({ fullName, username, password, role })
-                });
-
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error);
-
-                showNotification("Usuario creado con éxito");
-                document.getElementById('newFullName').value = '';
-                document.getElementById('newUsername').value = '';
-                document.getElementById('newPassword').value = '';
-                cargarUsuarios();
-            } catch (e) {
-                showNotification(e.message, "error");
-            } finally {
-                btn.disabled = false;
-                btn.textContent = "Crear Cuenta";
-            }
-        });
-
-        window.eliminarUsuario = async function (id) {
-            if (!confirm("¿Estás seguro de eliminar este usuario?")) return;
-            try {
-                const res = await apiFetch(`/users/${id}`, { method: 'DELETE' });
-                if (res.ok) {
-                    showNotification("Usuario eliminado");
-                    cargarUsuarios();
-                } else {
-                    const data = await res.json();
-                    showNotification(data.error, "error");
-                }
-            } catch (e) { showNotification("Error al eliminar", "error"); }
-        }
-
-        window.cambiarPasswordUsuario = async function (id, username) {
-            // Usamos un simple prompt del navegador para pedir la clave rápido
-            const nuevaClave = prompt(`Ingrese la NUEVA contraseña para el usuario: ${username}`);
-
-            if (nuevaClave === null) return; // Si el supervisor presiona "Cancelar"
-            if (nuevaClave.trim().length < 4) {
-                return showNotification("La contraseña debe tener al menos 4 caracteres.", "error");
-            }
-
-            try {
-                const res = await apiFetch(`/users/${id}/password`, {
-                    method: 'PUT',
-                    body: JSON.stringify({ newPassword: nuevaClave.trim() })
-                });
-
-                if (res.ok) {
-                    showNotification(`Contraseña de ${username} actualizada con éxito.`, "success");
-                } else {
-                    const data = await res.json();
-                    showNotification(data.error, "error");
-                }
-            } catch (e) {
-                showNotification("Error al cambiar la contraseña", "error");
-            }
-        };
 
         // ========================================
         // ✅ 7. CASHOUT RULES

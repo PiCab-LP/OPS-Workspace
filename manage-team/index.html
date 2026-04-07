@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Team - OPS Workspace</title>
+    <!-- Usa los estilos globales del Hub -->
+    <link rel="stylesheet" href="../style.css" />
+    <link rel="icon" type="image/png" href="../imgs/teams.png" />
+    <script>
+        // Bloqueo estricto de seguridad: redirige INMEDIATAMENTE si no hay permisos, antes de renderizar la página.
+        (function() {
+            const userStr = localStorage.getItem("user");
+            if (!userStr) {
+                window.location.replace('/');
+                return;
+            }
+            try {
+                const user = JSON.parse(userStr);
+                if (user.role !== 'supervisor') {
+                    window.location.replace('/');
+                }
+            } catch(e) {
+                window.location.replace('/');
+            }
+        })();
+    </script>
+    <style>
+        /* Ajustes específicos para esta vista basados en el global */
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 30px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+            position: relative;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-back {
+            position: absolute;
+            left: 0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        body.light-mode .btn-back {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .btn-back:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .modal-input {
+            background: #f4f6f8 !important;
+            color: #1f2937 !important;
+            border: 1px solid rgba(0, 0, 0, 0.15) !important;
+        }
+
+        body.light-mode .modal-input::placeholder {
+            color: #6b7280 !important;
+        }
+
+        body.light-mode label {
+            color: #1f2937 !important;
+        }
+
+        .modal-input:focus {
+            border-color: var(--accent) !important;
+        }
+
+        .btn-create {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+            display: block;
+            margin-left: auto;
+        }
+
+        .btn-create:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Tabla de Usuarios */
+        .users-table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+        }
+
+        thead {
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge-role {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .badge-supervisor {
+            background: rgba(94, 106, 210, 0.15);
+            color: #6f7bf0;
+            border: 1px solid rgba(94, 106, 210, 0.3);
+        }
+
+        .badge-analista {
+            background: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .badge-chats {
+            background: rgba(243, 156, 18, 0.15);
+            color: #f39c12;
+            border: 1px solid rgba(243, 156, 18, 0.3);
+        }
+
+        .badge-asistente {
+            background: rgba(52, 152, 219, 0.15);
+            color: #3498db;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn-pwd {
+            background: rgba(52, 152, 219, 0.15);
+            color: #3498db;
+        }
+
+        .btn-pwd:hover {
+            background: rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-del {
+            background: rgba(231, 76, 60, 0.15);
+            color: var(--danger);
+        }
+
+        .btn-del:hover {
+            background: rgba(231, 76, 60, 0.3);
+        }
+
+        /* Notificaciones */
+        .notification {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            background: #2ecc71;
+            color: #fff;
+            padding: 16px 30px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 800;
+            z-index: 3000;
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.4);
+            opacity: 0;
+            transform: translateX(120%);
+            transition: all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+
+        .notification.show {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateX(0);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+</head>
+
+<body>
+    <div id="particles-js"></div>
+
+    <div id="notification" class="notification"></div>
+
+    <div class="container">
+        <div class="header">
+            <a href="/" class="btn-back">
+                Volver al Hub
+            </a>
+            <h1>
+                <img src="../imgs/teams.png" alt="Manage Team"
+                    style="width: 32px; height: 32px; object-fit: contain;" />
+                Gestión de Equipo
+            </h1>
+        </div>
+
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+            <p style="color: var(--text-secondary); margin: 0;">Crea o elimina cuentas de acceso para los operadores.
+            </p>
+            <button id="openCreateModalBtn" class="btn-create" style="margin: 0;">+ Crear Cuenta</button>
+        </div>
+
+        <!-- Modal para Crear Cuenta -->
+        <div id="createAccountModal"
+            style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 9999; justify-content: center; align-items: center;">
+            <div
+                style="background: var(--bg-card); padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);position: relative;">
+                <button id="closeCreateModalBtn"
+                    style="position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: var(--text-secondary); font-size: 18px; cursor: pointer;">✖</button>
+                <h3
+                    style="margin-top: 0; margin-bottom: 25px; font-size: 20px; color: var(--text-primary); text-align: center;">
+                    Añadir nuevo usuario</h3>
+
+                <div style="display: flex; flex-direction: column; gap: 18px; margin-bottom: 25px;">
+                    <div>
+                        <label
+                            style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 14px;">Nombre
+                            Completo:</label>
+                        <input type="text" id="newFullName" class="modal-input" placeholder="Ej. Juan Perez"
+                            style="width: 100%; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border); padding: 14px; border-radius: 8px; outline: none; box-sizing: border-box; font-size: 15px;">
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 14px;">Usuario
+                            (Username):</label>
+                        <input type="text" id="newUsername" class="modal-input" placeholder="Ej. juan.perez"
+                            style="width: 100%; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border); padding: 14px; border-radius: 8px; outline: none; box-sizing: border-box; font-size: 15px;">
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 14px;">Contraseña:</label>
+                        <input type="password" id="newPassword" class="modal-input" placeholder="Contraseña"
+                            style="width: 100%; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border); padding: 14px; border-radius: 8px; outline: none; box-sizing: border-box; font-size: 15px;">
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 14px;">Rol:</label>
+                        <select id="newRole" class="modal-input"
+                            style="width: 100%; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border); padding: 14px; border-radius: 8px; outline: none; box-sizing: border-box; cursor: pointer; font-size: 15px;">
+                            <option value="analista">Analista</option>
+                            <option value="supervisor">Supervisor</option>
+                            <option value="chats">Chats</option>
+                            <option value="asistente">Asistente Administrativo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="btnCreateUser" class="btn-create"
+                    style="width: 100%; margin: 0; padding: 14px; text-transform: uppercase;">Crear Cuenta</button>
+            </div>
+        </div>
+
+        <!-- Confirm Modal (Reusable) -->
+        <div id="customConfirmModal"
+            style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 10000; justify-content: center; align-items: center;">
+            <div
+                style="background: var(--bg-card); padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);position: relative; text-align: center;">
+                <h3 id="confirmModalText"
+                    style="margin-top: 0; margin-bottom: 25px; font-size: 18px; color: var(--text-primary);">¿Seguro?
+                </h3>
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <button id="btnConfirmAccept" class="btn-create"
+                        style="padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; min-width: 120px; margin: 0;">Aceptar</button>
+                    <button id="btnConfirmCancel"
+                        style="background: transparent; border: 1px solid var(--border); color: var(--text-primary); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; min-width: 120px;">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prompt Modal (Reusable) -->
+        <div id="customPromptModal"
+            style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 10000; justify-content: center; align-items: center;">
+            <div
+                style="background: var(--bg-card); padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);position: relative; text-align: center;">
+                <h3 id="promptModalText"
+                    style="margin-top: 0; margin-bottom: 20px; font-size: 18px; color: var(--text-primary);">Ingrese
+                    valor:</h3>
+                <input type="password" id="promptModalInput" class="modal-input" placeholder="Nueva contraseña"
+                    style="width: 100%; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border); padding: 14px; border-radius: 8px; outline: none; box-sizing: border-box; font-size: 15px; margin-bottom: 25px;">
+
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <button id="btnPromptAccept" class="btn-create"
+                        style="padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; min-width: 120px; margin: 0;">Aceptar</button>
+                    <button id="btnPromptCancel"
+                        style="background: transparent; border: 1px solid var(--border); color: var(--text-primary); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; min-width: 120px;">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="usersContainer">
+            <div
+                style="text-align:center; padding: 30px; color: var(--text-secondary); background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border);">
+                Cargando usuarios...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "https://general-cashouts-production.up.railway.app/api";
+        let token = null;
+        let currentUser = null;
+
+        // Recuperar tema
+        const savedTheme = localStorage.getItem("workspaceTheme");
+        if (savedTheme === "light") {
+            document.body.classList.add("light-mode");
+        }
+
+        // Inicializar Partículas
+        if (typeof particlesJS !== "undefined") {
+            particlesJS("particles-js", {
+                particles: {
+                    number: { value: 60, density: { enable: true, value_area: 800 } },
+                    color: { value: "#5e6ad2" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.3, random: false },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: true, distance: 150, color: "#5e6ad2", opacity: 0.2, width: 1 },
+                    move: { enable: true, speed: 1.5, direction: "none", random: false, straight: false, out_mode: "out", bounce: false }
+                },
+                interactivity: {
+                    detect_on: "window",
+                    events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" }, resize: true },
+                    modes: { grab: { distance: 200, line_linked: { opacity: 0.6 } }, push: { particles_nb: 4 } }
+                },
+                retina_detect: true
+            });
+        }
+
+        // Notificaciones
+        function showNotification(msg, type = "success") {
+            const notif = document.getElementById('notification');
+            notif.textContent = msg;
+            notif.style.background = type === "error" ? "#e74c3c" : "#2ecc71";
+            notif.style.boxShadow = type === "error" ? "0 10px 30px rgba(231, 76, 60, 0.4)" : "0 10px 30px rgba(46, 204, 113, 0.4)";
+            notif.classList.add('show');
+            setTimeout(() => notif.classList.remove('show'), 3200);
+        }
+
+        // Fetch Wrapper
+        async function apiFetch(endpoint, options = {}) {
+            const headers = {
+                'Accept': 'application/json',
+                ...options.headers
+            };
+            if (options.body) headers['Content-Type'] = 'application/json';
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            const response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+
+            if (response.status === 401 || response.status === 403) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/';
+                throw new Error("Sesión expirada");
+            }
+            return response;
+        }
+
+        // Cargar Usuarios
+        async function cargarUsuarios() {
+            try {
+                const res = await apiFetch(`/users`);
+                const json = await res.json();
+                const container = document.getElementById('usersContainer');
+
+                if (json.data.length === 0) {
+                    container.innerHTML = '<div style="text-align:center; padding: 30px; color: var(--text-secondary); background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border);">No hay usuarios registrados.</div>';
+                    return;
+                }
+
+                const rolesMap = {
+                    'supervisor': 'Supervisores',
+                    'analista': 'Analistas',
+                    'chats': 'Chats',
+                    'asistente': 'Asistentes Administrativos'
+                };
+
+                const roleColors = {
+                    'supervisor': '#6f7bf0',
+                    'analista': '#2ecc71',
+                    'chats': '#f39c12',
+                    'asistente': '#3498db'
+                };
+
+                const groupedUsers = {};
+                json.data.forEach(u => {
+                    const role = u.role.toLowerCase();
+                    if (!groupedUsers[role]) groupedUsers[role] = [];
+                    groupedUsers[role].push(u);
+                });
+
+                let html = '';
+                const order = ['supervisor', 'analista', 'chats', 'asistente'];
+
+                const buildTable = (roleKey, users) => {
+                    const title = rolesMap[roleKey] || roleKey.charAt(0).toUpperCase() + roleKey.slice(1);
+                    return `
+                        <div style="margin-bottom: 40px;">
+                            <h2 style="font-size: 20px; color: ${roleColors[roleKey] || 'var(--text-primary)'}; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                                <span class="badge-role badge-${roleKey}" style="width: 12px; height: 12px; border-radius: 50%; padding: 0; display: inline-block;"></span>
+                                ${title} <span style="font-size: 14px; color: var(--text-secondary); font-weight: 500;">(${users.length})</span>
+                            </h2>
+                            <div class="users-table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Usuario</th>
+                                            <th>Rol</th>
+                                            <th>Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${users.map(u => `
+                                            <tr>
+                                                <td style="font-weight: 600;">${u.fullName}</td>
+                                                <td style="color: var(--text-secondary);">@${u.username}</td>
+                                                <td>
+                                                    <span class="badge-role badge-${u.role.toLowerCase()}">
+                                                        ${u.role}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="action-btns">
+                                                        <button onclick="cambiarPasswordUsuario('${u._id}', '${u.username}')" class="btn-sm btn-pwd">Cambiar contraseña</button>
+                                                        <button onclick="eliminarUsuario('${u._id}')" class="btn-sm btn-del" ${u.username === 'admin' ? 'disabled' : ''}>Eliminar</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                };
+
+                order.forEach(roleKey => {
+                    if (groupedUsers[roleKey]) {
+                        html += buildTable(roleKey, groupedUsers[roleKey]);
+                    }
+                });
+
+                Object.keys(groupedUsers).forEach(roleKey => {
+                    if (!order.includes(roleKey)) {
+                        html += buildTable(roleKey, groupedUsers[roleKey]);
+                    }
+                });
+
+                container.innerHTML = html;
+            } catch (e) {
+                showNotification("Error cargando usuarios", "error");
+            }
+        }
+
+        // Modal Logic
+        const createAccountModal = document.getElementById('createAccountModal');
+        const openCreateModalBtn = document.getElementById('openCreateModalBtn');
+        const closeCreateModalBtn = document.getElementById('closeCreateModalBtn');
+
+        openCreateModalBtn.addEventListener('click', () => {
+            createAccountModal.style.display = 'flex';
+        });
+
+        closeCreateModalBtn.addEventListener('click', () => {
+            createAccountModal.style.display = 'none';
+        });
+
+        // Crear Usuario
+        document.getElementById('btnCreateUser').addEventListener('click', async () => {
+            const fullName = document.getElementById('newFullName').value.trim();
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newPassword').value;
+            const role = document.getElementById('newRole').value;
+
+            if (!fullName || !username || !password) return showNotification("Llena todos los campos", "error");
+
+            const btn = document.getElementById('btnCreateUser');
+            btn.disabled = true;
+            btn.textContent = "Creando...";
+
+            try {
+                const res = await apiFetch(`/users`, {
+                    method: 'POST',
+                    body: JSON.stringify({ fullName, username, password, role })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error);
+
+                showNotification("Usuario creado con éxito");
+                document.getElementById('newFullName').value = '';
+                document.getElementById('newUsername').value = '';
+                document.getElementById('newPassword').value = '';
+                createAccountModal.style.display = 'none';
+                cargarUsuarios();
+            } catch (e) {
+                showNotification(e.message, "error");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Crear Cuenta";
+            }
+        });
+
+        // Custom Modals Handlers
+        function customConfirm(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('customConfirmModal');
+                document.getElementById('confirmModalText').textContent = message;
+                modal.style.display = 'flex';
+
+                document.getElementById('btnConfirmAccept').onclick = () => {
+                    modal.style.display = 'none';
+                    resolve(true);
+                };
+                document.getElementById('btnConfirmCancel').onclick = () => {
+                    modal.style.display = 'none';
+                    resolve(false);
+                };
+            });
+        }
+
+        function customPrompt(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('customPromptModal');
+                const input = document.getElementById('promptModalInput');
+                document.getElementById('promptModalText').textContent = message;
+                input.value = '';
+                modal.style.display = 'flex';
+                input.focus();
+
+                document.getElementById('btnPromptAccept').onclick = () => {
+                    modal.style.display = 'none';
+                    resolve(input.value);
+                };
+                document.getElementById('btnPromptCancel').onclick = () => {
+                    modal.style.display = 'none';
+                    resolve(null);
+                };
+            });
+        }
+
+        // Eliminar Usuario
+        window.eliminarUsuario = async function (id) {
+            const isConfirmed = await customConfirm("¿Estás seguro de eliminar este usuario?");
+            if (!isConfirmed) return;
+            try {
+                const res = await apiFetch(`/users/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    showNotification("Usuario eliminado");
+                    cargarUsuarios();
+                } else {
+                    const data = await res.json();
+                    showNotification(data.error, "error");
+                }
+            } catch (e) { showNotification("Error al eliminar", "error"); }
+        }
+
+        // Cambiar Password
+        window.cambiarPasswordUsuario = async function (id, username) {
+            const nuevaClave = await customPrompt(`Ingrese la NUEVA contraseña para el usuario: ${username}`);
+            if (nuevaClave === null) return;
+            if (nuevaClave.trim().length < 4) {
+                return showNotification("La contraseña debe tener al menos 4 caracteres.", "error");
+            }
+
+            try {
+                const res = await apiFetch(`/users/${id}/password`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ newPassword: nuevaClave.trim() })
+                });
+
+                if (res.ok) {
+                    showNotification(`Contraseña de ${username} actualizada.`, "success");
+                } else {
+                    const data = await res.json();
+                    showNotification(data.error, "error");
+                }
+            } catch (e) {
+                showNotification("Error al cambiar la contraseña", "error");
+            }
+        };
+
+        // Autenticación inicial
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedToken = localStorage.getItem('token');
+            const savedUser = localStorage.getItem('user');
+
+            if (savedToken && savedUser) {
+                currentUser = JSON.parse(savedUser);
+                token = savedToken;
+
+                // Seguridad: solo supervisores (o los roles permitidos en el Hub) pueden usar Manage Team
+                if (currentUser.role !== 'supervisor') {
+                    window.location.href = '/';
+                    return;
+                }
+
+                cargarUsuarios();
+            } else {
+                window.location.href = '/';
+            }
+        });
+    </script>
+</body>
+
+</html>

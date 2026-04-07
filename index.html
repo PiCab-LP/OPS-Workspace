@@ -384,6 +384,14 @@
                 </p>
             </a>
 
+            <a href="/manage-team/" class="app-card" id="card-manage-team">
+                <img src="./imgs/teams.png" alt="Manage Team" style="width: 40px; height: 40px; object-fit: contain" />
+                <h3 class="app-title">Manage Team</h3>
+                <p class="app-desc">
+                    Gestión de equipos.
+                </p>
+            </a>
+
             <div class="app-card" id="card-helpdesk" onclick="openHelpDeskModal()" style="cursor: pointer">
                 <img src="./imgs/it-support.png" alt="Cashouts"
                     style="width: 40px; height: 40px; object-fit: contain" />
@@ -509,6 +517,38 @@
                   margin-top: 4px;
                 ">
                             Solicitar nuevas funciones o herramientas.
+                        </div>
+                    </div>
+                </a>
+
+                <a href="#" target="_blank" style="
+              display: flex;
+              align-items: center;
+              gap: 15px;
+              background: rgba(52, 152, 219, 0.1);
+              border: 1px solid rgba(52, 152, 219, 0.3);
+              padding: 15px;
+              border-radius: 12px;
+              text-decoration: none;
+              color: var(--text-primary);
+              transition: transform 0.2s;
+            " onmouseover="this.style.transform = 'scale(1.02)'" onmouseout="this.style.transform = 'scale(1)'">
+                    <img src="./imgs/design.png" alt="Gráficas" style="
+                width: 36px;
+                height: 36px;
+                object-fit: contain;
+                flex-shrink: 0;
+              " onerror="this.src='./imgs/implementation.png'" />
+                    <div style="text-align: left">
+                        <div style="font-weight: bold; font-size: 16px">
+                            Solicitud de Gráficas
+                        </div>
+                        <div style="
+                  font-size: 12px;
+                  color: var(--text-secondary);
+                  margin-top: 4px;
+                ">
+                            Petición de nuevos gráficos o métricas del sistema.
                         </div>
                     </div>
                 </a>
@@ -652,6 +692,7 @@
             const cardHelpDesk = document.getElementById("card-helpdesk");
             const cardTierlock = document.getElementById("card-tierlock");
             const cardShiftlog = document.getElementById("card-shiftlog");
+            const cardManageTeam = document.getElementById("card-manage-team");
 
             // 1. Reseteamos la vista por defecto (mostrar todas)
             if (cardCashouts) cardCashouts.style.display = "flex";
@@ -663,6 +704,7 @@
             if (cardShiftlog) cardShiftlog.style.display = "none"; // Exclusivo de supervisor/analista/chats
 
             if (cardHelpDesk) cardHelpDesk.style.display = "none";
+            if (cardManageTeam) cardManageTeam.style.display = "none";
 
             // 2. Colores y permisos según el rol
             if (user.role === "supervisor") {
@@ -671,6 +713,7 @@
                 roleBadge.style.border = "1px solid rgba(94, 106, 210, 0.3)";
 
                 if (cardHelpDesk) cardHelpDesk.style.display = "flex";
+                if (cardManageTeam) cardManageTeam.style.display = "flex";
                 if (cardLocations) cardLocations.style.display = "flex";
                 if (cardKyc) cardKyc.style.display = "flex";
                 if (cardTierlock) cardTierlock.style.display = "flex";
