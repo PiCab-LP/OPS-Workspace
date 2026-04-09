@@ -10,7 +10,7 @@
     <link rel="icon" type="image/png" href="../imgs/teams.png" />
     <script>
         // Bloqueo estricto de seguridad: redirige INMEDIATAMENTE si no hay permisos, antes de renderizar la página.
-        (function() {
+        (function () {
             const userStr = localStorage.getItem("user");
             if (!userStr) {
                 window.location.replace('/');
@@ -21,7 +21,7 @@
                 if (user.role !== 'supervisor') {
                     window.location.replace('/');
                 }
-            } catch(e) {
+            } catch (e) {
                 window.location.replace('/');
             }
         })();
@@ -315,8 +315,8 @@
                             style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 14px;">Rol:</label>
                         <select id="newRole" class="modal-input"
                             style="width: 100%; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border); padding: 14px; border-radius: 8px; outline: none; box-sizing: border-box; cursor: pointer; font-size: 15px;">
-                            <option value="analista">Analista</option>
                             <option value="supervisor">Supervisor</option>
+                            <option value="analista">Analista</option>
                             <option value="chats">Chats</option>
                             <option value="asistente">Asistente Administrativo</option>
                         </select>

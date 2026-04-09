@@ -621,12 +621,34 @@
             }
         };
 
+        // Función para verificar si el token JWT expiró
+        function isTokenExpired(token) {
+            try {
+                const payloadBase64 = token.split('.')[1];
+                const payloadDecoded = atob(payloadBase64);
+                const payload = JSON.parse(payloadDecoded);
+                
+                if (payload.exp) {
+                    const currentTime = Math.floor(Date.now() / 1000);
+                    return payload.exp < currentTime;
+                }
+                return false;
+            } catch (e) {
+                return true; // Token inválido o corrupto
+            }
+        }
+
         // Al cargar la página
         document.addEventListener("DOMContentLoaded", () => {
             const token = localStorage.getItem("token");
             const userStr = localStorage.getItem("user");
 
             if (token && userStr) {
+                if (isTokenExpired(token)) {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("user");
+                    return;
+                }
                 const user = JSON.parse(userStr);
                 mostrarDashboard(user);
             }
