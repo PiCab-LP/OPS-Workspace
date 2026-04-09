@@ -4,6 +4,15 @@
 
 const API_BASE = "https://general-cashouts-production.up.railway.app/api";
 
+async function authenticatedFetch(url, options = {}) {
+    const token = localStorage.getItem('token');
+    const headers = options.headers ? { ...options.headers } : {};
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+    return fetch(url, { ...options, headers });
+}
+
 const DEFAULT_CATEGORIES = [
     { name: "Depositos", private: false },
     { name: "Cashouts", private: false },
@@ -22,7 +31,7 @@ class DataStore {
     // --- Companies API ---
     async getCompanies() {
         try {
-            const res = await fetch(`${API_BASE}/rules`);
+            const res = await authenticatedFetch(`${API_BASE}/rules`);
             const data = await res.json();
             if (data.success) {
                 // Returns only unique company names
@@ -39,7 +48,7 @@ class DataStore {
     // --- Categories API (Backend) ---
     async getCategories() {
         try {
-            const res = await fetch(`${API_BASE}/config/all`);
+            const res = await authenticatedFetch(`${API_BASE}/config/all`);
             const data = await res.json();
             if (data.success) {
                 return data.categories.map(name => ({ name }));
@@ -62,7 +71,7 @@ class DataStore {
                 }
             } catch (e) {}
 
-            const res = await fetch(`${API_BASE}/config/add`, {
+            const res = await authenticatedFetch(`${API_BASE}/config/add`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ type: 'category', name, operator: operatorName })
@@ -86,7 +95,7 @@ class DataStore {
                 }
             } catch (e) {}
 
-            const res = await fetch(`${API_BASE}/config/delete/${encodeURIComponent(name)}?operator=${encodeURIComponent(operatorName)}`, {
+            const res = await authenticatedFetch(`${API_BASE}/config/delete/${encodeURIComponent(name)}?operator=${encodeURIComponent(operatorName)}`, {
                 method: 'DELETE'
             });
             const data = await res.json();
@@ -100,7 +109,7 @@ class DataStore {
     // --- Incidents API (Backend) ---
     async getIncidents() {
         try {
-            const res = await fetch(`${API_BASE}/incidents/all`);
+            const res = await authenticatedFetch(`${API_BASE}/incidents/all`);
             const data = await res.json();
             return data.success ? data.data : [];
         } catch (error) {
@@ -120,7 +129,7 @@ class DataStore {
                 }
             } catch (e) {}
 
-            const res = await fetch(`${API_BASE}/incidents/create`, {
+            const res = await authenticatedFetch(`${API_BASE}/incidents/create`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -148,7 +157,7 @@ class DataStore {
                 }
             } catch (e) {}
 
-            const res = await fetch(`${API_BASE}/incidents/update/${id}`, {
+            const res = await authenticatedFetch(`${API_BASE}/incidents/update/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -182,7 +191,7 @@ class DataStore {
                 }
             } catch (e) {}
 
-            const res = await fetch(`${API_BASE}/incidents/update/${id}`, {
+            const res = await authenticatedFetch(`${API_BASE}/incidents/update/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...updatedData, operator: operatorName })
@@ -206,7 +215,7 @@ class DataStore {
                 }
             } catch (e) {}
 
-            const res = await fetch(`${API_BASE}/incidents/delete/${id}?operator=${encodeURIComponent(operatorName)}`, {
+            const res = await authenticatedFetch(`${API_BASE}/incidents/delete/${id}?operator=${encodeURIComponent(operatorName)}`, {
                 method: 'DELETE'
             });
             const data = await res.json();
@@ -220,7 +229,7 @@ class DataStore {
     // --- Activity Log API (Backend) ---
     async getLogs() {
         try {
-            const res = await fetch(`${API_BASE}/incidents/logs`);
+            const res = await authenticatedFetch(`${API_BASE}/incidents/logs`);
             const data = await res.json();
             if (data.success) {
                 // Map the DB logs to frontend structure

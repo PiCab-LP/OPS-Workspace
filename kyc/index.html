@@ -835,7 +835,10 @@
 
         async function loadClients() {
             try {
-                const res = await fetch(`${API_BASE}/clients/all`);
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE}/clients/all`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
                 const data = await res.json();
                 allClientsData = data.data || [];
                 renderClients(allClientsData);
@@ -931,7 +934,11 @@
             btnConfirmDelete.textContent = "Eliminando...";
             
             try {
-                const res = await fetch(`${API_BASE}/clients/${id}`, { method: 'DELETE' });
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE}/clients/${id}`, { 
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
                 const data = await res.json();
                 if(data.success) {
                     showToast('Cliente eliminado correctamente', 'success');
@@ -1036,8 +1043,10 @@
             const method = kycId ? 'PUT' : 'POST';
 
             try {
+                const token = localStorage.getItem('token');
                 const res = await fetch(url, {
                     method: method,
+                    headers: { 'Authorization': `Bearer ${token}` },
                     body: formData
                 });
                 
