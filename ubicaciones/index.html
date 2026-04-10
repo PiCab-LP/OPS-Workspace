@@ -1,443 +1,524 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Control de Ubicaciones - Workspace</title>
-    <link rel="stylesheet" href="../style.css" />
-    <link rel="icon" type="image/png" href="../imgs/dashboard.png" />
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <style>
-      /* Pequeños ajustes para la tabla dentro de las tarjetas */
-      .turno-table th { padding: 12px; font-size: 11px; }
-      .turno-table td { padding: 12px; font-size: 13px; }
-      .role-badge { padding: 3px 8px; border-radius: 6px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
 
-      /* Grid de turnos */
-      .shifts-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
-        align-items: start;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Control de Ubicaciones - Workspace</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="icon" type="image/png" href="../imgs/dashboard.png" />
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <style>
+    /* Pequeños ajustes para la tabla dentro de las tarjetas */
+    .turno-table th {
+      padding: 12px;
+      font-size: 11px;
+    }
+
+    .turno-table td {
+      padding: 12px;
+      font-size: 13px;
+    }
+
+    .role-badge {
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    /* Grid de turnos */
+    .shifts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    /* Header de ubicaciones */
+    .ubicaciones-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 15px;
+    }
+
+    /* Formulario de asignación */
+    .assign-form {
+      background: var(--bg-card);
+      padding: 25px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      margin-bottom: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: flex-end;
+      justify-content: flex-start;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    /* ===== RESPONSIVE: Laptops pequeñas (≤1280px) ===== */
+    @media (max-width: 1280px) {
+      .turno-table th {
+        padding: 10px 8px;
+        font-size: 10px;
       }
 
-      /* Header de ubicaciones */
+      .turno-table td {
+        padding: 10px 8px;
+        font-size: 12px;
+      }
+    }
+
+    /* ===== RESPONSIVE: Tablets y pantallas medianas (≤1024px) ===== */
+    @media (max-width: 1024px) {
       .ubicaciones-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        gap: 15px;
-      }
-
-      /* Formulario de asignación */
-      .assign-form {
-        background: var(--bg-card);
-        padding: 25px;
-        border-radius: 16px;
-        border: 1px solid var(--border);
-        margin-bottom: 30px;
-        display: flex;
         flex-wrap: wrap;
-        gap: 15px;
-        align-items: flex-end;
-        justify-content: flex-start;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      }
-
-      /* ===== RESPONSIVE: Laptops pequeñas (≤1280px) ===== */
-      @media (max-width: 1280px) {
-        .turno-table th { padding: 10px 8px; font-size: 10px; }
-        .turno-table td { padding: 10px 8px; font-size: 12px; }
-      }
-
-      /* ===== RESPONSIVE: Tablets y pantallas medianas (≤1024px) ===== */
-      @media (max-width: 1024px) {
-        .ubicaciones-header {
-          flex-wrap: wrap;
-          justify-content: center;
-          text-align: center;
-          gap: 15px;
-        }
-
-        .shifts-grid {
-          grid-template-columns: 1fr 1fr;
-          gap: 15px;
-        }
-
-        .shifts-grid > div:last-child {
-          grid-column: 1 / -1;
-        }
-
-        .assign-form {
-          padding: 20px;
-          gap: 12px;
-        }
-
-        .turno-table th { padding: 8px 6px; font-size: 9px; }
-        .turno-table td { padding: 8px 6px; font-size: 11px; }
-      }
-
-      /* ===== RESPONSIVE: Tablets verticales (≤768px) ===== */
-      @media (max-width: 768px) {
-        .shifts-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .shifts-grid > div:last-child {
-          grid-column: auto;
-        }
-
-        .ubicaciones-header {
-          flex-direction: column;
-          align-items: stretch;
-          text-align: center;
-        }
-
-        .assign-form > div {
-          min-width: 100% !important;
-          flex: unset !important;
-          width: 100% !important;
-        }
-
-        .assign-form button {
-          width: 100% !important;
-        }
-      }
-      /* ===== CUSTOM MODAL ===== */
-      .loc-modal-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.5);
-        backdrop-filter: blur(6px);
-        z-index: 9999;
-        display: flex; align-items: center; justify-content: center;
-        animation: locModalFadeIn 0.25s ease;
-      }
-      @keyframes locModalFadeIn {
-        from { opacity: 0; backdrop-filter: blur(0); }
-        to { opacity: 1; backdrop-filter: blur(6px); }
-      }
-      .loc-modal-box {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        padding: 30px 35px;
-        max-width: 400px;
-        width: 90%;
-        text-align: center;
-        box-shadow: 0 25px 60px rgba(0,0,0,0.3);
-        animation: locModalSlideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      }
-      @keyframes locModalSlideUp {
-        from { opacity: 0; transform: translateY(30px) scale(0.95); }
-        to { opacity: 1; transform: translateY(0) scale(1); }
-      }
-      .loc-modal-icon {
-        font-size: 40px;
-        margin-bottom: 10px;
-      }
-      .loc-modal-title {
-        font-size: 18px;
-        font-weight: 800;
-        color: var(--text-primary);
-        margin-bottom: 8px;
-      }
-      .loc-modal-msg {
-        font-size: 14px;
-        color: var(--text-secondary);
-        margin-bottom: 25px;
-        line-height: 1.5;
-      }
-      .loc-modal-buttons {
-        display: flex;
-        gap: 12px;
         justify-content: center;
+        text-align: center;
+        gap: 15px;
       }
-      .loc-modal-btn {
-        padding: 10px 28px;
-        border-radius: 12px;
-        border: none;
-        font-weight: 700;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        width: auto;
-        margin: 0;
-      }
-      .loc-modal-btn:hover {
-        transform: translateY(-2px);
-      }
-      .loc-modal-btn-primary {
-        background: #5e6ad2;
-        color: white;
-        box-shadow: 0 4px 15px rgba(94, 106, 210, 0.35);
-      }
-      .loc-modal-btn-primary:hover {
-        background: #4f5bc3;
-        box-shadow: 0 6px 20px rgba(94, 106, 210, 0.45);
-      }
-      .loc-modal-btn-danger {
-        background: #e74c3c;
-        color: white;
-        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
-      }
-      .loc-modal-btn-danger:hover {
-        background: #c0392b;
-        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
-      }
-      .loc-modal-btn-cancel {
-        background: var(--bg-app);
-        color: var(--text-secondary);
-        border: 1px solid var(--border);
-      }
-      .loc-modal-btn-cancel:hover {
-        background: var(--border);
-      }
-    </style>
-  </head>
-  <body class="location-page">
-    <div id="particles-js"></div>
-    <div class="container" style="max-width: 95%; margin-top: 40px; position: relative; z-index: 1;">
-      
-      <div style="max-width: 1400px; margin: 0 auto 30px auto">
-        <header class="ubicaciones-header">
-          <div>
-            <h1 style="margin: 0; color: var(--text-primary)">Control de Ubicaciones</h1>
-            <p style="color: var(--text-secondary)">Gestión de estaciones y descansos por fecha</p>
-          </div>
-          
-          <div style="display: flex; align-items: center; gap: 15px; background: var(--bg-card); padding: 10px 20px; border-radius: 12px; border: 1px solid var(--border);">
-             <label style="font-weight: 600; font-size: 14px; color: var(--text-primary);">Fecha Operativa:</label>
-             <input type="date" id="masterDate" style="width: auto; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--accent); background: var(--bg-app); color: var(--text-primary); font-weight: bold; margin: 0; outline: none; cursor: pointer;">
-          </div>
 
-          <button onclick="window.location.href = '/'" class="btn-primary" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); width: auto; padding: 10px 20px;">
-            Volver al Hub
+      .shifts-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+
+      .shifts-grid>div:last-child {
+        grid-column: 1 / -1;
+      }
+
+      .assign-form {
+        padding: 20px;
+        gap: 12px;
+      }
+
+      .turno-table th {
+        padding: 8px 6px;
+        font-size: 9px;
+      }
+
+      .turno-table td {
+        padding: 8px 6px;
+        font-size: 11px;
+      }
+    }
+
+    /* ===== RESPONSIVE: Tablets verticales (≤768px) ===== */
+    @media (max-width: 768px) {
+      .shifts-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .shifts-grid>div:last-child {
+        grid-column: auto;
+      }
+
+      .ubicaciones-header {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+      }
+
+      .assign-form>div {
+        min-width: 100% !important;
+        flex: unset !important;
+        width: 100% !important;
+      }
+
+      .assign-form button {
+        width: 100% !important;
+      }
+    }
+
+    /* ===== CUSTOM MODAL ===== */
+    .loc-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(6px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: locModalFadeIn 0.25s ease;
+    }
+
+    @keyframes locModalFadeIn {
+      from {
+        opacity: 0;
+        backdrop-filter: blur(0);
+      }
+
+      to {
+        opacity: 1;
+        backdrop-filter: blur(6px);
+      }
+    }
+
+    .loc-modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 30px 35px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+      animation: locModalSlideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes locModalSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .loc-modal-icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    .loc-modal-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .loc-modal-msg {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    .loc-modal-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .loc-modal-btn {
+      padding: 10px 28px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: auto;
+      margin: 0;
+    }
+
+    .loc-modal-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .loc-modal-btn-primary {
+      background: #5e6ad2;
+      color: white;
+      box-shadow: 0 4px 15px rgba(94, 106, 210, 0.35);
+    }
+
+    .loc-modal-btn-primary:hover {
+      background: #4f5bc3;
+      box-shadow: 0 6px 20px rgba(94, 106, 210, 0.45);
+    }
+
+    .loc-modal-btn-danger {
+      background: #e74c3c;
+      color: white;
+      box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    .loc-modal-btn-danger:hover {
+      background: #c0392b;
+      box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+    }
+
+    .loc-modal-btn-cancel {
+      background: var(--bg-app);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .loc-modal-btn-cancel:hover {
+      background: var(--border);
+    }
+  </style>
+</head>
+
+<body class="location-page">
+  <div id="particles-js"></div>
+  <div class="container" style="max-width: 95%; margin-top: 40px; position: relative; z-index: 1;">
+
+    <div style="max-width: 1400px; margin: 0 auto 30px auto">
+      <header class="ubicaciones-header">
+        <div>
+          <h1 style="margin: 0; color: var(--text-primary)">Control de Ubicaciones</h1>
+          <p style="color: var(--text-secondary)">Gestión de estaciones y descansos por fecha</p>
+        </div>
+
+        <div
+          style="display: flex; align-items: center; gap: 15px; background: var(--bg-card); padding: 10px 20px; border-radius: 12px; border: 1px solid var(--border);">
+          <label style="font-weight: 600; font-size: 14px; color: var(--text-primary);">Fecha Operativa:</label>
+          <input type="date" id="masterDate"
+            style="width: auto; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--accent); background: var(--bg-app); color: var(--text-primary); font-weight: bold; margin: 0; outline: none; cursor: pointer;">
+        </div>
+
+        <button onclick="window.location.href = '/'" class="btn-primary"
+          style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); width: auto; padding: 10px 20px;">
+          Volver al Hub
+        </button>
+      </header>
+
+      <div id="assignForm" class="assign-form">
+        <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column;">
+          <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Operador
+            disponible:</label>
+          <select id="locOperatorSelect"
+            style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-app); color: var(--text-primary); height: 48px; margin: 0;"></select>
+        </div>
+
+        <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column;">
+          <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Turno:</label>
+          <select id="locShiftSelect"
+            style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-app); color: var(--text-primary); height: 48px; margin: 0;">
+            <option value="morning">Mañana (7:00 - 14:30)</option>
+            <option value="afternoon">Tarde (14:30 - 22:00)</option>
+            <option value="night">Noche (22:00 - 7:00)</option>
+          </select>
+        </div>
+
+        <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column">
+          <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Estación:</label>
+          <select id="locStationInput"
+            style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-app); color: var(--text-primary); height: 48px; margin: 0;">
+            <option value="">Seleccionar estación...</option>
+            <option value="Supervisor">Supervisor</option>
+            <option value="Operador Wise Gang">Operador Wise Gang</option>
+            <option value="Operador Licencias">Operador Licencias</option>
+            <option value="Agente Licencias">Agente Licencias</option>
+            <option value="Agentes Wysaro">Agentes Wysaro</option>
+            <option value="Analistas Licencias">Analistas Licencias</option>
+            <option value="Analista Wise Gang">Analista Wise Gang</option>
+            <option value="Cajero">Cajero</option>
+          </select>
+        </div>
+
+        <div style="display: flex; flex-direction: column">
+          <button onclick="asignarEstacion()" class="btn-primary"
+            style="width: auto; padding: 12px 30px; height: 48px; margin: 0">
+            Asignar Estación
           </button>
-        </header>
-
-        <div id="assignForm" class="assign-form">
-          <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column;">
-            <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Operador disponible:</label>
-            <select id="locOperatorSelect" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-app); color: var(--text-primary); height: 48px; margin: 0;"></select>
-          </div>
-
-          <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column;">
-            <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Turno:</label>
-            <select id="locShiftSelect" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-app); color: var(--text-primary); height: 48px; margin: 0;">
-              <option value="morning">Mañana (7:00 - 14:30)</option>
-              <option value="afternoon">Tarde (14:30 - 22:00)</option>
-              <option value="night">Noche (22:00 - 7:00)</option>
-            </select>
-          </div>
-
-          <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column">
-            <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Estación:</label>
-            <select id="locStationInput" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-app); color: var(--text-primary); height: 48px; margin: 0;">
-              <option value="">Seleccionar estación...</option>
-              <option value="Supervisor">Supervisor</option>
-              <option value="Operador Wise Gang">Operador Wise Gang</option>
-              <option value="Operador Licencias">Operador Licencias</option>
-              <option value="Agente Licencias">Agente Licencias</option>
-              <option value="Agentes Wysaro">Agentes Wysaro</option>
-              <option value="Analistas Licencias">Analistas Licencias</option>
-              <option value="Analista Wise Gang">Analista Wise Gang</option>
-            </select>
-          </div>
-
-          <div style="display: flex; flex-direction: column">
-            <button onclick="asignarEstacion()" class="btn-primary" style="width: auto; padding: 12px 30px; height: 48px; margin: 0">
-              Asignar Estación
-            </button>
-          </div>
         </div>
-        </div>
-
-        <div class="shifts-grid">
-            
-            <div style="background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <div style="background: rgba(94, 106, 210, 0.1); padding: 15px; border-bottom: 2px solid rgba(94, 106, 210, 0.3);">
-                    <h3 style="margin: 0; color: #5e6ad2; font-size: 16px; text-align: center;">Turno Mañana</h3>
-                </div>
-                <div>
-                    <table class="turno-table" style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <th>Estación</th>
-                                <th>Operador</th>
-                                <th style="text-align: center;">Salida</th>
-                                <th style="text-align: center;">Regreso</th>
-                                <th style="text-align: right;">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="board-morning"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div style="background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <div style="background: rgba(243, 156, 18, 0.1); padding: 15px; border-bottom: 2px solid rgba(243, 156, 18, 0.3);">
-                    <h3 style="margin: 0; color: #f39c12; font-size: 16px; text-align: center;">Turno Tarde</h3>
-                </div>
-                <div>
-                    <table class="turno-table" style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <th>Estación</th>
-                                <th>Operador</th>
-                                <th style="text-align: center;">Salida</th>
-                                <th style="text-align: center;">Regreso</th>
-                                <th style="text-align: right;">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="board-afternoon"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div style="background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <div style="background: rgba(46, 204, 113, 0.1); padding: 15px; border-bottom: 2px solid rgba(46, 204, 113, 0.3);">
-                    <h3 style="margin: 0; color: #2ecc71; font-size: 16px; text-align: center;">Turno Noche</h3>
-                </div>
-                <div>
-                    <table class="turno-table" style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <th>Estación</th>
-                                <th>Operador</th>
-                                <th style="text-align: center;">Salida</th>
-                                <th style="text-align: center;">Regreso</th>
-                                <th style="text-align: right;">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="board-night"></tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div>
-    </div>
-  </div>
-
-    <!-- Custom Modal -->
-    <div id="locModal" class="loc-modal-overlay" style="display: none;">
-      <div class="loc-modal-box">
-        <div class="loc-modal-icon" id="locModalIcon">⚠️</div>
-        <div class="loc-modal-title" id="locModalTitle">Atención</div>
-        <div class="loc-modal-msg" id="locModalMsg"></div>
-        <div class="loc-modal-buttons" id="locModalButtons"></div>
       </div>
     </div>
 
-    <script>
-      const API_BASE = "https://general-cashouts-production.up.railway.app/api";
-      let token = localStorage.getItem("token");
-      let user = JSON.parse(localStorage.getItem("user") || "null");
-      let usuariosData = []; 
+    <div class="shifts-grid">
 
-      if (!token || token === "null") window.location.href = "/";
-      if (!user || user.role !== "supervisor") window.location.href = "/";
+      <div
+        style="background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        <div
+          style="background: rgba(94, 106, 210, 0.1); padding: 15px; border-bottom: 2px solid rgba(94, 106, 210, 0.3);">
+          <h3 style="margin: 0; color: #5e6ad2; font-size: 16px; text-align: center;">Turno Mañana</h3>
+        </div>
+        <div>
+          <table class="turno-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--border);">
+                <th>Estación</th>
+                <th>Operador</th>
+                <th style="text-align: center;">Salida</th>
+                <th style="text-align: center;">Regreso</th>
+                <th style="text-align: right;">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="board-morning"></tbody>
+          </table>
+        </div>
+      </div>
 
-      // ===== CUSTOM MODAL FUNCTIONS =====
-      function closeModal() {
-        document.getElementById('locModal').style.display = 'none';
-      }
+      <div
+        style="background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        <div
+          style="background: rgba(243, 156, 18, 0.1); padding: 15px; border-bottom: 2px solid rgba(243, 156, 18, 0.3);">
+          <h3 style="margin: 0; color: #f39c12; font-size: 16px; text-align: center;">Turno Tarde</h3>
+        </div>
+        <div>
+          <table class="turno-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--border);">
+                <th>Estación</th>
+                <th>Operador</th>
+                <th style="text-align: center;">Salida</th>
+                <th style="text-align: center;">Regreso</th>
+                <th style="text-align: right;">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="board-afternoon"></tbody>
+          </table>
+        </div>
+      </div>
 
-      function showModal(icon, title, msg) {
-        document.getElementById('locModalIcon').textContent = icon;
-        document.getElementById('locModalTitle').textContent = title;
-        document.getElementById('locModalMsg').textContent = msg;
-        document.getElementById('locModalButtons').innerHTML = `
+      <div
+        style="background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        <div
+          style="background: rgba(46, 204, 113, 0.1); padding: 15px; border-bottom: 2px solid rgba(46, 204, 113, 0.3);">
+          <h3 style="margin: 0; color: #2ecc71; font-size: 16px; text-align: center;">Turno Noche</h3>
+        </div>
+        <div>
+          <table class="turno-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--border);">
+                <th>Estación</th>
+                <th>Operador</th>
+                <th style="text-align: center;">Salida</th>
+                <th style="text-align: center;">Regreso</th>
+                <th style="text-align: right;">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="board-night"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+
+  <!-- Custom Modal -->
+  <div id="locModal" class="loc-modal-overlay" style="display: none;">
+    <div class="loc-modal-box">
+      <div class="loc-modal-icon" id="locModalIcon">⚠️</div>
+      <div class="loc-modal-title" id="locModalTitle">Atención</div>
+      <div class="loc-modal-msg" id="locModalMsg"></div>
+      <div class="loc-modal-buttons" id="locModalButtons"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "https://general-cashouts-production.up.railway.app/api";
+    let token = localStorage.getItem("token");
+    let user = JSON.parse(localStorage.getItem("user") || "null");
+    let usuariosData = [];
+
+    if (!token || token === "null") window.location.href = "/";
+    if (!user || user.role !== "supervisor") window.location.href = "/";
+
+    // ===== CUSTOM MODAL FUNCTIONS =====
+    function closeModal() {
+      document.getElementById('locModal').style.display = 'none';
+    }
+
+    function showModal(icon, title, msg) {
+      document.getElementById('locModalIcon').textContent = icon;
+      document.getElementById('locModalTitle').textContent = title;
+      document.getElementById('locModalMsg').textContent = msg;
+      document.getElementById('locModalButtons').innerHTML = `
           <button class="loc-modal-btn loc-modal-btn-primary" onclick="closeModal()">Aceptar</button>
         `;
-        document.getElementById('locModal').style.display = 'flex';
-      }
+      document.getElementById('locModal').style.display = 'flex';
+    }
 
-      let _confirmCallback = null;
+    let _confirmCallback = null;
 
-      function showConfirm(icon, title, msg, onConfirm) {
-        _confirmCallback = onConfirm;
-        document.getElementById('locModalIcon').textContent = icon;
-        document.getElementById('locModalTitle').textContent = title;
-        document.getElementById('locModalMsg').textContent = msg;
-        document.getElementById('locModalButtons').innerHTML = `
+    function showConfirm(icon, title, msg, onConfirm) {
+      _confirmCallback = onConfirm;
+      document.getElementById('locModalIcon').textContent = icon;
+      document.getElementById('locModalTitle').textContent = title;
+      document.getElementById('locModalMsg').textContent = msg;
+      document.getElementById('locModalButtons').innerHTML = `
           <button class="loc-modal-btn loc-modal-btn-cancel" onclick="closeModal()">Cancelar</button>
           <button class="loc-modal-btn loc-modal-btn-danger" onclick="confirmarAccion()">Confirmar</button>
         `;
-        document.getElementById('locModal').style.display = 'flex';
-      }
+      document.getElementById('locModal').style.display = 'flex';
+    }
 
-      async function confirmarAccion() {
-        closeModal();
-        if (_confirmCallback) {
-          await _confirmCallback();
-          _confirmCallback = null;
+    async function confirmarAccion() {
+      closeModal();
+      if (_confirmCallback) {
+        await _confirmCallback();
+        _confirmCallback = null;
+      }
+    }
+
+    // 1. Configurar Fecha Inicial (HOY)
+    const masterDate = document.getElementById('masterDate');
+    let hoy = new Date();
+    const offset = hoy.getTimezoneOffset();
+    hoy = new Date(hoy.getTime() - (offset * 60 * 1000));
+    masterDate.value = hoy.toISOString().split('T')[0];
+
+    // Escuchar cambios
+    masterDate.addEventListener('change', cargarUbicaciones);
+
+    async function apiFetch(endpoint, options = {}) {
+      const headers = { Accept: "application/json", Authorization: `Bearer ${token}`, ...options.headers };
+      if (options.body) headers["Content-Type"] = "application/json";
+      const response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+      if (response.status === 401 || response.status === 403) {
+        localStorage.clear();
+        window.location.href = "/";
+        throw new Error("Sesión expirada");
+      }
+      return response;
+    }
+
+    async function cargarUsuariosParaSelect() {
+      try {
+        const res = await apiFetch(`/users`);
+        const json = await res.json();
+        if (json.data && Array.isArray(json.data)) {
+          usuariosData = json.data;
+          const select = document.getElementById("locOperatorSelect");
+          select.innerHTML = '<option value="">Seleccionar operador...</option>' + json.data.map((u) => `<option value="${u.fullName}">${u.fullName}</option>`).join("");
         }
-      }
+      } catch (error) { console.error("Error usuarios:", error); }
+    }
 
-      // 1. Configurar Fecha Inicial (HOY)
-      const masterDate = document.getElementById('masterDate');
-      let hoy = new Date();
-      const offset = hoy.getTimezoneOffset();
-      hoy = new Date(hoy.getTime() - (offset*60*1000));
-      masterDate.value = hoy.toISOString().split('T')[0];
+    async function cargarUbicaciones() {
+      try {
+        const fechaSeleccionada = masterDate.value;
+        const res = await apiFetch(`/locations?date=${fechaSeleccionada}`);
+        const json = await res.json();
+        if (json.data) renderizarTableros(json.data);
+      } catch (error) { console.error("Error ubicaciones:", error); }
+    }
 
-      // Escuchar cambios
-      masterDate.addEventListener('change', cargarUbicaciones);
+    function renderizarTableros(data) {
+      const mBoard = document.getElementById("board-morning");
+      const aBoard = document.getElementById("board-afternoon");
+      const nBoard = document.getElementById("board-night");
 
-      async function apiFetch(endpoint, options = {}) {
-        const headers = { Accept: "application/json", Authorization: `Bearer ${token}`, ...options.headers };
-        if (options.body) headers["Content-Type"] = "application/json";
-        const response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
-        if (response.status === 401 || response.status === 403) {
-          localStorage.clear();
-          window.location.href = "/";
-          throw new Error("Sesión expirada");
-        }
-        return response;
-      }
+      const crearFilaTabla = (loc) => {
+        const enBreak = loc.status === "on_break";
+        const hInicio = loc.breakStart ? loc.breakStart.split(" ")[1] : "--:--";
+        const hFin = loc.breakEnd ? loc.breakEnd.split(" ")[1] : "--:--";
 
-      async function cargarUsuariosParaSelect() {
-        try {
-          const res = await apiFetch(`/users`);
-          const json = await res.json();
-          if (json.data && Array.isArray(json.data)) {
-            usuariosData = json.data;
-            const select = document.getElementById("locOperatorSelect");
-            select.innerHTML = '<option value="">Seleccionar operador...</option>' + json.data.map((u) => `<option value="${u.fullName}">${u.fullName}</option>`).join("");
-          }
-        } catch (error) { console.error("Error usuarios:", error); }
-      }
+        const usuario = usuariosData.find((u) => u.fullName === loc.operatorName);
+        const rol = usuario ? usuario.role : "analista";
 
-      async function cargarUbicaciones() {
-        try {
-          const fechaSeleccionada = masterDate.value;
-          const res = await apiFetch(`/locations?date=${fechaSeleccionada}`);
-          const json = await res.json();
-          if (json.data) renderizarTableros(json.data);
-        } catch (error) { console.error("Error ubicaciones:", error); }
-      }
+        let bgBadge = "rgba(255,255,255,0.1)"; let colBadge = "#ccc";
+        if (rol === "supervisor") { bgBadge = "rgba(94, 106, 210, 0.15)"; colBadge = "#6f7bf0"; }
+        else if (rol === "chats") { bgBadge = "rgba(243, 156, 18, 0.15)"; colBadge = "#f39c12"; }
+        else if (rol === "analista") { bgBadge = "rgba(46, 204, 113, 0.15)"; colBadge = "#2ecc71"; }
+        else if (rol === "asistente") { bgBadge = "rgba(52, 152, 219, 0.15)"; colBadge = "#3498db"; }
 
-      function renderizarTableros(data) {
-        const mBoard = document.getElementById("board-morning");
-        const aBoard = document.getElementById("board-afternoon");
-        const nBoard = document.getElementById("board-night");
-
-        const crearFilaTabla = (loc) => {
-          const enBreak = loc.status === "on_break";
-          const hInicio = loc.breakStart ? loc.breakStart.split(" ")[1] : "--:--";
-          const hFin = loc.breakEnd ? loc.breakEnd.split(" ")[1] : "--:--";
-
-          const usuario = usuariosData.find((u) => u.fullName === loc.operatorName);
-          const rol = usuario ? usuario.role : "analista";
-
-          let bgBadge = "rgba(255,255,255,0.1)"; let colBadge = "#ccc";
-          if (rol === "supervisor") { bgBadge = "rgba(94, 106, 210, 0.15)"; colBadge = "#6f7bf0"; } 
-          else if (rol === "chats") { bgBadge = "rgba(243, 156, 18, 0.15)"; colBadge = "#f39c12"; } 
-          else if (rol === "analista") { bgBadge = "rgba(46, 204, 113, 0.15)"; colBadge = "#2ecc71"; } 
-          else if (rol === "asistente") { bgBadge = "rgba(52, 152, 219, 0.15)"; colBadge = "#3498db"; }
-
-          return `
+        return `
             <tr style="border-bottom: 1px solid var(--border);">
                 <td style="font-weight: 800; color: var(--text-primary); max-width: 180px; word-break: break-word;">${loc.station}</td>
                 <td>
@@ -448,94 +529,95 @@
                 <td style="text-align: center; font-family: monospace; color: var(--text-primary); font-size: 14px;">${hFin}</td>
                 <td style="text-align: right; white-space: nowrap;">
                     ${!loc.breakStart
-                        ? `<button onclick="controlBreak('${loc._id}', 'start')" style="background:#f39c12; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-weight:bold; font-size: 10px; transition:0.3s;">Break</button>`
-                        : !loc.breakEnd
-                        ? `<button onclick="controlBreak('${loc._id}', 'end')" style="background:#27ae60; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-weight:bold; font-size: 10px; transition:0.3s;">Volver</button>`
-                        : '<span style="color:#27ae60; font-weight:bold; font-size: 11px;">Listo</span>'
-                    }
+            ? `<button onclick="controlBreak('${loc._id}', 'start')" style="background:#f39c12; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-weight:bold; font-size: 10px; transition:0.3s;">Break</button>`
+            : !loc.breakEnd
+              ? `<button onclick="controlBreak('${loc._id}', 'end')" style="background:#27ae60; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-weight:bold; font-size: 10px; transition:0.3s;">Volver</button>`
+              : '<span style="color:#27ae60; font-weight:bold; font-size: 11px;">Listo</span>'
+          }
                     <button onclick="liberarEstacion('${loc._id}')" style="background:transparent; border:none; color:var(--danger); cursor:pointer; font-size:14px; margin-left: 5px;" title="Eliminar / Liberar">🗑️</button>
                 </td>
             </tr>
           `;
-        };
+      };
 
-        const dMorning = data.filter((d) => d.shift === "morning");
-        const dAfternoon = data.filter((d) => d.shift === "afternoon");
-        const dNight = data.filter((d) => d.shift === "night");
+      const dMorning = data.filter((d) => d.shift === "morning");
+      const dAfternoon = data.filter((d) => d.shift === "afternoon");
+      const dNight = data.filter((d) => d.shift === "night");
 
-        mBoard.innerHTML = dMorning.length ? dMorning.map(crearFilaTabla).join("") : '<tr><td colspan="5" style="text-align:center; opacity:0.5; padding: 20px;">Sin asignaciones</td></tr>';
-        aBoard.innerHTML = dAfternoon.length ? dAfternoon.map(crearFilaTabla).join("") : '<tr><td colspan="5" style="text-align:center; opacity:0.5; padding: 20px;">Sin asignaciones</td></tr>';
-        nBoard.innerHTML = dNight.length ? dNight.map(crearFilaTabla).join("") : '<tr><td colspan="5" style="text-align:center; opacity:0.5; padding: 20px;">Sin asignaciones</td></tr>';
-      }
+      mBoard.innerHTML = dMorning.length ? dMorning.map(crearFilaTabla).join("") : '<tr><td colspan="5" style="text-align:center; opacity:0.5; padding: 20px;">Sin asignaciones</td></tr>';
+      aBoard.innerHTML = dAfternoon.length ? dAfternoon.map(crearFilaTabla).join("") : '<tr><td colspan="5" style="text-align:center; opacity:0.5; padding: 20px;">Sin asignaciones</td></tr>';
+      nBoard.innerHTML = dNight.length ? dNight.map(crearFilaTabla).join("") : '<tr><td colspan="5" style="text-align:center; opacity:0.5; padding: 20px;">Sin asignaciones</td></tr>';
+    }
 
-      async function asignarEstacion() {
-        const operatorName = document.getElementById("locOperatorSelect").value;
-        const shift = document.getElementById("locShiftSelect").value;
-        const station = document.getElementById("locStationInput").value.trim();
-        const date = masterDate.value; 
+    async function asignarEstacion() {
+      const operatorName = document.getElementById("locOperatorSelect").value;
+      const shift = document.getElementById("locShiftSelect").value;
+      const station = document.getElementById("locStationInput").value.trim();
+      const date = masterDate.value;
 
-        if (!operatorName || !station || !shift) return showModal('⚠️', 'Campos incompletos', 'Por favor completa todos los campos antes de asignar.');
+      if (!operatorName || !station || !shift) return showModal('⚠️', 'Campos incompletos', 'Por favor completa todos los campos antes de asignar.');
 
+      try {
+        await apiFetch(`/locations`, {
+          method: "POST",
+          body: JSON.stringify({ operatorName, station, shift, date }),
+        });
+        document.getElementById("locStationInput").selectedIndex = 0;
+        cargarUbicaciones();
+      } catch (e) { showModal('❌', 'Error', 'No se pudo asignar la estación. Intenta de nuevo.'); }
+    }
+
+    async function controlBreak(id, action) {
+      try {
+        await apiFetch(`/locations/${id}/break`, {
+          method: "PATCH",
+          body: JSON.stringify({ action }),
+        });
+        cargarUbicaciones();
+      } catch (e) { console.error("Error cambiando estado de break"); }
+    }
+
+    async function liberarEstacion(id) {
+      showConfirm('🗑️', '¿Eliminar entrada?', '¿Seguro que deseas eliminar esta entrada?', async () => {
         try {
-          await apiFetch(`/locations`, {
-            method: "POST",
-            body: JSON.stringify({ operatorName, station, shift, date }),
-          });
-          document.getElementById("locStationInput").selectedIndex = 0;
-          cargarUbicaciones();
-        } catch (e) { showModal('❌', 'Error', 'No se pudo asignar la estación. Intenta de nuevo.'); }
-      }
-
-      async function controlBreak(id, action) {
-        try {
-          await apiFetch(`/locations/${id}/break`, {
-            method: "PATCH",
-            body: JSON.stringify({ action }),
-          });
-          cargarUbicaciones();
-        } catch (e) { console.error("Error cambiando estado de break"); }
-      }
-
-      async function liberarEstacion(id) {
-        showConfirm('🗑️', '¿Eliminar entrada?', '¿Seguro que deseas eliminar esta entrada?', async () => {
-          try {
-            const res = await apiFetch(`/locations/${id}`, { method: "DELETE" });
-            console.log("liberarEstacion response status:", res.status);
-            const json = await res.json().catch(() => null);
-            console.log("liberarEstacion response body:", json);
-            if (res.ok) {
-              await cargarUbicaciones();
-            } else {
-              showModal('❌', 'Error', `No se pudo eliminar la entrada (${res.status}).`);
-            }
-          } catch (e) { 
-            console.error("Error liberando estación:", e);
-            showModal('❌', 'Error', 'Error al intentar eliminar la entrada.');
+          const res = await apiFetch(`/locations/${id}`, { method: "DELETE" });
+          console.log("liberarEstacion response status:", res.status);
+          const json = await res.json().catch(() => null);
+          console.log("liberarEstacion response body:", json);
+          if (res.ok) {
+            await cargarUbicaciones();
+          } else {
+            showModal('❌', 'Error', `No se pudo eliminar la entrada (${res.status}).`);
           }
-        });
-      }
+        } catch (e) {
+          console.error("Error liberando estación:", e);
+          showModal('❌', 'Error', 'Error al intentar eliminar la entrada.');
+        }
+      });
+    }
 
-      async function start() {
-        await cargarUsuariosParaSelect(); 
-        await cargarUbicaciones(); 
-      }
+    async function start() {
+      await cargarUsuariosParaSelect();
+      await cargarUbicaciones();
+    }
 
-      start();
-      setInterval(cargarUbicaciones, 30000); 
+    start();
+    setInterval(cargarUbicaciones, 30000);
 
-      function aplicarTema() {
-        const savedTheme = localStorage.getItem("workspaceTheme");
-        if (savedTheme === "light") document.body.classList.add("light-mode");
-      }
-      aplicarTema();
+    function aplicarTema() {
+      const savedTheme = localStorage.getItem("workspaceTheme");
+      if (savedTheme === "light") document.body.classList.add("light-mode");
+    }
+    aplicarTema();
 
-      if (typeof particlesJS !== "undefined") {
-        particlesJS("particles-js", {
-          particles: { number: { value: 60, density: { enable: true, value_area: 800 } }, color: { value: "#5e6ad2" }, shape: { type: "circle" }, opacity: { value: 0.3, random: false }, size: { value: 3, random: true }, line_linked: { enable: true, distance: 150, color: "#5e6ad2", opacity: 0.2, width: 1 }, move: { enable: true, speed: 1.5, direction: "none", random: false, straight: false, out_mode: "out", bounce: false } },
-          interactivity: { detect_on: "window", events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" }, resize: true }, modes: { grab: { distance: 200, line_linked: { opacity: 0.6 } }, push: { particles_nb: 4 } } },
-          retina_detect: true,
-        });
-      }
-    </script>
-  </body>
+    if (typeof particlesJS !== "undefined") {
+      particlesJS("particles-js", {
+        particles: { number: { value: 60, density: { enable: true, value_area: 800 } }, color: { value: "#5e6ad2" }, shape: { type: "circle" }, opacity: { value: 0.3, random: false }, size: { value: 3, random: true }, line_linked: { enable: true, distance: 150, color: "#5e6ad2", opacity: 0.2, width: 1 }, move: { enable: true, speed: 1.5, direction: "none", random: false, straight: false, out_mode: "out", bounce: false } },
+        interactivity: { detect_on: "window", events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" }, resize: true }, modes: { grab: { distance: 200, line_linked: { opacity: 0.6 } }, push: { particles_nb: 4 } } },
+        retina_detect: true,
+      });
+    }
+  </script>
+</body>
+
 </html>
