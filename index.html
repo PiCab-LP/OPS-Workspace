@@ -7,6 +7,8 @@
     <title>OPS Workspace</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" type="image/png" href="./imgs/dashboard.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <style>
         /* === AJUSTES DEL DASHBOARD Y MENU DESPLEGABLE === */
         #dashboard-view {
@@ -247,6 +249,28 @@
             </div>
 
             <div style="display: flex; align-items: center; gap: 15px">
+
+                <div class="notification-menu" style="position: relative; cursor: pointer;">
+                    <div id="notif-trigger" onclick="toggleNotifDropdown()">
+                        <i class="fas fa-bell" style="font-size: 20px; color: var(--text-secondary);"></i>
+                        <span id="notif-badge"
+                            style="display: none; position: absolute; top: -8px; right: -8px; background: var(--danger); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: bold; border: 2px solid var(--bg-card);">0</span>
+                    </div>
+
+                    <div id="notif-dropdown" class="profile-dropdown"
+                        style="width: 300px; right: 0; top: 120%; padding: 0; overflow: hidden; display: none; flex-direction: column;">
+                        <div
+                            style="padding: 12px; font-weight: bold; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.02); font-size: 14px; color: var(--text-primary);">
+                            Notificaciones Pendientes
+                        </div>
+                        <div id="notif-items-container" style="max-height: 300px; overflow-y: auto;">
+                            <p
+                                style="padding: 20px; text-align: center; color: var(--text-secondary); font-size: 13px;">
+                                No hay firmas pendientes</p>
+                        </div>
+                    </div>
+                </div>
+
                 <label class="theme-switch" title="Cambiar Tema">
                     <input type="checkbox" class="theme-checkbox" onchange="toggleTheme()" />
                     <span class="slider">
@@ -257,57 +281,38 @@
 
                 <div class="profile-menu">
                     <div class="profile-trigger" id="profileTrigger" onclick="toggleProfileMenu()">
-                        <img src="./imgs/user (1).png" alt="Perfil" style="
-                  width: 24px;
-                  height: 24px;
-                  border-radius: 50%;
-                  object-fit: cover;
-                " />
-                        <span id="triggerName" style="
-                  font-weight: 600;
-                  font-size: 14px;
-                  color: var(--text-primary);
-                ">Cargando...</span>
+                        <img src="./imgs/user (1).png" alt="Perfil"
+                            style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" />
+                        <span id="triggerName"
+                            style="font-weight: 600; font-size: 14px; color: var(--text-primary);">Cargando...</span>
                         <span style="font-size: 10px; opacity: 0.5">▼</span>
                     </div>
 
                     <div class="profile-dropdown" id="profileDropdown">
                         <div class="dropdown-header">
                             <div id="profileFullName" style="font-weight: bold; font-size: 16px; margin-bottom: 4px">
-                                Nombre
+                                Nombre</div>
+                            <div id="profileUsername"
+                                style="color: var(--text-secondary); font-size: 13px; margin-bottom: 10px;">@usuario
                             </div>
-                            <div id="profileUsername" style="
-                    color: var(--text-secondary);
-                    font-size: 13px;
-                    margin-bottom: 10px;
-                  ">
-                                @usuario
-                            </div>
-                            <span class="badge" id="profileRole" style="
-                    font-size: 11px;
-                    padding: 4px 10px;
-                    border-radius: 12px;
-                    font-weight: 700;
-                    letter-spacing: 0.5px;
-                  ">ROL</span>
+                            <span class="badge" id="profileRole"
+                                style="font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 700; letter-spacing: 0.5px;">ROL</span>
                         </div>
 
-                        <button class="btn-logout" onclick="logout()">
-                            Cerrar Sesión
+                        <button id="btnOpenSignature" onclick="openSignatureModal()"
+                            style="width: 100%; text-align: center; background: transparent; color: var(--text-primary); border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-bottom: 10px; transition: 0.2s; display: none;">
+                            ✍️ Configurar Firma
                         </button>
+
+                        <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
                     </div>
                 </div>
             </div>
         </div>
+
         <div style="margin-top: 40px; margin-bottom: 10px">
-            <h1 style="
-            margin: 0;
-            font-size: 28px;
-            color: var(--text-primary);
-            font-weight: 700;
-          ">
-                Hola de nuevo,
-                <span id="welcomeName" style="color: #5e6ad2">...</span>!
+            <h1 style="margin: 0; font-size: 28px; color: var(--text-primary); font-weight: 700;">
+                Hola de nuevo, <span id="welcomeName" style="color: #5e6ad2">...</span>!
             </h1>
             <p style="margin-top: 5px; color: var(--text-secondary); font-size: 15px">
                 ¿Qué haremos el día de hoy?
@@ -389,6 +394,15 @@
                 <h3 class="app-title">Manage Team</h3>
                 <p class="app-desc">
                     Gestión de equipos.
+                </p>
+            </a>
+
+            <a href="/incidencias/" class="app-card" id="card-operational-errors">
+                <img src="./imgs/incidencias.png" alt="Operational Errors"
+                    style="width: 40px; height: 40px; object-fit: contain" />
+                <h3 class="app-title">Errores operacionales e incidencias</h3>
+                <p class="app-desc">
+                    Emisión de informes para los operadores.
                 </p>
             </a>
 
@@ -556,6 +570,127 @@
             </div>
         </div>
     </div>
+
+    <div id="signatureModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 9999; justify-content: center; align-items: center;">
+        <div
+            style="background: var(--bg-card); padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 100%; max-width: 500px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); text-align: center; position: relative;">
+
+            <button onclick="closeSignatureModal()"
+                style="position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: var(--text-secondary); font-size: 18px; cursor: pointer; padding: 5px;">✖</button>
+
+            <h3 style="margin-top: 0; margin-bottom: 5px; color: var(--text-primary); font-size: 22px;">Mi Firma Maestra
+            </h3>
+            <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 20px;">Dibuja tu firma. Esta se
+                adjuntará automáticamente a los reportes que emitas.</p>
+
+            <div
+                style="background: #ffffff; border: 2px dashed #ccc; border-radius: 8px; margin-bottom: 20px; overflow: hidden; touch-action: none;">
+                <canvas id="signature-canvas" width="450" height="200"
+                    style="cursor: crosshair; display: block; width: 100%; touch-action: none;"></canvas>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button onclick="clearCanvas()"
+                    style="flex: 1; padding: 10px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); cursor: pointer; transition: 0.2s;">Limpiar</button>
+                <button onclick="saveSignature()" id="btnSaveSign" class="btn-primary"
+                    style="flex: 2; padding: 10px; border-radius: 8px;">Guardar Firma</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="signReportModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 10000; justify-content: center; align-items: center;">
+        <div
+            style="background: var(--bg-card); padding: 30px; border-radius: 16px; border: 1px solid var(--border); width: 100%; max-width: 500px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); position: relative;">
+
+            <button onclick="closeSignReportModal()"
+                style="position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: var(--text-secondary); font-size: 18px; cursor: pointer; padding: 5px;">✖</button>
+
+            <h3
+                style="margin-top: 0; margin-bottom: 15px; color: var(--text-primary); font-size: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+                Revisión de Documento
+            </h3>
+
+            <div id="report-details-container"
+                style="margin-bottom: 20px; font-size: 14px; color: var(--text-secondary); line-height: 1.6;">
+                <p><strong>Tipo:</strong> <span id="r-type">Cargando...</span></p>
+                <p><strong>Asunto:</strong> <span id="r-subject">Cargando...</span></p>
+                <p id="row-severity"><strong>Severidad:</strong> <span id="r-severity"
+                        style="font-weight: bold; color: var(--danger);">Cargando...</span></p>
+                <p><strong>Descripción:</strong> <span id="r-desc">Cargando...</span></p>
+
+                <div id="row-evidences" style="margin-top: 15px;">
+                    <strong>Evidencias:</strong>
+                    <div id="r-evidences" style="display: flex; gap: 10px; margin-top: 5px; flex-wrap: wrap;"></div>
+                </div>
+            </div>
+
+            <p style="color: var(--text-primary); font-size: 14px; margin-bottom: 10px; font-weight: 600;">Por favor,
+                dibuje su firma para dar conformidad:</p>
+
+            <div
+                style="background: #ffffff; border: 2px dashed #ccc; border-radius: 8px; margin-bottom: 20px; overflow: hidden; touch-action: none;">
+                <canvas id="report-signature-canvas" width="450" height="150"
+                    style="cursor: crosshair; display: block; width: 100%; touch-action: none;"></canvas>
+            </div>
+
+            <input type="hidden" id="current-report-id">
+            <div style="display: flex; gap: 10px;">
+                <button onclick="clearReportCanvas()"
+                    style="flex: 1; padding: 10px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); cursor: pointer; transition: 0.2s;">Limpiar</button>
+                <button onclick="submitReportSignature()" id="btnSubmitReportSign" class="btn-primary"
+                    style="flex: 2; padding: 10px; border-radius: 8px;">Aceptar y Firmar</button>
+            </div>
+
+            <!-- Loading overlay dentro del modal -->
+            <div id="signLoadingOverlay"
+                style="display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); border-radius: 16px; z-index: 10; justify-content: center; align-items: center; flex-direction: column; gap: 12px;">
+                <div
+                    style="width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spinSign 0.8s linear infinite;">
+                </div>
+                <p id="signLoadingText"
+                    style="color: white; font-weight: 600; font-size: 14px; text-align: center; margin: 0;">Procesando
+                    firma...</p>
+            </div>
+            <style>
+                @keyframes spinSign {
+                    to {
+                        transform: rotate(360deg);
+                    }
+                }
+            </style>
+        </div>
+    </div>
+
+    <!-- ✅ MODAL ESTILIZADO para reemplazar alert() -->
+    <div id="wsResultModal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 20000; justify-content: center; align-items: center;">
+        <div
+            style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 30px 35px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.3); animation: wsModalSlide 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+            <div id="wsResultIcon" style="font-size: 48px; margin-bottom: 12px;">✅</div>
+            <h3 id="wsResultTitle"
+                style="color: var(--text-primary); font-size: 18px; font-weight: 800; margin: 0 0 8px 0;">¡Éxito!</h3>
+            <p id="wsResultMsg"
+                style="color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin: 0 0 25px 0;"></p>
+            <button onclick="closeWsResultModal()"
+                style="background: var(--accent); color: white; border: none; padding: 10px 40px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(94,106,210,0.35);">Aceptar</button>
+        </div>
+    </div>
+    <style>
+        @keyframes wsModalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+    </style>
+
     <script>
         const API_BASE = "https://general-cashouts-production.up.railway.app/api";
 
@@ -563,6 +698,8 @@
         const dashboardView = document.getElementById("dashboard-view");
         const loginForm = document.getElementById("loginForm");
         const errorMsg = document.getElementById("error-msg");
+
+        let socket;
 
         // ✅ INICIALIZAR EL FONDO TECNOLÓGICO (NODOS)
         if (typeof particlesJS !== "undefined") {
@@ -627,7 +764,7 @@
                 const payloadBase64 = token.split('.')[1];
                 const payloadDecoded = atob(payloadBase64);
                 const payload = JSON.parse(payloadDecoded);
-                
+
                 if (payload.exp) {
                     const currentTime = Math.floor(Date.now() / 1000);
                     return payload.exp < currentTime;
@@ -694,6 +831,12 @@
             loginView.style.display = "none";
             dashboardView.style.display = "block";
 
+            // ✅ DEBUG: Ver qué trae el objeto user
+
+            // ✅ CONECTAMOS EL SOCKET AQUÍ (con fallback al token JWT)
+            const socketUserId = user.id || user._id || user.userId || extraerIdDelToken();
+            inicializarSockets(socketUserId);
+
             const primerNombre = user.fullName.split(" ")[0];
             document.getElementById("triggerName").textContent = primerNombre;
 
@@ -716,6 +859,7 @@
             const cardTierlock = document.getElementById("card-tierlock");
             const cardShiftlog = document.getElementById("card-shiftlog");
             const cardManageTeam = document.getElementById("card-manage-team");
+            const cardIncidencias = document.getElementById("card-operational-errors");
 
             // 1. Reseteamos la vista por defecto (mostrar todas)
             if (cardCashouts) cardCashouts.style.display = "flex";
@@ -725,6 +869,7 @@
             if (cardLocations) cardLocations.style.display = "none";
             if (cardTierlock) cardTierlock.style.display = "none"; // Exclusivo de supervisor/analista
             if (cardShiftlog) cardShiftlog.style.display = "none"; // Exclusivo de supervisor/analista/chats
+            if (cardIncidencias) cardIncidencias.style.display = "none"; // Exclusivo de supervisor/RRHH
 
             if (cardHelpDesk) cardHelpDesk.style.display = "none";
             if (cardManageTeam) cardManageTeam.style.display = "none";
@@ -741,6 +886,9 @@
                 if (cardKyc) cardKyc.style.display = "flex";
                 if (cardTierlock) cardTierlock.style.display = "flex";
                 if (cardShiftlog) cardShiftlog.style.display = "flex";
+                if (cardIncidencias) cardIncidencias.style.display = "flex";
+                const btnSignature = document.getElementById("btnOpenSignature");
+                if (btnSignature) btnSignature.style.display = "block";
             } else if (user.role === "analista") {
                 roleBadge.style.background = "rgba(46, 204, 113, 0.15)";
                 roleBadge.style.color = "#2ecc71";
@@ -765,6 +913,31 @@
 
                 if (cardCashouts) cardCashouts.style.display = "none";
                 if (cardOperapedia) cardOperapedia.style.display = "none";
+            } else if (user.role === "recursos_humanos") {
+                roleBadge.style.background = "rgba(155, 89, 182, 0.15)";
+                roleBadge.style.color = "#9b59b2";
+                roleBadge.style.border = "1px solid rgba(155, 89, 182, 0.3)";
+                
+                if (cardIncidencias) cardIncidencias.style.display = "flex";
+            } else if (user.role === "movimientos") {
+                roleBadge.style.background = "rgba(26, 188, 156, 0.15)";
+                roleBadge.style.color = "#1abc9c";
+                roleBadge.style.border = "1px solid rgba(26, 188, 156, 0.3)";
+
+                // Rol restringido: Solo Operapedia y ShiftLog
+                if (cardCashouts) cardCashouts.style.display = "none";
+                if (cardKyc) cardKyc.style.display = "none";
+                if (cardBalance) cardBalance.style.display = "none";
+                if (cardLocations) cardLocations.style.display = "none";
+                if (cardTierlock) cardTierlock.style.display = "none";
+                if (cardIncidencias) cardIncidencias.style.display = "none";
+                
+                if (cardOperapedia) cardOperapedia.style.display = "flex";
+                if (cardShiftlog) cardShiftlog.style.display = "flex";
+            } else if (user.role === "cajero") {
+                roleBadge.style.background = "rgba(241, 196, 15, 0.15)";
+                roleBadge.style.color = "#f1c40f";
+                roleBadge.style.border = "1px solid rgba(241, 196, 15, 0.3)";
             }
         }
 
@@ -803,6 +976,437 @@
             // Marcar los checkboxes correctamente al cargar la página
             const checkboxes = document.querySelectorAll(".theme-checkbox");
             checkboxes.forEach((chk) => (chk.checked = isLight));
+        }
+
+        // ================= LÓGICA DE FIRMA MAESTRA (CANVAS) =================
+        const btnOpenSignature = document.getElementById("btnOpenSignature");
+
+        // (OPCIONAL) Busca tu función mostrarDashboard(user) y agrega esta línea
+        // dentro del if (user.role === "supervisor") { ... }
+        // if (btnOpenSignature) btnOpenSignature.style.display = "block";
+
+        function openSignatureModal() {
+            document.getElementById("signatureModal").style.display = "flex";
+            document.getElementById("profileDropdown").classList.remove("active"); // Cierra el menú
+        }
+
+        function closeSignatureModal() {
+            document.getElementById("signatureModal").style.display = "none";
+        }
+
+        const canvas = document.getElementById('signature-canvas');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+
+        // Estilo del trazo
+        ctx.strokeStyle = "#0f172a"; // Azul muy oscuro/negro
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = "round";
+
+        // Eventos para Mouse y Táctil (Móviles)
+        const startDraw = (e) => { drawing = true; draw(e); };
+        const stopDraw = () => { drawing = false; ctx.beginPath(); };
+
+        canvas.addEventListener('mousedown', startDraw);
+        canvas.addEventListener('mouseup', stopDraw);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseout', stopDraw);
+
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDraw(e.touches[0]); }, { passive: false });
+        canvas.addEventListener('touchend', stopDraw);
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); }, { passive: false });
+
+        function draw(e) {
+            if (!drawing) return;
+            const rect = canvas.getBoundingClientRect();
+            // Calculamos la escala por si el canvas se achicó en móviles
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+        }
+
+        async function saveSignature() {
+            // Validar si el canvas está vacío
+            const blank = document.createElement('canvas');
+            blank.width = canvas.width;
+            blank.height = canvas.height;
+            if (canvas.toDataURL() === blank.toDataURL()) {
+                alert("Por favor, dibuja tu firma antes de guardar.");
+                return;
+            }
+
+            const btn = document.getElementById('btnSaveSign');
+            const dataURL = canvas.toDataURL("image/png"); // Convertir a Base64
+
+            btn.disabled = true;
+            btn.innerText = "Guardando...";
+
+            try {
+                const res = await fetch(`${API_BASE}/users/profile/signature`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ signatureBase64: dataURL })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert("✅ Firma guardada con éxito.");
+                    closeSignatureModal();
+                } else {
+                    alert("Error: " + (data.error || "No se pudo guardar la firma."));
+                }
+            } catch (err) {
+                alert("Error de conexión al guardar la firma.");
+                console.error(err);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Guardar Firma";
+            }
+        }
+
+
+        // Modificamos el window.onclick para que cierre ambos menús
+        window.onclick = function (event) {
+            if (!event.target.closest(".profile-menu") && !event.target.closest(".notification-menu")) {
+                const pDropdown = document.getElementById("profileDropdown");
+                const nDropdown = document.getElementById("notif-dropdown");
+                if (pDropdown) pDropdown.classList.remove("active");
+                if (nDropdown) nDropdown.style.display = "none";
+            }
+        };
+
+        function toggleNotifDropdown() {
+            const dropdown = document.getElementById("notif-dropdown");
+            const isVisible = dropdown.style.display === "flex";
+            document.getElementById("profileDropdown").classList.remove("active"); // Cierra el de perfil
+            dropdown.style.display = isVisible ? "none" : "flex";
+        }
+
+        // ✅ Fallback: extraer el userId del token JWT
+        function extraerIdDelToken() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return null;
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                return payload.id || payload._id || payload.userId || payload.sub || null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        async function inicializarSockets(userId) {
+            if (!userId) return;
+
+            socket = io("https://general-cashouts-production.up.railway.app");
+
+            socket.on("connect", () => {
+                console.log("✅ WebSocket conectado | ID:", socket.id);
+                socket.emit("join_room", userId);
+            });
+
+            socket.on("connect_error", (err) => {
+                console.error("❌ Error de WebSocket:", err.message);
+            });
+
+            socket.on("new_notification", (data) => {
+                renderNotificacion(data, true);
+            });
+
+            // --- CARGAR HISTORIAL ---
+            try {
+                const res = await fetch(`${API_BASE}/reports/notifications`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+
+                const result = await res.json();
+
+                if (result.success && result.data.length > 0) {
+                    document.getElementById('notif-items-container').innerHTML = '';
+                    result.data.forEach(notif => {
+                        renderNotificacion({
+                            type: "Reporte Pendiente",
+                            message: notif.message,
+                            reportId: notif.reportId
+                        }, true);
+                    });
+                }
+            } catch (err) {
+                console.error("❌ Error al cargar historial de notificaciones:", err);
+            }
+        }
+
+        function renderNotificacion(data, incrementBadge = true) {
+            const badge = document.getElementById('notif-badge');
+            const container = document.getElementById('notif-items-container');
+
+            if (badge.style.display === 'none') {
+                container.innerHTML = ''; // Borra el mensaje de "No hay firmas"
+                badge.style.display = 'block';
+            }
+
+            if (incrementBadge) {
+                let count = parseInt(badge.innerText || "0") + 1;
+                badge.innerText = count;
+            }
+
+            const item = document.createElement('div');
+            item.className = "notif-item";
+            item.style = "padding: 15px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s;";
+            item.onmouseover = () => item.style.background = "rgba(0,0,0,0.05)";
+            item.onmouseout = () => item.style.background = "transparent";
+
+            item.innerHTML = `
+                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary); margin-bottom: 4px;">${data.type}</div>
+                <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.4;">${data.message}</div>
+                <div style="font-size: 10px; color: #5e6ad2; margin-top: 8px; font-weight: bold;">CLIC PARA FIRMAR</div>
+            `;
+
+            item.onclick = () => openReportToSign(data.reportId);
+            container.prepend(item); // Pone las más nuevas arriba
+        }
+        // ================= LÓGICA PARA FIRMAR REPORTES (MODAL) =================
+        const reportCanvas = document.getElementById('report-signature-canvas');
+        const reportCtx = reportCanvas.getContext('2d');
+        let reportDrawing = false;
+
+        reportCtx.strokeStyle = "#0f172a";
+        reportCtx.lineWidth = 2.5;
+        reportCtx.lineCap = "round";
+
+        const startReportDraw = (e) => { reportDrawing = true; drawReport(e); };
+        const stopReportDraw = () => { reportDrawing = false; reportCtx.beginPath(); };
+
+        reportCanvas.addEventListener('mousedown', startReportDraw);
+        reportCanvas.addEventListener('mouseup', stopReportDraw);
+        reportCanvas.addEventListener('mousemove', drawReport);
+        reportCanvas.addEventListener('mouseout', stopReportDraw);
+        reportCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); startReportDraw(e.touches[0]); }, { passive: false });
+        reportCanvas.addEventListener('touchend', stopReportDraw);
+        reportCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); drawReport(e.touches[0]); }, { passive: false });
+
+        function drawReport(e) {
+            if (!reportDrawing) return;
+            const rect = reportCanvas.getBoundingClientRect();
+            const scaleX = reportCanvas.width / rect.width;
+            const scaleY = reportCanvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+            reportCtx.lineTo(x, y); reportCtx.stroke(); reportCtx.beginPath(); reportCtx.moveTo(x, y);
+        }
+
+        function clearReportCanvas() {
+            reportCtx.clearRect(0, 0, reportCanvas.width, reportCanvas.height);
+            reportCtx.beginPath();
+        }
+
+        function closeSignReportModal() {
+            document.getElementById("signReportModal").style.display = "none";
+            clearReportCanvas();
+        }
+
+        // ✅ REEMPLAZAMOS EL ALERT POR ESTA FUNCIÓN
+
+        // Variable global para guardar el reporte temporalmente
+        let currentReportData = null;
+
+        async function openReportToSign(reportId) {
+            document.getElementById("notif-dropdown").style.display = "none";
+            document.getElementById("signReportModal").style.display = "flex";
+            document.getElementById("current-report-id").value = reportId;
+
+            try {
+                const res = await fetch(`${API_BASE}/reports/${reportId}`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const result = await res.json();
+
+                if (result.success) {
+                    currentReportData = result.data;
+
+                    document.getElementById("r-type").innerText = currentReportData.type;
+                    document.getElementById("r-subject").innerText = currentReportData.subject;
+                    document.getElementById("r-desc").innerText = currentReportData.description;
+
+                    // ✅ Mostrar/ocultar campos según el tipo
+                    const isError = currentReportData.type === 'Error Operacional';
+
+                    // Severidad: solo visible en Error Operacional
+                    const rowSeverity = document.getElementById("row-severity");
+                    if (isError) {
+                        rowSeverity.style.display = 'block';
+                        document.getElementById("r-severity").innerText = currentReportData.severity;
+                    } else {
+                        rowSeverity.style.display = 'none';
+                    }
+
+                    // Evidencias: solo visible en Error Operacional
+                    const rowEvidences = document.getElementById("row-evidences");
+                    const evContainer = document.getElementById("r-evidences");
+                    evContainer.innerHTML = '';
+
+                    if (isError) {
+                        rowEvidences.style.display = 'block';
+                        if (currentReportData.evidences && currentReportData.evidences.length > 0) {
+                            currentReportData.evidences.forEach(img => {
+                                evContainer.innerHTML += `<a href="${img.url}" target="_blank"><img src="${img.url}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); cursor: pointer;"></a>`;
+                            });
+                        } else {
+                            evContainer.innerHTML = '<span style="font-size:12px;">Sin imágenes adjuntas.</span>';
+                        }
+                    } else {
+                        rowEvidences.style.display = 'none';
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Error al cargar el reporte.");
+                closeSignReportModal();
+            }
+        }
+
+        // ✅ Función auxiliar para comprimir una firma Base64 a un tamaño razonable
+        function comprimirFirmaBase64(base64, maxWidth = 300, quality = 0.6) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ratio = Math.min(maxWidth / img.width, 1);
+                    canvas.width = img.width * ratio;
+                    canvas.height = img.height * ratio;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL('image/png', quality));
+                };
+                img.onerror = () => resolve(base64); // Si falla, devuelve la original
+                img.src = base64;
+            });
+        }
+
+        // ✅ Modal estilizado para reemplazar alert()
+        function showWsResult(icon, title, message, onClose) {
+            document.getElementById('wsResultIcon').textContent = icon;
+            document.getElementById('wsResultTitle').textContent = title;
+            document.getElementById('wsResultMsg').textContent = message;
+            document.getElementById('wsResultModal').style.display = 'flex';
+            window._wsResultOnClose = onClose || null;
+        }
+
+        function closeWsResultModal() {
+            document.getElementById('wsResultModal').style.display = 'none';
+            if (window._wsResultOnClose) {
+                window._wsResultOnClose();
+                window._wsResultOnClose = null;
+            }
+        }
+
+        async function submitReportSignature() {
+            const blank = document.createElement('canvas');
+            blank.width = reportCanvas.width; blank.height = reportCanvas.height;
+            if (reportCanvas.toDataURL() === blank.toDataURL()) {
+                return showWsResult('✍️', 'Firma requerida', 'Por favor, dibuje su firma para dar conformidad.');
+            }
+
+            const btn = document.getElementById('btnSubmitReportSign');
+            const dataURL = reportCanvas.toDataURL("image/png");
+            const reportId = document.getElementById("current-report-id").value;
+            const loadingOverlay = document.getElementById('signLoadingOverlay');
+            const loadingText = document.getElementById('signLoadingText');
+
+            btn.disabled = true;
+            loadingOverlay.style.display = 'flex';
+            loadingText.textContent = 'Guardando firma...';
+
+            try {
+                // 1. Guardamos la firma en el Backend
+                const res = await fetch(`${API_BASE}/reports/${reportId}/sign`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                    body: JSON.stringify({ signatureBase64: dataURL })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    // 2. Comprimimos las firmas
+                    loadingText.textContent = 'Preparando envío de correo...';
+
+                    let firmaColabComprimida = "";
+                    let firmaSuperComprimida = "";
+
+                    try {
+                        firmaColabComprimida = await comprimirFirmaBase64(dataURL);
+                    } catch (e) {
+                        firmaColabComprimida = dataURL;
+                    }
+
+                    try {
+                        if (currentReportData.supervisorSignature) {
+                            firmaSuperComprimida = await comprimirFirmaBase64(currentReportData.supervisorSignature);
+                        }
+                    } catch (e) {
+                        firmaSuperComprimida = currentReportData.supervisorSignature || "";
+                    }
+
+                    const emailPayload = {
+                        tipo_informe: currentReportData.type,
+                        colaborador: currentReportData.collaboratorName,
+                        supervisor: currentReportData.supervisorId?.fullName || 'Supervisor',
+                        numero_incidencia: currentReportData.incidenceNumber,
+                        fecha: new Date(currentReportData.createdAt).toISOString().split("T")[0],
+                        asunto: currentReportData.subject,
+                        severidad: currentReportData.severity,
+                        descripcion: currentReportData.description,
+                        destinatarios: currentReportData.recipients || [],
+                        firma_supervisor_img: firmaSuperComprimida,
+                        firma_colaborador_img: firmaColabComprimida,
+                        imagenes: currentReportData.evidences ? currentReportData.evidences.map(e => e.url) : []
+                    };
+
+                    loadingText.textContent = 'Enviando correo...';
+
+                    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx3jizg2XR490i21wrladFc7-BQthgxkb7HODvsrCzxCUJrCFYiZz6WsAlE0ESg2z1S2w/exec";
+
+                    try {
+                        await fetch(WEB_APP_URL, {
+                            method: "POST",
+                            mode: "no-cors",
+                            headers: { "Content-Type": "text/plain" },
+                            body: JSON.stringify(emailPayload)
+                        });
+                    } catch (emailErr) {
+                        console.warn("⚠️ El correo pudo no haberse enviado:", emailErr.message);
+                    }
+
+                    loadingOverlay.style.display = 'none';
+                    closeSignReportModal();
+                    showWsResult('', '¡Documento firmado!', 'La firma se guardó exitosamente y el correo fue enviado.', () => {
+                        location.reload();
+                    });
+                } else {
+                    loadingOverlay.style.display = 'none';
+                    showWsResult('❌', 'Error', data.message || 'No se pudo procesar la firma.');
+                }
+            } catch (err) {
+                console.error("❌ Error completo:", err);
+                loadingOverlay.style.display = 'none';
+                showWsResult('❌', 'Error de conexión', 'No se pudo conectar con el servidor. Verifica tu internet e intenta de nuevo.');
+            } finally {
+                btn.disabled = false; btn.innerText = "Aceptar y Firmar";
+            }
         }
 
         loadTheme();

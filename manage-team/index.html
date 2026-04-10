@@ -193,6 +193,24 @@
             border: 1px solid rgba(52, 152, 219, 0.3);
         }
 
+        .badge-recursos_humanos {
+            background: rgba(155, 89, 182, 0.15);
+            color: #9b59b2;
+            border: 1px solid rgba(155, 89, 182, 0.3);
+        }
+
+        .badge-movimientos {
+            background: rgba(26, 188, 156, 0.15);
+            color: #1abc9c;
+            border: 1px solid rgba(26, 188, 156, 0.3);
+        }
+
+        .badge-cajero {
+            background: rgba(241, 196, 15, 0.15);
+            color: #f1c40f;
+            border: 1px solid rgba(241, 196, 15, 0.3);
+        }
+
         .action-btns {
             display: flex;
             gap: 10px;
@@ -319,6 +337,8 @@
                             <option value="analista">Analista</option>
                             <option value="chats">Chats</option>
                             <option value="asistente">Asistente Administrativo</option>
+                            <option value="recursos_humanos">Recursos Humanos</option>
+                            <option value="movimientos">Movimientos</option>
                             <option value="cajero">Cajero</option>
                         </select>
                     </div>
@@ -451,14 +471,20 @@
                     'supervisor': 'Supervisores',
                     'analista': 'Analistas',
                     'chats': 'Chats',
-                    'asistente': 'Asistentes Administrativos'
+                    'asistente': 'Asistentes Administrativos',
+                    'recursos_humanos': 'Recursos Humanos',
+                    'movimientos': 'Movimientos',
+                    'cajero': 'Cajero'
                 };
 
                 const roleColors = {
                     'supervisor': '#6f7bf0',
                     'analista': '#2ecc71',
                     'chats': '#f39c12',
-                    'asistente': '#3498db'
+                    'asistente': '#3498db',
+                    'recursos_humanos': '#9b59b2',
+                    'movimientos': '#1abc9c',
+                    'cajero': '#f1c40f'
                 };
 
                 const groupedUsers = {};
@@ -469,7 +495,7 @@
                 });
 
                 let html = '';
-                const order = ['supervisor', 'analista', 'chats', 'asistente'];
+                const order = ['supervisor', 'analista', 'chats', 'asistente', 'recursos_humanos', 'movimientos', 'cajero'];
 
                 const buildTable = (roleKey, users) => {
                     const title = rolesMap[roleKey] || roleKey.charAt(0).toUpperCase() + roleKey.slice(1);
