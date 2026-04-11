@@ -607,9 +607,9 @@
                     const select = document.getElementById('selectColaborador');
                     select.innerHTML = '<option value="">Seleccione un colaborador...</option>';
                     data.data.forEach(u => {
-                        if (u.role !== 'supervisor') {
-                            select.innerHTML += `<option value="${u._id}">${u.fullName}</option>`;
-                        }
+                        // Ahora enviamos a todos los usuarios, incluyendo supervisores
+                        select.innerHTML += `<option value="${u._id}">${u.fullName}</option>`;
+                        // Si hay otros roles como 'admin' y quieres ocultarlos, puedes usar: if (u.role !== 'admin')
                     });
                 } catch (err) { console.error("Error al cargar usuarios"); }
             }
