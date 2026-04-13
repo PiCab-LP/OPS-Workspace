@@ -1,868 +1,1040 @@
 <!doctype html>
 <html lang="es">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sistema de Informes Corporativo</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <link rel="icon" type="image/png" href="../imgs/dashboard.png" />
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
-        /* ================= TEMA OSCURO (POR DEFECTO - IGUAL QUE EL HUB) ================= */
-        :root {
-            --bg-app: #0f1115;
-            --bg-card: #16181d;
-            --bg-input: #1e2128;
-            --text-primary: #ffffff;
-            --text-secondary: #a0aabf;
-            --accent: #5e6ad2;
-            --accent-hover: #6f7bf0;
-            --border: rgba(255, 255, 255, 0.08);
-            --danger: #ef4444;
-            --success: #10b981;
-            --radius: 10px;
-        }
+      /* ================= TEMA OSCURO (POR DEFECTO - IGUAL QUE EL HUB) ================= */
+      :root {
+        --bg-app: #0f1115;
+        --bg-card: #16181d;
+        --bg-input: #1e2128;
+        --text-primary: #ffffff;
+        --text-secondary: #a0aabf;
+        --accent: #5e6ad2;
+        --accent-hover: #6f7bf0;
+        --border: rgba(255, 255, 255, 0.08);
+        --danger: #ef4444;
+        --success: #10b981;
+        --radius: 10px;
+      }
 
-        /* ================= MODO CLARO ================= */
-        body.light-mode {
-            --bg-app: #f4f6f8;
-            --bg-card: #ffffff;
-            --bg-input: #f0f2f5;
-            --text-primary: #1f2937;
-            --text-secondary: #6b7280;
-            --border: rgba(0, 0, 0, 0.1);
-        }
+      /* ================= MODO CLARO ================= */
+      body.light-mode {
+        --bg-app: #f4f6f8;
+        --bg-card: #ffffff;
+        --bg-input: #f0f2f5;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --border: rgba(0, 0, 0, 0.1);
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
 
-        body {
-            background-color: var(--bg-app);
-            color: var(--text-primary);
-            line-height: 1.5;
-            padding: 2rem 1rem;
-            min-height: 100vh;
-            transition: background-color 0.3s, color 0.3s;
-        }
+      body {
+        background-color: var(--bg-app);
+        color: var(--text-primary);
+        line-height: 1.5;
+        padding: 2rem 1rem;
+        min-height: 100vh;
+        transition:
+          background-color 0.3s,
+          color 0.3s;
+      }
 
-        /* ================= BOTÓN REGRESAR ================= */
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: var(--bg-card);
-            transition: all 0.2s;
-            margin-bottom: 1.5rem;
-            max-width: 850px;
-            margin-left: auto;
-            margin-right: auto;
-        }
+      /* ================= BOTÓN REGRESAR ================= */
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--bg-card);
+        transition: all 0.2s;
+        margin-bottom: 1.5rem;
+        max-width: 850px;
+        margin-left: auto;
+        margin-right: auto;
+      }
 
-        .back-btn:hover {
-            color: var(--accent);
-            border-color: var(--accent);
-            transform: translateX(-3px);
-        }
+      .back-btn:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+        transform: translateX(-3px);
+      }
 
-        /* ================= CONTENEDOR PRINCIPAL ================= */
-        .container {
-            max-width: 850px;
-            margin: 0 auto;
-            background: var(--bg-card);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            border: 1px solid var(--border);
-            overflow: hidden;
-        }
+      /* ================= CONTENEDOR PRINCIPAL ================= */
+      .container {
+        max-width: 850px;
+        margin: 0 auto;
+        background: var(--bg-card);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        border: 1px solid var(--border);
+        overflow: hidden;
+      }
 
-        header {
-            padding: 2rem;
-            border-bottom: 1px solid var(--border);
-            text-align: center;
-        }
+      header {
+        padding: 2rem;
+        border-bottom: 1px solid var(--border);
+        text-align: center;
+      }
 
-        .logo {
-            font-size: 2rem;
-            color: var(--accent);
-            margin-bottom: 0.5rem;
-        }
+      .logo {
+        font-size: 2rem;
+        color: var(--accent);
+        margin-bottom: 0.5rem;
+      }
 
-        h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
 
-        p.subtitle {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
+      p.subtitle {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+      }
 
-        /* ================= PESTAÑAS ================= */
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid var(--border);
-            background-color: rgba(0, 0, 0, 0.1);
-        }
+      /* ================= PESTAÑAS ================= */
+      .tabs {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        background-color: rgba(0, 0, 0, 0.1);
+      }
 
-        body.light-mode .tabs {
-            background-color: #f8fafc;
-        }
+      body.light-mode .tabs {
+        background-color: #f8fafc;
+      }
 
-        .tab-btn {
-            flex: 1;
-            padding: 1rem;
-            background: none;
-            border: none;
-            border-bottom: 2px solid transparent;
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
+      .tab-btn {
+        flex: 1;
+        padding: 1rem;
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
 
-        .tab-btn:hover {
-            color: var(--text-primary);
-            background-color: rgba(255, 255, 255, 0.03);
-        }
+      .tab-btn:hover {
+        color: var(--text-primary);
+        background-color: rgba(255, 255, 255, 0.03);
+      }
 
-        body.light-mode .tab-btn:hover {
-            background-color: #f1f5f9;
-        }
+      body.light-mode .tab-btn:hover {
+        background-color: #f1f5f9;
+      }
 
-        .tab-btn.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
-            background-color: transparent;
-        }
+      .tab-btn.active {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
+        background-color: transparent;
+      }
 
-        /* ================= FORMULARIO ================= */
-        form {
-            padding: 2rem;
-        }
+      /* ================= FORMULARIO ================= */
+      form {
+        padding: 2rem;
+      }
 
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .full-width {
+        grid-column: span 2;
+      }
+
+      @media (max-width: 640px) {
         .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
+          grid-template-columns: 1fr;
         }
 
         .full-width {
-            grid-column: span 2;
+          grid-column: span 1;
         }
+      }
 
-        @media (max-width: 640px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
 
-            .full-width {
-                grid-column: span 1;
-            }
-        }
+      label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-primary);
+      }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
+      .required {
+        color: var(--danger);
+      }
 
-        label {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-primary);
-        }
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background-color: var(--bg-input);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-size: 0.95rem;
+        color: var(--text-primary);
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
 
-        .required {
-            color: var(--danger);
-        }
+      input::placeholder,
+      textarea::placeholder {
+        color: var(--text-secondary);
+      }
 
-        input,
-        textarea,
-        select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background-color: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            font-size: 0.95rem;
-            color: var(--text-primary);
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(94, 106, 210, 0.15);
+      }
 
-        input::placeholder,
-        textarea::placeholder {
-            color: var(--text-secondary);
-        }
+      select option {
+        background-color: var(--bg-card);
+        color: var(--text-primary);
+      }
 
-        input:focus,
-        textarea:focus,
-        select:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(94, 106, 210, 0.15);
-        }
+      textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
 
-        select option {
-            background-color: var(--bg-card);
-            color: var(--text-primary);
-        }
+      /* ================= SEVERIDAD ================= */
+      .severity-levels {
+        display: flex;
+        gap: 0.5rem;
+      }
 
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
+      .severity-btn {
+        flex: 1;
+        padding: 0.5rem;
+        background: var(--bg-input);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        cursor: pointer;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        transition: all 0.2s;
+      }
 
-        /* ================= SEVERIDAD ================= */
-        .severity-levels {
-            display: flex;
-            gap: 0.5rem;
-        }
+      .severity-btn.selected {
+        font-weight: 600;
+        color: white;
+        border-color: transparent;
+      }
 
-        .severity-btn {
-            flex: 1;
-            padding: 0.5rem;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            transition: all 0.2s;
-        }
+      .severity-btn[data-value="leve"].selected {
+        background-color: var(--success);
+      }
 
-        .severity-btn.selected {
-            font-weight: 600;
-            color: white;
-            border-color: transparent;
-        }
+      .severity-btn[data-value="media"].selected {
+        background-color: #f59e0b;
+      }
 
-        .severity-btn[data-value="leve"].selected {
-            background-color: var(--success);
-        }
+      .severity-btn[data-value="grave"].selected {
+        background-color: #ea580c;
+      }
 
-        .severity-btn[data-value="media"].selected {
-            background-color: #f59e0b;
-        }
+      .severity-btn[data-value="critica"].selected {
+        background-color: var(--danger);
+      }
 
-        .severity-btn[data-value="grave"].selected {
-            background-color: #ea580c;
-        }
+      /* ================= UPLOAD ZONA ================= */
+      .image-upload {
+        border: 2px dashed var(--border);
+        border-radius: var(--radius);
+        padding: 2.5rem 2rem;
+        text-align: center;
+        background-color: var(--bg-input);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
 
-        .severity-btn[data-value="critica"].selected {
-            background-color: var(--danger);
-        }
+      .image-upload.dragover {
+        background-color: rgba(94, 106, 210, 0.1);
+        border-color: var(--accent);
+        transform: scale(1.02);
+      }
 
-        /* ================= UPLOAD ZONA ================= */
-        .image-upload {
-            border: 2px dashed var(--border);
-            border-radius: var(--radius);
-            padding: 2.5rem 2rem;
-            text-align: center;
-            background-color: var(--bg-input);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+      .image-upload i {
+        font-size: 2rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.75rem;
+      }
 
-        .image-upload.dragover {
-            background-color: rgba(94, 106, 210, 0.1);
-            border-color: var(--accent);
-            transform: scale(1.02);
-        }
+      .image-upload p {
+        color: var(--text-secondary);
+      }
 
-        .image-upload i {
-            font-size: 2rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.75rem;
-        }
+      .image-preview-container {
+        margin-top: 1rem;
+        position: relative;
+        display: inline-block;
+        margin-right: 10px;
+      }
 
-        .image-upload p {
-            color: var(--text-secondary);
-        }
+      .image-preview {
+        height: 100px;
+        width: 100px;
+        object-fit: cover;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+      }
 
-        .image-preview-container {
-            margin-top: 1rem;
-            position: relative;
-            display: inline-block;
-            margin-right: 10px;
-        }
+      .remove-image {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: var(--danger);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
 
-        .image-preview {
-            height: 100px;
-            width: 100px;
-            object-fit: cover;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-        }
+      /* ================= DIVISOR DE SECCIÓN ================= */
+      .section-divider {
+        height: 1px;
+        background-color: var(--border);
+        margin: 2rem 0;
+        position: relative;
+      }
 
-        .remove-image {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
+      .section-divider span {
+        position: absolute;
+        top: -10px;
+        left: 0;
+        background: var(--bg-card);
+        padding-right: 1rem;
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
 
-        /* ================= DIVISOR DE SECCIÓN ================= */
-        .section-divider {
-            height: 1px;
-            background-color: var(--border);
-            margin: 2rem 0;
-            position: relative;
-        }
+      /* ================= BOTÓN ENVIAR ================= */
+      .submit-btn {
+        width: 100%;
+        background-color: var(--accent);
+        color: white;
+        border: none;
+        padding: 1rem;
+        border-radius: var(--radius);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 2rem;
+        transition: background-color 0.2s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+      }
 
-        .section-divider span {
-            position: absolute;
-            top: -10px;
-            left: 0;
-            background: var(--bg-card);
-            padding-right: 1rem;
-            color: var(--text-primary);
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
+      .submit-btn:hover {
+        background-color: var(--accent-hover);
+      }
 
-        /* ================= BOTÓN ENVIAR ================= */
-        .submit-btn {
-            width: 100%;
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            padding: 1rem;
-            border-radius: var(--radius);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 2rem;
-            transition: background-color 0.2s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
+      .hide {
+        display: none !important;
+      }
 
-        .submit-btn:hover {
-            background-color: var(--accent-hover);
-        }
+      /* ================= NOTIFICACIÓN ================= */
+      .notification {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        padding: 1rem 1.5rem;
+        border-radius: var(--radius);
+        color: white;
+        background-color: var(--accent);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        transform: translateY(-150%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 50;
+      }
 
-        .hide {
-            display: none !important;
-        }
+      .notification.show {
+        transform: translateY(0);
+      }
 
-        /* ================= NOTIFICACIÓN ================= */
-        .notification {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            padding: 1rem 1.5rem;
-            border-radius: var(--radius);
-            color: white;
-            background-color: var(--accent);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-            transform: translateY(-150%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 50;
-        }
+      .notification.error {
+        background-color: var(--danger);
+      }
 
-        .notification.show {
-            transform: translateY(0);
-        }
+      .notification.success {
+        background-color: var(--success);
+      }
 
-        .notification.error {
-            background-color: var(--danger);
-        }
+      /* ================= LOADING OVERLAY ================= */
+      #loading-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(15, 17, 21, 0.9);
+        z-index: 9999;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(4px);
+        color: var(--text-primary);
+      }
 
-        .notification.success {
-            background-color: var(--success);
-        }
+      body.light-mode #loading-overlay {
+        background-color: rgba(255, 255, 255, 0.9);
+      }
 
-        /* ================= LOADING OVERLAY ================= */
-        #loading-overlay {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(15, 17, 21, 0.9);
-            z-index: 9999;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(4px);
-            color: var(--text-primary);
-        }
+      #loading-overlay.active {
+        display: flex;
+      }
 
-        body.light-mode #loading-overlay {
-            background-color: rgba(255, 255, 255, 0.9);
-        }
+      /* ================= RECIPIENTS ================= */
+      .recipient-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
 
-        #loading-overlay.active {
-            display: flex;
-        }
+      .recipient-row input {
+        flex: 1;
+      }
 
-        /* ================= RECIPIENTS ================= */
-        .recipient-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+      /* ================= INPUT READONLY (Incidencia auto) ================= */
+      input[readonly] {
+        background-color: rgba(255, 255, 255, 0.03) !important;
+        cursor: not-allowed !important;
+        opacity: 0.7;
+      }
 
-        .recipient-row input {
-            flex: 1;
-        }
+      body.light-mode input[readonly] {
+        background-color: #f3f4f6 !important;
+      }
 
-        /* ================= INPUT READONLY (Incidencia auto) ================= */
-        input[readonly] {
-            background-color: rgba(255, 255, 255, 0.03) !important;
-            cursor: not-allowed !important;
-            opacity: 0.7;
-        }
+      /* ================= NODOS DE FONDO ================= */
+      #particles-js {
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        pointer-events: auto;
+      }
 
-        body.light-mode input[readonly] {
-            background-color: #f3f4f6 !important;
-        }
-
-        /* ================= NODOS DE FONDO ================= */
-        #particles-js {
-            position: fixed;
-            width: 100vw;
-            height: 100vh;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            pointer-events: auto;
-        }
-
-        .container,
-        .back-btn {
-            position: relative;
-            z-index: 1;
-        }
+      .container,
+      .back-btn {
+        position: relative;
+        z-index: 1;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div id="particles-js"></div>
     <script>
-        // Cargar tema guardado del hub
-        if (localStorage.getItem('workspaceTheme') === 'light') {
-            document.body.classList.add('light-mode');
-        }
+      // Cargar tema guardado del hub
+      if (localStorage.getItem("workspaceTheme") === "light") {
+        document.body.classList.add("light-mode");
+      }
     </script>
 
     <div id="loading-overlay">
-        <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--accent); margin-bottom: 1rem;"></i>
-        <p style="font-weight: 600;">Emitiendo informe y notificando al colaborador...</p>
+      <i
+        class="fas fa-spinner fa-spin"
+        style="font-size: 3rem; color: var(--accent); margin-bottom: 1rem"
+      ></i>
+      <p style="font-weight: 600">
+        Emitiendo informe y notificando al colaborador...
+      </p>
     </div>
 
     <div class="notification" id="notification">
-        <span id="notif-text"></span>
+      <span id="notif-text"></span>
     </div>
 
     <a href="/" class="back-btn">
-        <i class="fas fa-arrow-left"></i> Regresar al Hub
+      <i class="fas fa-arrow-left"></i> Regresar al Hub
     </a>
 
     <div class="container">
-        <header>
-            <div class="logo"><i class="fas fa-file-contract"></i></div>
-            <h1>Gestión de Informes Corporativos</h1>
-            <p class="subtitle">Emisión de Errores e Incidencias con firma digital</p>
-        </header>
+      <header>
+        <div class="logo"><i class="fas fa-file-contract"></i></div>
+        <h1>Generador de Informes e Incidencias</h1>
+      </header>
 
-        <div class="tabs">
-            <button class="tab-btn active" data-type="Error Operacional">
-                <i class="fas fa-exclamation-triangle"></i> Error Operacional
-            </button>
-            <button class="tab-btn" data-type="Incidencia">
-                <i class="fas fa-comments"></i> Incidencia
-            </button>
+      <div class="tabs">
+        <button class="tab-btn active" data-type="Error Operacional">
+          <i class="fas fa-exclamation-triangle"></i> Error Operacional
+        </button>
+        <button class="tab-btn" data-type="Incidencia">
+          <i class="fas fa-comments"></i> Incidencia
+        </button>
+      </div>
+
+      <form id="main-report-form">
+        <div class="section-divider"><span>Información General</span></div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Colaborador implicado <span class="required">*</span></label>
+            <select id="selectColaborador" required>
+              <option value="">Cargando lista...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>N° de Incidencia<span class="required">*</span></label>
+            <input
+              type="text"
+              id="incidenceNumber"
+              required
+              placeholder="Se genera automáticamente"
+              readonly
+              maxlength="10"
+            />
+          </div>
+          <div class="form-group full-width">
+            <label>Asunto del Informe <span class="required">*</span></label>
+            <input
+              type="text"
+              id="subject"
+              required
+              placeholder="Resumen corto de la situación"
+              maxlength="100"
+            />
+          </div>
         </div>
 
-        <form id="main-report-form">
-            <div class="section-divider"><span>Información General</span></div>
+        <div class="section-divider"><span>Detalles del Informe</span></div>
 
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Colaborador implicado <span class="required">*</span></label>
-                    <select id="selectColaborador" required>
-                        <option value="">Cargando lista...</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>N° de Incidencia / Ref. <span class="required">*</span></label>
-                    <input type="text" id="incidenceNumber" required placeholder="Se genera automáticamente" readonly
-                        maxlength="10" />
-                </div>
-                <div class="form-group full-width">
-                    <label>Asunto del Informe <span class="required">*</span></label>
-                    <input type="text" id="subject" required placeholder="Resumen corto de la situación"
-                        maxlength="100" />
-                </div>
+        <div class="form-grid">
+          <div class="form-group full-width" id="field-severity">
+            <label>Nivel de Severidad <span class="required">*</span></label>
+            <div class="severity-levels">
+              <button type="button" class="severity-btn" data-value="leve">
+                Leve
+              </button>
+              <button type="button" class="severity-btn" data-value="media">
+                Media
+              </button>
+              <button type="button" class="severity-btn" data-value="grave">
+                Grave
+              </button>
+              <button type="button" class="severity-btn" data-value="critica">
+                Crítica
+              </button>
             </div>
+          </div>
 
-            <div class="section-divider"><span>Detalles del Informe</span></div>
+          <div class="form-group full-width">
+            <label id="label-descripcion"
+              >Descripción detallada <span class="required">*</span></label
+            >
+            <textarea
+              id="description"
+              required
+              placeholder="Detalle los hechos aquí..."
+              maxlength="1000"
+            ></textarea>
+          </div>
 
-            <div class="form-grid">
-                <div class="form-group full-width" id="field-severity">
-                    <label>Nivel de Severidad <span class="required">*</span></label>
-                    <div class="severity-levels">
-                        <button type="button" class="severity-btn" data-value="leve">Leve</button>
-                        <button type="button" class="severity-btn" data-value="media">Media</button>
-                        <button type="button" class="severity-btn" data-value="grave">Grave</button>
-                        <button type="button" class="severity-btn" data-value="critica">Crítica</button>
-                    </div>
-                </div>
-
-                <div class="form-group full-width">
-                    <label id="label-descripcion">Descripción detallada <span class="required">*</span></label>
-                    <textarea id="description" required placeholder="Detalle los hechos aquí..."
-                        maxlength="1000"></textarea>
-                </div>
-
-                <div class="form-group full-width" id="field-image">
-                    <label>Evidencias Fotográficas (Máx. 5)</label>
-                    <div class="image-upload" id="upload-zone">
-                        <i class="fas fa-images"></i>
-                        <p>Haz clic o arrastra fotos aquí</p>
-                        <input type="file" id="file-input" accept="image/*" multiple style="display: none" />
-                    </div>
-                    <div id="gallery-preview" style="margin-top: 1rem;"></div>
-                </div>
+          <div class="form-group full-width" id="field-image">
+            <label>Evidencias Fotográficas (Máx. 5)</label>
+            <div class="image-upload" id="upload-zone">
+              <i class="fas fa-images"></i>
+              <p>Haz clic o arrastra fotos aquí</p>
+              <input
+                type="file"
+                id="file-input"
+                accept="image/*"
+                multiple
+                style="display: none"
+              />
             </div>
+            <div id="gallery-preview" style="margin-top: 1rem"></div>
+          </div>
+        </div>
 
-            <div class="section-divider"><span>Destinatarios</span></div>
-            <div class="form-grid">
-                <div class="form-group full-width">
-                    <label>Enviar copia a (Correos) <span class="required">*</span></label>
-                    <div class="recipients-container" id="recipients-list">
-                        <div class="recipient-row">
-                            <input type="email" name="destinatario[]" required placeholder="correo@empresa.com" />
-                            <button type="button" class="remove-recipient-btn" style="display: none;"><i
-                                    class="fas fa-times"></i></button>
-                        </div>
-                    </div>
-                    <button type="button" class="add-recipient-btn" id="add-recipient"
-                        style="color: var(--accent); background: none; border: none; cursor: pointer; text-align: left; margin-top: 10px; font-weight: 600;">
-                        <i class="fas fa-plus"></i> Añadir otro correo
-                    </button>
-                </div>
+        <div class="section-divider"><span>Destinatarios</span></div>
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label
+              >Enviar copia a (Correos) <span class="required">*</span></label
+            >
+            <div class="recipients-container" id="recipients-list">
+              <div class="recipient-row">
+                <input
+                  type="email"
+                  name="destinatario[]"
+                  required
+                  placeholder="correo@trez.com"
+                />
+                <button
+                  type="button"
+                  class="remove-recipient-btn"
+                  style="display: none"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
             </div>
-
-            <button type="submit" class="submit-btn" id="submit-btn">
-                <i class="fas fa-paper-plane"></i> Emitir Informe y Notificar
+            <button
+              type="button"
+              class="add-recipient-btn"
+              id="add-recipient"
+              style="
+                color: var(--accent);
+                background: none;
+                border: none;
+                cursor: pointer;
+                text-align: left;
+                margin-top: 10px;
+                font-weight: 600;
+              "
+            >
+              <i class="fas fa-plus"></i> Añadir otro correo
             </button>
-        </form>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <i class="fas fa-paper-plane"></i> Emitir Informe y Notificar
+        </button>
+      </form>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const API_BASE = "https://general-cashouts-production.up.railway.app/api";
-            const token = localStorage.getItem('token');
-            const userData = JSON.parse(localStorage.getItem('user'));
+      document.addEventListener("DOMContentLoaded", () => {
+        const API_BASE =
+          "https://general-cashouts-production.up.railway.app/api";
+        const token = localStorage.getItem("token");
+        const userData = JSON.parse(localStorage.getItem("user"));
 
-            let currentType = "Error Operacional";
-            let selectedSeverity = "";
-            let selectedFiles = [];
+        let currentType = "Error Operacional";
+        let selectedSeverity = "";
+        let selectedFiles = [];
 
-            // Redirigir si no es supervisor
-            if (!token || userData.role !== 'supervisor') {
-                window.location.href = '/';
+        // Redirigir si no es supervisor
+        if (!token || userData.role !== "supervisor") {
+          window.location.href = "/";
+        }
+
+        // 1. Cargar Colaboradores Dinámicamente
+        async function loadUsers() {
+          try {
+            const res = await fetch(`${API_BASE}/users`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            const select = document.getElementById("selectColaborador");
+            select.innerHTML =
+              '<option value="">Seleccione un colaborador...</option>';
+            data.data.forEach((u) => {
+              // Ahora enviamos a todos los usuarios, incluyendo supervisores
+              select.innerHTML += `<option value="${u._id}">${u.fullName}</option>`;
+              // Si hay otros roles como 'admin' y quieres ocultarlos, puedes usar: if (u.role !== 'admin')
+            });
+          } catch (err) {
+            console.error("Error al cargar usuarios");
+          }
+        }
+        loadUsers();
+
+        // 1.5 Auto-generar N° de Incidencia al seleccionar colaborador
+        document
+          .getElementById("selectColaborador")
+          .addEventListener("change", async (e) => {
+            const colabId = e.target.value;
+            const incInput = document.getElementById("incidenceNumber");
+
+            if (!colabId) {
+              incInput.value = "";
+              return;
             }
 
-            // 1. Cargar Colaboradores Dinámicamente
-            async function loadUsers() {
-                try {
-                    const res = await fetch(`${API_BASE}/users`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    const data = await res.json();
-                    const select = document.getElementById('selectColaborador');
-                    select.innerHTML = '<option value="">Seleccione un colaborador...</option>';
-                    data.data.forEach(u => {
-                        // Ahora enviamos a todos los usuarios, incluyendo supervisores
-                        select.innerHTML += `<option value="${u._id}">${u.fullName}</option>`;
-                        // Si hay otros roles como 'admin' y quieres ocultarlos, puedes usar: if (u.role !== 'admin')
-                    });
-                } catch (err) { console.error("Error al cargar usuarios"); }
+            try {
+              const res = await fetch(`${API_BASE}/reports/count/${colabId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              const data = await res.json();
+              if (data.success) {
+                incInput.value = String(data.nextNumber).padStart(3, "0");
+              }
+            } catch (err) {
+              console.error("Error al obtener conteo:", err);
             }
-            loadUsers();
+          });
 
-            // 1.5 Auto-generar N° de Incidencia al seleccionar colaborador
-            document.getElementById('selectColaborador').addEventListener('change', async (e) => {
-                const colabId = e.target.value;
-                const incInput = document.getElementById('incidenceNumber');
+        // 2. Lógica de Pestañas
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            document
+              .querySelectorAll(".tab-btn")
+              .forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentType = btn.getAttribute("data-type");
 
-                if (!colabId) {
-                    incInput.value = '';
-                    return;
-                }
+            const severityField = document.getElementById("field-severity");
+            const imageField = document.getElementById("field-image");
 
-                try {
-                    const res = await fetch(`${API_BASE}/reports/count/${colabId}`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        incInput.value = String(data.nextNumber).padStart(3, '0');
-                    }
-                } catch (err) {
-                    console.error("Error al obtener conteo:", err);
-                }
-            });
+            if (currentType === "Incidencia") {
+              severityField.classList.add("hide");
+              imageField.classList.add("hide");
+            } else {
+              severityField.classList.remove("hide");
+              imageField.classList.remove("hide");
+            }
+          });
+        });
 
-            // 2. Lógica de Pestañas
-            document.querySelectorAll(".tab-btn").forEach((btn) => {
-                btn.addEventListener("click", () => {
-                    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
-                    btn.classList.add("active");
-                    currentType = btn.getAttribute("data-type");
+        // 3. Selección de Severidad
+        document.querySelectorAll(".severity-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            document
+              .querySelectorAll(".severity-btn")
+              .forEach((b) => b.classList.remove("selected"));
+            btn.classList.add("selected");
+            selectedSeverity = btn.getAttribute("data-value");
+          });
+        });
 
-                    const severityField = document.getElementById("field-severity");
-                    const imageField = document.getElementById("field-image");
+        // 3.5 Lógica del botón + para destinatarios
+        const btnAddRecipient = document.getElementById("add-recipient");
+        const recipientsList = document.getElementById("recipients-list");
 
-                    if (currentType === "Incidencia") {
-                        severityField.classList.add("hide");
-                        imageField.classList.add("hide");
-                    } else {
-                        severityField.classList.remove("hide");
-                        imageField.classList.remove("hide");
-                    }
-                });
-            });
+        // Ocultar botón eliminar en la primera fila
+        const firstRowRemoveBtn = recipientsList.querySelector(
+          ".remove-recipient-btn",
+        );
+        if (firstRowRemoveBtn) firstRowRemoveBtn.style.display = "none";
 
-            // 3. Selección de Severidad
-            document.querySelectorAll(".severity-btn").forEach((btn) => {
-                btn.addEventListener("click", () => {
-                    document.querySelectorAll(".severity-btn").forEach((b) => b.classList.remove("selected"));
-                    btn.classList.add("selected");
-                    selectedSeverity = btn.getAttribute("data-value");
-                });
-            });
+        btnAddRecipient.addEventListener("click", () => {
+          // Contamos cuántas filas hay (para limitar a 5)
+          const currentRows =
+            recipientsList.querySelectorAll(".recipient-row").length;
+          if (currentRows >= 5) {
+            return showNotification(
+              "Máximo 5 destinatarios permitidos.",
+              "error",
+            );
+          }
 
-            // 3.5 Lógica del botón + para destinatarios
-            const btnAddRecipient = document.getElementById("add-recipient");
-            const recipientsList = document.getElementById("recipients-list");
-
-            // Ocultar botón eliminar en la primera fila
-            const firstRowRemoveBtn = recipientsList.querySelector(".remove-recipient-btn");
-            if (firstRowRemoveBtn) firstRowRemoveBtn.style.display = "none";
-
-            btnAddRecipient.addEventListener("click", () => {
-                // Contamos cuántas filas hay (para limitar a 5)
-                const currentRows = recipientsList.querySelectorAll(".recipient-row").length;
-                if (currentRows >= 5) {
-                    return showNotification("Máximo 5 destinatarios permitidos.", "error");
-                }
-
-                // Crear nueva fila
-                const div = document.createElement("div");
-                div.className = "recipient-row";
-                div.style.marginTop = "8px"; // Un poco de espacio
-                div.innerHTML = `
+          // Crear nueva fila
+          const div = document.createElement("div");
+          div.className = "recipient-row";
+          div.style.marginTop = "8px"; // Un poco de espacio
+          div.innerHTML = `
             <input type="email" name="destinatario[]" required placeholder="correo@empresa.com" style="flex:1;" />
             <button type="button" class="remove-recipient-btn" style="background: none; border: none; color: var(--danger); cursor: pointer; padding: 0 0.5rem;"><i class="fas fa-times"></i></button>
         `;
 
-                recipientsList.appendChild(div);
+          recipientsList.appendChild(div);
 
-                // Lógica para eliminar la fila creada
-                div.querySelector(".remove-recipient-btn").addEventListener("click", () => {
-                    div.remove();
-                });
+          // Lógica para eliminar la fila creada
+          div
+            .querySelector(".remove-recipient-btn")
+            .addEventListener("click", () => {
+              div.remove();
             });
+        });
 
-            // 4. Lógica de Archivos (Drag & Drop)
-            const uploadZone = document.getElementById("upload-zone");
-            const fileInput = document.getElementById("file-input");
+        // 4. Lógica de Archivos (Drag & Drop)
+        const uploadZone = document.getElementById("upload-zone");
+        const fileInput = document.getElementById("file-input");
 
-            uploadZone.addEventListener("click", () => fileInput.click());
+        uploadZone.addEventListener("click", () => fileInput.click());
 
-            const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB por imagen
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB por imagen
 
-            // Mostrar/ocultar zona de upload según cantidad
-            function updateUploadZone() {
-                if (selectedFiles.length >= 5) {
-                    uploadZone.style.display = 'none';
-                } else {
-                    uploadZone.style.display = '';
-                }
+        // Mostrar/ocultar zona de upload según cantidad
+        function updateUploadZone() {
+          if (selectedFiles.length >= 5) {
+            uploadZone.style.display = "none";
+          } else {
+            uploadZone.style.display = "";
+          }
+        }
+
+        const handleFiles = (files) => {
+          if (selectedFiles.length >= 5) {
+            showNotification("Solo puedes subir hasta 5 imágenes.", "error");
+            return;
+          }
+
+          const remaining = 5 - selectedFiles.length;
+          const toAdd = Array.from(files).slice(0, remaining);
+
+          toAdd.forEach((file) => {
+            // Validar tamaño
+            if (file.size > MAX_FILE_SIZE) {
+              const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+              showNotification(
+                `"${file.name}" pesa ${sizeMB}MB. El máximo permitido es 5MB. Intenta con una imagen más ligera.`,
+                "error",
+              );
+              return;
             }
 
-            const handleFiles = (files) => {
-                if (selectedFiles.length >= 5) {
-                    showNotification("Solo puedes subir hasta 5 imágenes.", "error");
-                    return;
-                }
-
-                const remaining = 5 - selectedFiles.length;
-                const toAdd = Array.from(files).slice(0, remaining);
-
-                toAdd.forEach(file => {
-                    // Validar tamaño
-                    if (file.size > MAX_FILE_SIZE) {
-                        const sizeMB = (file.size / 1024 / 1024).toFixed(1);
-                        showNotification(`"${file.name}" pesa ${sizeMB}MB. El máximo permitido es 5MB. Intenta con una imagen más ligera.`, "error");
-                        return;
-                    }
-
-                    selectedFiles.push(file);
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const container = document.getElementById("gallery-preview");
-                        const div = document.createElement("div");
-                        div.className = "image-preview-container";
-                        div.innerHTML = `
+            selectedFiles.push(file);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const container = document.getElementById("gallery-preview");
+              const div = document.createElement("div");
+              div.className = "image-preview-container";
+              div.innerHTML = `
               <img src="${e.target.result}" class="image-preview">
               <button type="button" class="remove-image" onclick="removeImg('${file.name}')">✖</button>
             `;
-                        container.appendChild(div);
-                    };
-                    reader.readAsDataURL(file);
-                });
-
-                updateUploadZone();
+              container.appendChild(div);
             };
+            reader.readAsDataURL(file);
+          });
 
-            fileInput.addEventListener("change", (e) => handleFiles(e.target.files));
+          updateUploadZone();
+        };
 
-            uploadZone.addEventListener("dragover", (e) => { e.preventDefault(); uploadZone.classList.add("dragover"); });
-            uploadZone.addEventListener("dragleave", () => uploadZone.classList.remove("dragover"));
-            uploadZone.addEventListener("drop", (e) => {
-                e.preventDefault();
-                uploadZone.classList.remove("dragover");
-                handleFiles(e.dataTransfer.files);
-            });
+        fileInput.addEventListener("change", (e) =>
+          handleFiles(e.target.files),
+        );
 
-            window.removeImg = (name) => {
-                selectedFiles = selectedFiles.filter(f => f.name !== name);
-                document.getElementById("gallery-preview").innerHTML = "";
-                const tempFiles = [...selectedFiles];
-                selectedFiles = [];
-                handleFiles(tempFiles);
-                updateUploadZone();
-            };
-
-            // 5. Envío Final a Railway
-            document.getElementById("main-report-form").addEventListener("submit", async (e) => {
-                e.preventDefault();
-
-                if (currentType === "Error Operacional" && !selectedSeverity) {
-                    return showNotification("Selecciona un nivel de severidad", "error");
-                }
-
-                const loader = document.getElementById("loading-overlay");
-                loader.classList.add("active");
-
-                const formData = new FormData();
-                formData.append('type', currentType);
-                formData.append('collaboratorId', document.getElementById('selectColaborador').value);
-                formData.append('collaboratorName', document.getElementById('selectColaborador').selectedOptions[0].text);
-                formData.append('incidenceNumber', document.getElementById('incidenceNumber').value);
-                formData.append('subject', document.getElementById('subject').value);
-                let finalSeverity = 'N/A'; // Por defecto para "Incidencias"
-
-                if (currentType === "Error Operacional") {
-                    const severityMap = {
-                        "leve": "Leve",
-                        "media": "Media",
-                        "grave": "Grave",
-                        "critica": "Crítica" // Le pone la tilde y mayúscula que exige Mongo
-                    };
-                    finalSeverity = severityMap[selectedSeverity];
-                }
-
-                formData.append('severity', finalSeverity);
-                formData.append('description', document.getElementById('description').value);
-
-                selectedFiles.forEach(file => formData.append('evidences', file));
-                // ✅ NUEVO: Extraer todos los correos ingresados
-                const correosInputs = Array.from(document.querySelectorAll('input[name="destinatario[]"]'));
-                // Filtramos por si hay inputs vacíos accidentalmente
-                const correos = correosInputs.map(input => input.value).filter(val => val.trim() !== "");
-
-                // Lo mandamos como un String JSON porque FormData solo acepta strings
-                formData.append('recipients', JSON.stringify(correos));
-
-                try {
-                    const res = await fetch(`${API_BASE}/reports/create`, {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${token}` },
-                        body: formData
-                    });
-
-                    const data = await res.json();
-                    if (data.success) {
-                        showNotification("¡Informe emitido con éxito!", "success");
-
-                        // Limpiar formulario para poder enviar otro
-                        document.getElementById("main-report-form").reset();
-                        document.getElementById("gallery-preview").innerHTML = "";
-                        document.getElementById("incidenceNumber").value = "";
-                        selectedFiles = [];
-                        selectedSeverity = "";
-                        document.querySelectorAll(".severity-btn").forEach(b => b.classList.remove("selected"));
-                    } else {
-                        // Detectar si el error es por tamaño de archivo
-                        const msg = data.message || "";
-                        if (msg.toLowerCase().includes("large") || msg.toLowerCase().includes("size") || msg.toLowerCase().includes("limit") || res.status === 413) {
-                            showNotification("Una o más imágenes son demasiado pesadas. Reduce su tamaño e intenta de nuevo.", "error");
-                        } else {
-                            showNotification(msg || "Error al emitir el informe.", "error");
-                        }
-                    }
-                } catch (error) {
-                    showNotification("Error de conexión. Verifica tu internet e intenta de nuevo.", "error");
-                } finally {
-                    loader.classList.remove("active");
-                }
-            });
-
-            function showNotification(msg, type) {
-                const notif = document.getElementById("notification");
-                document.getElementById("notif-text").textContent = msg;
-                notif.className = `notification show ${type}`;
-                setTimeout(() => notif.classList.remove("show"), 4000);
-            }
+        uploadZone.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          uploadZone.classList.add("dragover");
         });
+        uploadZone.addEventListener("dragleave", () =>
+          uploadZone.classList.remove("dragover"),
+        );
+        uploadZone.addEventListener("drop", (e) => {
+          e.preventDefault();
+          uploadZone.classList.remove("dragover");
+          handleFiles(e.dataTransfer.files);
+        });
+
+        window.removeImg = (name) => {
+          selectedFiles = selectedFiles.filter((f) => f.name !== name);
+          document.getElementById("gallery-preview").innerHTML = "";
+          const tempFiles = [...selectedFiles];
+          selectedFiles = [];
+          handleFiles(tempFiles);
+          updateUploadZone();
+        };
+
+        // 5. Envío Final a Railway
+        document
+          .getElementById("main-report-form")
+          .addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            if (currentType === "Error Operacional" && !selectedSeverity) {
+              return showNotification(
+                "Selecciona un nivel de severidad",
+                "error",
+              );
+            }
+
+            const loader = document.getElementById("loading-overlay");
+            loader.classList.add("active");
+
+            const formData = new FormData();
+            formData.append("type", currentType);
+            formData.append(
+              "collaboratorId",
+              document.getElementById("selectColaborador").value,
+            );
+            formData.append(
+              "collaboratorName",
+              document.getElementById("selectColaborador").selectedOptions[0]
+                .text,
+            );
+            formData.append(
+              "incidenceNumber",
+              document.getElementById("incidenceNumber").value,
+            );
+            formData.append(
+              "subject",
+              document.getElementById("subject").value,
+            );
+            let finalSeverity = "N/A"; // Por defecto para "Incidencias"
+
+            if (currentType === "Error Operacional") {
+              const severityMap = {
+                leve: "Leve",
+                media: "Media",
+                grave: "Grave",
+                critica: "Crítica", // Le pone la tilde y mayúscula que exige Mongo
+              };
+              finalSeverity = severityMap[selectedSeverity];
+            }
+
+            formData.append("severity", finalSeverity);
+            formData.append(
+              "description",
+              document.getElementById("description").value,
+            );
+
+            selectedFiles.forEach((file) => formData.append("evidences", file));
+            // ✅ NUEVO: Extraer todos los correos ingresados
+            const correosInputs = Array.from(
+              document.querySelectorAll('input[name="destinatario[]"]'),
+            );
+            // Filtramos por si hay inputs vacíos accidentalmente
+            const correos = correosInputs
+              .map((input) => input.value)
+              .filter((val) => val.trim() !== "");
+
+            // Lo mandamos como un String JSON porque FormData solo acepta strings
+            formData.append("recipients", JSON.stringify(correos));
+
+            try {
+              const res = await fetch(`${API_BASE}/reports/create`, {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` },
+                body: formData,
+              });
+
+              const data = await res.json();
+              if (data.success) {
+                showNotification("¡Informe emitido con éxito!", "success");
+
+                // Limpiar formulario para poder enviar otro
+                document.getElementById("main-report-form").reset();
+                document.getElementById("gallery-preview").innerHTML = "";
+                document.getElementById("incidenceNumber").value = "";
+                selectedFiles = [];
+                selectedSeverity = "";
+                document
+                  .querySelectorAll(".severity-btn")
+                  .forEach((b) => b.classList.remove("selected"));
+              } else {
+                // Detectar si el error es por tamaño de archivo
+                const msg = data.message || "";
+                if (
+                  msg.toLowerCase().includes("large") ||
+                  msg.toLowerCase().includes("size") ||
+                  msg.toLowerCase().includes("limit") ||
+                  res.status === 413
+                ) {
+                  showNotification(
+                    "Una o más imágenes son demasiado pesadas. Reduce su tamaño e intenta de nuevo.",
+                    "error",
+                  );
+                } else {
+                  showNotification(
+                    msg || "Error al emitir el informe.",
+                    "error",
+                  );
+                }
+              }
+            } catch (error) {
+              showNotification(
+                "Error de conexión. Verifica tu internet e intenta de nuevo.",
+                "error",
+              );
+            } finally {
+              loader.classList.remove("active");
+            }
+          });
+
+        function showNotification(msg, type) {
+          const notif = document.getElementById("notification");
+          document.getElementById("notif-text").textContent = msg;
+          notif.className = `notification show ${type}`;
+          setTimeout(() => notif.classList.remove("show"), 4000);
+        }
+      });
     </script>
 
     <script>
-        if (typeof particlesJS !== "undefined") {
-            particlesJS("particles-js", {
-                particles: { number: { value: 60, density: { enable: true, value_area: 800 } }, color: { value: "#5e6ad2" }, shape: { type: "circle" }, opacity: { value: 0.3, random: false }, size: { value: 3, random: true }, line_linked: { enable: true, distance: 150, color: "#5e6ad2", opacity: 0.2, width: 1 }, move: { enable: true, speed: 1.5, direction: "none", random: false, straight: false, out_mode: "out", bounce: false } },
-                interactivity: { detect_on: "window", events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" }, resize: true }, modes: { grab: { distance: 200, line_linked: { opacity: 0.6 } }, push: { particles_nb: 4 } } },
-                retina_detect: true,
-            });
-        }
+      if (typeof particlesJS !== "undefined") {
+        particlesJS("particles-js", {
+          particles: {
+            number: { value: 60, density: { enable: true, value_area: 800 } },
+            color: { value: "#5e6ad2" },
+            shape: { type: "circle" },
+            opacity: { value: 0.3, random: false },
+            size: { value: 3, random: true },
+            line_linked: {
+              enable: true,
+              distance: 150,
+              color: "#5e6ad2",
+              opacity: 0.2,
+              width: 1,
+            },
+            move: {
+              enable: true,
+              speed: 1.5,
+              direction: "none",
+              random: false,
+              straight: false,
+              out_mode: "out",
+              bounce: false,
+            },
+          },
+          interactivity: {
+            detect_on: "window",
+            events: {
+              onhover: { enable: true, mode: "grab" },
+              onclick: { enable: true, mode: "push" },
+              resize: true,
+            },
+            modes: {
+              grab: { distance: 200, line_linked: { opacity: 0.6 } },
+              push: { particles_nb: 4 },
+            },
+          },
+          retina_detect: true,
+        });
+      }
     </script>
-</body>
-
+  </body>
 </html>
