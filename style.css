@@ -430,3 +430,34 @@ body.light-mode #login-view input {
 body.light-mode #login-view input::placeholder {
     color: #6b7280 !important;
 }
+
+/* ================= LÓGICA DE PINES/FAVORITOS ================= */
+.pin-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  z-index: 10;
+  opacity: 0.1;
+  cursor: pointer;
+}
+.app-card:hover .pin-btn {
+  opacity: 0.8;
+}
+.pin-btn:hover {
+  color: #f1c40f;
+  transform: scale(1.15);
+  opacity: 1;
+}
+.pin-btn.pinned {
+  color: #f1c40f;
+  opacity: 1;
+  fill: #f1c40f;
+}
+.pin-btn.pinned svg {
+  fill: #f1c40f;
+}
+.app-card.is-pinned {
+  order: -1;
+}
