@@ -83,7 +83,7 @@ button.btn-primary:hover { background: var(--accent-hover); }
 /* ================= DASHBOARD VIEW ================= */
 #dashboard-view {
     width: 100%;
-    max-width: 900px;
+    max-width: 1280px;
     padding: 20px;
     display: none; /* Oculto hasta que inicie sesión */
 }
@@ -97,6 +97,8 @@ button.btn-primary:hover { background: var(--accent-hover); }
     padding: 15px 25px;
     border-radius: 16px;
     border: 1px solid var(--border);
+    position: relative;
+    z-index: 1000;
     margin-bottom: 40px;
 }
 
@@ -112,33 +114,171 @@ button.btn-primary:hover { background: var(--accent-hover); }
     font-weight: 600;
 }
 
+.dashboard-container {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 40px;
+    margin-top: 30px;
+    align-items: start;
+}
+
+.column-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 25px 0;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.column-title.secondary {
+    opacity: 0.7;
+}
+
 .apps-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.utility-grid {
+    grid-template-columns: 1fr;
 }
 
 .app-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 16px;
-    padding: 30px;
+    padding: 25px;
     text-decoration: none;
     color: var(--text-primary);
-    transition: transform 0.2s, border-color 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Base style for card content to stay above the hover effect */
+.app-card > * {
+    position: relative;
+    z-index: 2;
+    transition: color 0.3s ease, filter 0.3s ease, opacity 0.3s ease;
+}
+
+/* Sliding background - Theme Inversion Effect */
+.card-hover-bg {
+    position: absolute;
+    inset: 0;
+    background: #ffffff; /* Default: Light hover for Dark mode */
+    transform: translateY(105%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+}
+
+body.light-mode .card-hover-bg {
+    background: #16181d; /* Dark hover for Light mode */
+}
+
+/* Giant background icon */
+.card-icon-bg {
+    position: absolute;
+    z-index: 1;
+    top: -20px;
+    right: -20px;
+    width: 120px !important;
+    height: 120px !important;
+    opacity: 0.05;
+    filter: grayscale(1) brightness(2);
+    transform: rotate(-15deg);
+    transition: transform 0.5s ease, opacity 0.5s ease, filter 0.5s ease;
+    pointer-events: none;
+}
+
+.app-card:hover .card-hover-bg {
+    transform: translateY(0);
+}
+
+.app-card:hover .card-icon-bg {
+    transform: rotate(12deg) scale(1.2);
+    opacity: 0.1;
+    filter: grayscale(0) brightness(1);
+}
+
+body.light-mode .app-card:hover .card-icon-bg {
+    filter: grayscale(0) brightness(1) invert(1);
 }
 
 .app-card:hover {
-    transform: translateY(-5px);
     border-color: var(--accent);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+}
+
+.app-card:hover .app-title,
+.app-card:hover .app-desc {
+    color: #1f2937; /* Dark text for Dark mode hover */
+}
+
+body.light-mode .app-card:hover .app-title,
+body.light-mode .app-card:hover .app-desc {
+    color: #ffffff; /* White text for Light mode hover */
+}
+
+.app-card:hover img:not(.card-icon-bg) {
+    /* Mantiene el color original del logo principal */
+}
+
+body.light-mode .app-card:hover img:not(.card-icon-bg) {
+    /* Mantiene el color original del logo principal */
+}
+
+/* Specific adjustment for utility cards in the sidebar */
+.side-column .app-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Compact styles for the side column */
+.side-column .app-card {
+    padding: 18px 22px;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.15); /* Borde un poco más visible */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+body.light-mode .side-column .app-card {
+    border-color: rgba(0, 0, 0, 0.2); /* Más notable en modo claro */
+    background: #fcfcfc;
+}
+
+.side-column .app-card img {
+    width: 32px !important;
+    height: 32px !important;
+}
+
+.side-column .app-title {
+    font-size: 16px;
+}
+
+.side-column .app-desc {
+    font-size: 13px;
+    opacity: 0.8;
 }
 
 .app-icon { font-size: 40px; }
 .app-title { font-size: 20px; font-weight: 700; margin: 0; }
 .app-desc { color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin: 0; }
+
+@media (max-width: 900px) {
+    .dashboard-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .side-column {
+        margin-top: 40px;
+    }
+}
 
 /* ================= PROFILE SECTION ================= */
 .profile-section {

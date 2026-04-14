@@ -1,296 +1,258 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OPS Workspace</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="icon" type="image/png" href="./imgs/dashboard.png" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-    <style>
-      /* === AJUSTES DEL DASHBOARD Y MENU DESPLEGABLE === */
-      #dashboard-view {
-        width: 100%;
-        max-width: 800px;
-        margin: 0 auto;
-      }
 
-      .navbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OPS Workspace</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="./imgs/dashboard.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <style>
+    /* === AJUSTES DEL DASHBOARD Y MENU DESPLEGABLE === */
+    #dashboard-view {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
 
-      /* Contenedor del menú de perfil */
-      .profile-menu {
-        position: relative;
-        display: inline-block;
-      }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-      /* El botón redondo de arriba a la derecha */
-      .profile-trigger {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--border);
-        padding: 8px 16px;
-        border-radius: 30px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        user-select: none;
-      }
+    /* Contenedor del menú de perfil */
+    .profile-menu {
+      position: relative;
+      display: inline-block;
+    }
 
-      .profile-trigger:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.2);
-      }
+    /* El botón redondo de arriba a la derecha */
+    .profile-trigger {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
 
-      /* La cajita flotante con la información */
-      .profile-dropdown {
-        position: absolute;
-        top: 120%;
-        right: 0;
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 15px;
-        width: 240px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-        display: none;
-        /* Oculto por defecto */
-        flex-direction: column;
-        z-index: 100;
-      }
+    .profile-trigger:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
 
-      /* Clase para mostrar el menú */
-      .profile-dropdown.active {
-        display: flex;
-      }
+    /* La cajita flotante con la información */
+    .profile-dropdown {
+      position: absolute;
+      top: 120%;
+      right: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 15px;
+      width: 240px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      display: none;
+      /* Oculto por defecto */
+      flex-direction: column;
+      z-index: 1100;
+    }
 
-      .dropdown-header {
-        border-bottom: 1px solid var(--border);
-        padding-bottom: 15px;
-        margin-bottom: 10px;
-      }
+    /* Clase para mostrar el menú */
+    .profile-dropdown.active {
+      display: flex;
+    }
 
-      .btn-logout {
-        width: 100%;
-        text-align: center;
-        background: rgba(231, 76, 60, 0.1);
-        color: var(--danger);
-        border: 1px solid rgba(231, 76, 60, 0.2);
-        padding: 10px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: 0.2s;
-      }
+    .dropdown-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 15px;
+      margin-bottom: 10px;
+    }
 
-      .btn-logout:hover {
-        background: rgba(231, 76, 60, 0.2);
-      }
+    .btn-logout {
+      width: 100%;
+      text-align: center;
+      background: rgba(231, 76, 60, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(231, 76, 60, 0.2);
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+    }
 
-      /* ================= ESTILOS MODO CLARO / OSCURO ================= */
-      body.light-mode {
-        --bg-app: #f4f6f8;
-        --bg-card: #ffffff;
-        --text-primary: #1f2937;
-        --text-secondary: #6b7280;
-        --border: rgba(0, 0, 0, 0.1);
-      }
+    .btn-logout:hover {
+      background: rgba(231, 76, 60, 0.2);
+    }
 
-      /* ================= CORRECCIONES NAVBAR MODO CLARO ================= */
-      body.light-mode .navbar {
-        background-color: var(--bg-card);
-        border: 1px solid var(--border);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-      }
+    /* ================= ESTILOS MODO CLARO / OSCURO ================= */
+    body.light-mode {
+      --bg-app: #f4f6f8;
+      --bg-card: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --border: rgba(0, 0, 0, 0.1);
+    }
 
-      body.light-mode .logo-text,
-      body.light-mode .logo-text * {
-        color: #1f2937 !important;
-        background: none !important;
-        -webkit-text-fill-color: #1f2937 !important;
-        text-shadow: none !important;
-      }
+    /* ================= CORRECCIONES NAVBAR MODO CLARO ================= */
+    body.light-mode .navbar {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    }
 
-      body.light-mode .profile-trigger {
-        background: rgba(0, 0, 0, 0.04);
-        border: 1px solid var(--border);
-      }
+    body.light-mode .logo-text,
+    body.light-mode .logo-text * {
+      color: #1f2937 !important;
+      background: none !important;
+      -webkit-text-fill-color: #1f2937 !important;
+      text-shadow: none !important;
+    }
 
-      body.light-mode .profile-trigger:hover {
-        background: rgba(0, 0, 0, 0.08);
-      }
+    body.light-mode .profile-trigger {
+      background: rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--border);
+    }
 
-      body.light-mode .profile-trigger,
-      body.light-mode .profile-trigger span {
-        color: #1f2937 !important;
-      }
+    body.light-mode .profile-trigger:hover {
+      background: rgba(0, 0, 0, 0.08);
+    }
 
-      /* ================= INTERCAMBIO DE LOGOS ================= */
-      body.light-mode .logo-dark {
-        display: none !important;
-      }
+    body.light-mode .profile-trigger,
+    body.light-mode .profile-trigger span {
+      color: #1f2937 !important;
+    }
 
-      body.light-mode .logo-light {
-        display: block !important;
-      }
+    /* ================= INTERCAMBIO DE LOGOS ================= */
+    body.light-mode .logo-dark {
+      display: none !important;
+    }
 
-      /* ================= SWITCH DE TEMA ESTILO IOS ================= */
-      .theme-switch {
-        position: relative;
-        display: inline-block;
-        width: 64px;
-        height: 32px;
-      }
+    body.light-mode .logo-light {
+      display: block !important;
+    }
 
-      .theme-switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
+    /* ================= SWITCH DE TEMA ESTILO IOS ================= */
+    .theme-switch {
+      position: relative;
+      display: inline-block;
+      width: 64px;
+      height: 32px;
+    }
 
-      .theme-switch .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--border);
-        border-radius: 32px;
-        transition: 0.4s;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 6px;
-      }
+    .theme-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
 
-      .theme-switch .slider::before {
-        position: absolute;
-        content: "";
-        height: 24px;
-        width: 24px;
-        left: 3px;
-        bottom: 3px;
-        background-color: #5e6ad2;
-        border-radius: 50%;
-        transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        z-index: 2;
-      }
+    .theme-switch .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      transition: 0.4s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6px;
+    }
 
-      .theme-switch .switch-icon {
-        height: 14px;
-        width: 14px;
-        z-index: 1;
-        object-fit: contain;
-      }
+    .theme-switch .slider::before {
+      position: absolute;
+      content: "";
+      height: 24px;
+      width: 24px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #5e6ad2;
+      border-radius: 50%;
+      transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      z-index: 2;
+    }
 
-      body.light-mode .theme-switch .slider {
-        background-color: rgba(0, 0, 0, 0.05);
-      }
+    .theme-switch .switch-icon {
+      height: 14px;
+      width: 14px;
+      z-index: 1;
+      object-fit: contain;
+    }
 
-      .theme-switch input:checked + .slider::before {
-        transform: translateX(32px);
-        background-color: #1f2937;
-      }
-    </style>
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-  </head>
+    body.light-mode .theme-switch .slider {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
 
-  <body>
-    <div id="particles-js"></div>
+    .theme-switch input:checked+.slider::before {
+      transform: translateX(32px);
+      background-color: #1f2937;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+</head>
 
-    <div id="login-view" style="position: relative">
-      <label
-        class="theme-switch"
-        style="position: absolute; top: 20px; right: 20px"
-        title="Cambiar Tema"
-      >
-        <input
-          type="checkbox"
-          class="theme-checkbox"
-          onchange="toggleTheme()"
-        />
-        <span class="slider">
-          <img src="./imgs/daylight.png" alt="Dark" class="switch-icon" />
-          <img src="./imgs/moon (2).png" alt="Light" class="switch-icon" />
-        </span>
-      </label>
+<body>
+  <div id="particles-js"></div>
 
-      <div class="logo-text">OPS Workspace</div>
-      <p style="color: var(--text-secondary); margin-bottom: 25px"></p>
+  <div id="login-view" style="position: relative">
+    <label class="theme-switch" style="position: absolute; top: 20px; right: 20px" title="Cambiar Tema">
+      <input type="checkbox" class="theme-checkbox" onchange="toggleTheme()" />
+      <span class="slider">
+        <img src="./imgs/daylight.png" alt="Dark" class="switch-icon" />
+        <img src="./imgs/moon (2).png" alt="Light" class="switch-icon" />
+      </span>
+    </label>
 
-      <form id="loginForm">
-        <input type="text" id="username" placeholder="Usuario" required />
-        <input
-          type="password"
-          id="password"
-          placeholder="Contraseña"
-          required
-        />
-        <button type="submit" class="btn-primary" id="loginBtn">
-          Ingresar
-        </button>
-      </form>
-      <div
-        id="error-msg"
-        style="
+    <div class="logo-text">OPS Workspace</div>
+    <p style="color: var(--text-secondary); margin-bottom: 25px"></p>
+
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Usuario" required />
+      <input type="password" id="password" placeholder="Contraseña" required />
+      <button type="submit" class="btn-primary" id="loginBtn">
+        Ingresar
+      </button>
+    </form>
+    <div id="error-msg" style="
           color: var(--danger);
           margin-top: 15px;
           font-size: 14px;
           display: none;
-        "
-      ></div>
-    </div>
+        "></div>
+  </div>
 
-    <div id="dashboard-view" style="display: none">
-      <div class="navbar">
-        <div
-          class="logo-text"
-          style="
+  <div id="dashboard-view" style="display: none">
+    <div class="navbar">
+      <div class="logo-text" style="
             margin: 0;
             font-size: 20px;
             display: flex;
             align-items: center;
             gap: 8px;
-          "
-        >
-          <img
-            src="./imgs/categories (1).png"
-            alt="Logo"
-            class="logo-dark"
-            style="height: 28px; width: auto"
-          />
-          <img
-            src="./imgs/categories.png"
-            alt="Logo"
-            class="logo-light"
-            style="height: 28px; width: auto; display: none"
-          />
-          Workspace
-        </div>
+          ">
+        <img src="./imgs/categories (1).png" alt="Logo" class="logo-dark" style="height: 28px; width: auto" />
+        <img src="./imgs/categories.png" alt="Logo" class="logo-light"
+          style="height: 28px; width: auto; display: none" />
+        Workspace
+      </div>
 
-        <div style="display: flex; align-items: center; gap: 15px">
-          <div
-            class="notification-menu"
-            style="position: relative; cursor: pointer"
-          >
-            <div id="notif-trigger" onclick="toggleNotifDropdown()">
-              <i
-                class="fas fa-bell"
-                style="font-size: 20px; color: var(--text-secondary)"
-              ></i>
-              <span
-                id="notif-badge"
-                style="
+      <div style="display: flex; align-items: center; gap: 15px">
+        <div class="notification-menu" style="position: relative; cursor: pointer">
+          <div id="notif-trigger" onclick="toggleNotifDropdown()">
+            <i class="fas fa-bell" style="font-size: 20px; color: var(--text-secondary)"></i>
+            <span id="notif-badge" style="
                   display: none;
                   position: absolute;
                   top: -8px;
@@ -302,15 +264,10 @@
                   border-radius: 10px;
                   font-weight: bold;
                   border: 2px solid var(--bg-card);
-                "
-                >0</span
-              >
-            </div>
+                ">0</span>
+          </div>
 
-            <div
-              id="notif-dropdown"
-              class="profile-dropdown"
-              style="
+          <div id="notif-dropdown" class="profile-dropdown" style="
                 width: 300px;
                 right: 0;
                 top: 120%;
@@ -318,114 +275,76 @@
                 overflow: hidden;
                 display: none;
                 flex-direction: column;
-              "
-            >
-              <div
-                style="
+              ">
+            <div style="
                   padding: 12px;
                   font-weight: bold;
                   border-bottom: 1px solid var(--border);
                   background: rgba(0, 0, 0, 0.02);
                   font-size: 14px;
                   color: var(--text-primary);
-                "
-              >
-                Notificaciones Pendientes
-              </div>
-              <div
-                id="notif-items-container"
-                style="max-height: 300px; overflow-y: auto"
-              >
-                <p
-                  style="
+                ">
+              Notificaciones Pendientes
+            </div>
+            <div id="notif-items-container" style="max-height: 300px; overflow-y: auto">
+              <p style="
                     padding: 20px;
                     text-align: center;
                     color: var(--text-secondary);
                     font-size: 13px;
-                  "
-                >
-                  No hay firmas pendientes
-                </p>
-              </div>
+                  ">
+                No hay firmas pendientes
+              </p>
             </div>
           </div>
+        </div>
 
-          <label class="theme-switch" title="Cambiar Tema">
-            <input
-              type="checkbox"
-              class="theme-checkbox"
-              onchange="toggleTheme()"
-            />
-            <span class="slider">
-              <img src="./imgs/daylight.png" alt="Dark" class="switch-icon" />
-              <img src="./imgs/moon (2).png" alt="Light" class="switch-icon" />
-            </span>
-          </label>
+        <label class="theme-switch" title="Cambiar Tema">
+          <input type="checkbox" class="theme-checkbox" onchange="toggleTheme()" />
+          <span class="slider">
+            <img src="./imgs/daylight.png" alt="Dark" class="switch-icon" />
+            <img src="./imgs/moon (2).png" alt="Light" class="switch-icon" />
+          </span>
+        </label>
 
-          <div class="profile-menu">
-            <div
-              class="profile-trigger"
-              id="profileTrigger"
-              onclick="toggleProfileMenu()"
-            >
-              <img
-                src="./imgs/user (1).png"
-                alt="Perfil"
-                style="
+        <div class="profile-menu">
+          <div class="profile-trigger" id="profileTrigger" onclick="toggleProfileMenu()">
+            <img src="./imgs/user (1).png" alt="Perfil" style="
                   width: 24px;
                   height: 24px;
                   border-radius: 50%;
                   object-fit: cover;
-                "
-              />
-              <span
-                id="triggerName"
-                style="
+                " />
+            <span id="triggerName" style="
                   font-weight: 600;
                   font-size: 14px;
                   color: var(--text-primary);
-                "
-                >Cargando...</span
-              >
-              <span style="font-size: 10px; opacity: 0.5">▼</span>
-            </div>
+                ">Cargando...</span>
+            <span style="font-size: 10px; opacity: 0.5">▼</span>
+          </div>
 
-            <div class="profile-dropdown" id="profileDropdown">
-              <div class="dropdown-header">
-                <div
-                  id="profileFullName"
-                  style="font-weight: bold; font-size: 16px; margin-bottom: 4px"
-                >
-                  Nombre
-                </div>
-                <div
-                  id="profileUsername"
-                  style="
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="dropdown-header">
+              <div id="profileFullName" style="font-weight: bold; font-size: 16px; margin-bottom: 4px">
+                Nombre
+              </div>
+              <div id="profileUsername" style="
                     color: var(--text-secondary);
                     font-size: 13px;
                     margin-bottom: 10px;
-                  "
-                >
-                  @usuario
-                </div>
-                <span
-                  class="badge"
-                  id="profileRole"
-                  style="
+                  ">
+                @usuario
+              </div>
+              <span class="badge" id="profileRole" style="
                     font-size: 11px;
                     padding: 4px 10px;
                     border-radius: 12px;
                     font-weight: 700;
                     letter-spacing: 0.5px;
-                  "
-                  >ROL</span
-                >
-              </div>
+                  ">ROL</span>
+            </div>
 
-              <button
-                id="btnOpenSignature"
-                onclick="openSignatureModal()"
-                style="
+            <button id="btnOpenSignature" onclick="openSignatureModal()" style="
                   width: 100%;
                   text-align: center;
                   background: transparent;
@@ -438,176 +357,141 @@
                   margin-bottom: 10px;
                   transition: 0.2s;
                   display: none;
-                "
-              >
-                ✍️ Configurar Firma
-              </button>
+                ">
+              ✍️ Configurar Firma
+            </button>
 
-              <button class="btn-logout" onclick="logout()">
-                Cerrar Sesión
-              </button>
-            </div>
+            <button class="btn-logout" onclick="logout()">
+              Cerrar Sesión
+            </button>
           </div>
         </div>
       </div>
+    </div>
 
-      <div style="margin-top: 40px; margin-bottom: 10px">
-        <h1
-          style="
+    <div style="margin-top: 40px; margin-bottom: 10px">
+      <h1 style="
             margin: 0;
             font-size: 28px;
             color: var(--text-primary);
             font-weight: 700;
-          "
-        >
-          Hola de nuevo,
-          <span id="welcomeName" style="color: #5e6ad2">...</span>!
-        </h1>
-        <p
-          style="margin-top: 5px; color: var(--text-secondary); font-size: 15px"
-        >
-          ¿Qué haremos el día de hoy?
-        </p>
+          ">
+        Hola de nuevo,
+        <span id="welcomeName" style="color: #5e6ad2">...</span>!
+      </h1>
+      <p style="margin-top: 5px; color: var(--text-secondary); font-size: 15px">
+        ¿Qué haremos el día de hoy?
+      </p>
+    </div>
+    <div class="dashboard-container">
+      <div class="main-column">
+        <h2 class="column-title">Applications</h2>
+        <div class="apps-grid">
+          <a href="/cashouts/" class="app-card" id="card-cashouts">
+            <div class="card-hover-bg"></div>
+            <img src="./imgs/budget (1).png" class="card-icon-bg" alt="" />
+            <img src="./imgs/budget (1).png" alt="Cashouts" style="width: 40px; height: 40px; object-fit: contain" />
+            <h3 class="app-title">Cashouts</h3>
+            <p class="app-desc">
+              Sistema de registro y verificación de cashouts en tiempo real con
+              sincronización a Google Sheets.
+            </p>
+          </a>
+
+          <a href="/operapedia/" class="app-card" id="card-operapedia">
+            <div class="card-hover-bg"></div>
+            <img src="./imgs/book.png" class="card-icon-bg" alt="" />
+            <img src="./imgs/book.png" alt="Operapedia" style="width: 40px; height: 40px; object-fit: contain" />
+            <h3 class="app-title">Operapedia</h3>
+            <p class="app-desc">
+              Panel de credenciales, métodos de pago, promociones y catálogo de
+              juegos de nuestras compañías.
+            </p>
+          </a>
+
+          <a href="/kyc/" class="app-card" id="card-kyc">
+            <div class="card-hover-bg"></div>
+            <img src="./imgs/KYC.png" class="card-icon-bg" alt="" />
+            <img src="./imgs/KYC.png" alt="KYC" style="width: 40px; height: 40px; object-fit: contain" />
+            <h3 class="app-title">Customers KYC</h3>
+            <p class="app-desc">
+              Base de datos de clientes, verificación de identidad y documentos.
+            </p>
+          </a>
+
+          <a href="/balance-monitor/" class="app-card" id="card-balance">
+            <div class="card-hover-bg"></div>
+            <img src="./imgs/statistics.png" class="card-icon-bg" alt="" />
+            <img src="./imgs/statistics.png" alt="Balances" style="width: 40px; height: 40px; object-fit: contain" />
+            <h3 class="app-title">Balance Monitor</h3>
+            <p class="app-desc">
+              Monitoreo balances y movimientos. (Módulo Externo)
+            </p>
+          </a>
+
+          <a href="/Shiftlog/" class="app-card" id="card-shiftlog">
+            <div class="card-hover-bg"></div>
+            <img src="./imgs/Shiftlogs.png" class="card-icon-bg" alt="" />
+            <img src="./imgs/Shiftlogs.png" alt="Shiftlog" style="width: 40px; height: 40px; object-fit: contain" />
+            <h3 class="app-title">ShiftLog</h3>
+            <p class="app-desc">
+              Registro de incidentes y novedades del turno.
+            </p>
+          </a>
+        </div>
       </div>
-      <h2
-        style="
-          margin-top: 30px;
-          margin-bottom: 20px;
-          font-size: 18px;
-          color: var(--text-secondary);
-          font-weight: 600;
-        "
-      >
-        Tus Aplicaciones
-      </h2>
 
-      <div class="apps-grid">
-        <a href="/cashouts/" class="app-card" id="card-cashouts">
-          <img
-            src="./imgs/budget (1).png"
-            alt="Cashouts"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">Cashouts</h3>
-          <p class="app-desc">
-            Sistema de registro y verificación de cashouts en tiempo real con
-            sincronización a Google Sheets.
-          </p>
-        </a>
+      <div class="side-column">
+        <h2 class="column-title secondary">Utilities</h2>
+        <div class="apps-grid utility-grid">
+          <a href="/ubicaciones/" class="app-card" id="card-locations">
+            <div class="card-hover-bg"></div>
+            <img src="./imgs/locations.png" class="card-icon-bg" alt="" />
+            <img src="./imgs/locations.png" alt="Balances" style="width: 40px; height: 40px; object-fit: contain" />
+            <h3 class="app-title">Ubicaciones</h3>
+            <p class="app-desc">
+              Monitorea las estaciones de los operadores
+            </p>
+          </a>
 
-        <a href="/operapedia/" class="app-card" id="card-operapedia">
-          <img
-            src="./imgs/book.png"
-            alt="Operapedia"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">Operapedia</h3>
-          <p class="app-desc">
-            Panel de credenciales, métodos de pago, promociones y catálogo de
-            juegos de nuestras compañías.
-          </p>
-        </a>
+          <a href="/Tierlock-verifier/" class="app-card" id="card-tierlock">
+            <div class="card-hover-bg"></div>
+            <img src="./imgs/tools.png" class="card-icon-bg" alt="" />
+            <img src="./imgs/tools.png" alt="Tierlock Verifier"
+              style="width: 40px; height: 40px; object-fit: contain" />
+            <h3 class="app-title">Tierlock Tools</h3>
+            <p class="app-desc">Verificación de depósitos.</p>
+          </a>
 
-        <a href="/kyc/" class="app-card" id="card-kyc">
-          <img
-            src="./imgs/KYC.png"
-            alt="KYC"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">Customers KYC</h3>
-          <p class="app-desc">
-            Base de datos de clientes, verificación de identidad y documentos.
-          </p>
-        </a>
+          <a href="/manage-team/" class="app-card" id="card-manage-team">
+            <div class="card-hover-bg"></div>
+            <img src="./imgs/teams.png" class="card-icon-bg" alt="" />
+            <img src="./imgs/teams.png" alt="Manage Team" style="width: 40px; height: 40px; object-fit: contain" />
+            <h3 class="app-title">Manage Team</h3>
+            <p class="app-desc">Gestión de equipos.</p>
+          </a>
 
-        <a href="/balance-monitor/" class="app-card" id="card-balance">
-          <img
-            src="./imgs/statistics.png"
-            alt="Balances"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">Balance Monitor</h3>
-          <p class="app-desc">
-            Monitoreo balances y movimientos. (Módulo Externo)
-          </p>
-        </a>
+          <a href="/incidencias/" class="app-card" id="card-operational-errors">
+            <div class="card-hover-bg"></div>
+            <img src="./imgs/incidencias.png" class="card-icon-bg" alt="" />
+            <img src="./imgs/incidencias.png" alt="Operational Errors"
+              style="width: 40px; height: 40px; object-fit: contain" />
+            <h3 class="app-title">Errores operacionales</h3>
+            <p class="app-desc">Emisión de informes.</p>
+          </a>
 
-        <a href="/ubicaciones/" class="app-card" id="card-locations">
-          <img
-            src="./imgs/locations.png"
-            alt="Balances"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">Ubicaciones</h3>
-          <p class="app-desc">
-            Monitorea las estaciones de los operadores y sus breaks
-          </p>
-        </a>
-
-        <a href="/Shiftlog/" class="app-card" id="card-shiftlog">
-          <img
-            src="./imgs/Shiftlogs.png"
-            alt="Shiftlog"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">ShiftLog</h3>
-          <p class="app-desc">Registro de incidentes y novedades del turno.</p>
-        </a>
-
-        <a href="/Tierlock-verifier/" class="app-card" id="card-tierlock">
-          <img
-            src="./imgs/tools.png"
-            alt="Tierlock Verifier"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">Tierlock Tools</h3>
-          <p class="app-desc">
-            Herramienta para la verificación de depósitos de jugadores en
-            Tierlock.
-          </p>
-        </a>
-
-        <a href="/manage-team/" class="app-card" id="card-manage-team">
-          <img
-            src="./imgs/teams.png"
-            alt="Manage Team"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">Manage Team</h3>
-          <p class="app-desc">Gestión de equipos.</p>
-        </a>
-
-        <a href="/incidencias/" class="app-card" id="card-operational-errors">
-          <img
-            src="./imgs/incidencias.png"
-            alt="Operational Errors"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">Errores operacionales e incidencias</h3>
-          <p class="app-desc">Emisión de informes para los operadores.</p>
-        </a>
-
-        <div
-          class="app-card"
-          id="card-helpdesk"
-          onclick="openHelpDeskModal()"
-          style="cursor: pointer"
-        >
-          <img
-            src="./imgs/it-support.png"
-            alt="Cashouts"
-            style="width: 40px; height: 40px; object-fit: contain"
-          />
-          <h3 class="app-title">Soporte TI</h3>
-          <p class="app-desc">
-            Reporta incidencias del sistema o solicita nuevas implementaciones
-          </p>
+          <div class="app-card" id="card-helpdesk" onclick="openHelpDeskModal()" style="cursor: pointer">
+            <div class="card-hover-bg"></div>
+            <img src="./imgs/it-support.png" class="card-icon-bg" alt="" />
+            <img src="./imgs/it-support.png" alt="Cashouts" style="width: 40px; height: 40px; object-fit: contain" />
+            <h3 class="app-title">Soporte TI</h3>
+            <p class="app-desc">Reporta incidencias.</p>
+          </div>
         </div>
       </div>
     </div>
-    <div
-      id="helpDeskModal"
-      style="
+  </div>
+  <div id="helpDeskModal" style="
         display: none;
         position: fixed;
         top: 0;
@@ -619,10 +503,8 @@
         z-index: 9999;
         justify-content: center;
         align-items: center;
-      "
-    >
-      <div
-        style="
+      ">
+    <div style="
           background: var(--bg-card);
           padding: 30px;
           border-radius: 16px;
@@ -632,11 +514,8 @@
           box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
           text-align: center;
           position: relative;
-        "
-      >
-        <button
-          onclick="closeHelpDeskModal()"
-          style="
+        ">
+      <button onclick="closeHelpDeskModal()" style="
             position: absolute;
             top: 15px;
             right: 15px;
@@ -646,36 +525,28 @@
             font-size: 18px;
             cursor: pointer;
             padding: 5px;
-          "
-        >
-          ✖
-        </button>
+          ">
+        ✖
+      </button>
 
-        <h3
-          style="
+      <h3 style="
             margin-top: 0;
             margin-bottom: 10px;
             color: var(--text-primary);
             font-size: 22px;
-          "
-        >
-          ¿Qué necesitas?
-        </h3>
-        <p
-          style="
+          ">
+        ¿Qué necesitas?
+      </h3>
+      <p style="
             color: var(--text-secondary);
             font-size: 14px;
             margin-bottom: 25px;
-          "
-        >
-          Selecciona el tipo de formulario que deseas llenar:
-        </p>
+          ">
+        Selecciona el tipo de formulario que deseas llenar:
+      </p>
 
-        <div style="display: flex; flex-direction: column; gap: 15px">
-          <a
-            href="https://airtable.com/appI9YfF3gEZHSss7/pagSlhAHkerY3U3zH/form"
-            target="_blank"
-            style="
+      <div style="display: flex; flex-direction: column; gap: 15px">
+        <a href="https://airtable.com/appI9YfF3gEZHSss7/pagSlhAHkerY3U3zH/form" target="_blank" style="
               display: flex;
               align-items: center;
               gap: 15px;
@@ -686,40 +557,28 @@
               text-decoration: none;
               color: var(--text-primary);
               transition: transform 0.2s;
-            "
-            onmouseover="this.style.transform = 'scale(1.02)'"
-            onmouseout="this.style.transform = 'scale(1)'"
-          >
-            <img
-              src="./imgs/bug.png"
-              alt="Ticket"
-              style="
+            " onmouseover="this.style.transform = 'scale(1.02)'" onmouseout="this.style.transform = 'scale(1)'">
+          <img src="./imgs/bug.png" alt="Ticket" style="
                 width: 36px;
                 height: 36px;
                 object-fit: contain;
                 flex-shrink: 0;
-              "
-            />
-            <div style="text-align: left">
-              <div style="font-weight: bold; font-size: 16px">
-                Reportar un Error (Ticket)
-              </div>
-              <div
-                style="
+              " />
+          <div style="text-align: left">
+            <div style="font-weight: bold; font-size: 16px">
+              Reportar un Error (Ticket)
+            </div>
+            <div style="
                   font-size: 12px;
                   color: var(--text-secondary);
                   margin-top: 4px;
-                "
-              >
-                Fallas, caídas del sistema o bugs.
-              </div>
+                ">
+              Fallas, caídas del sistema o bugs.
             </div>
-          </a>
+          </div>
+        </a>
 
-          <a
-            href="https://airtable.com/appI9YfF3gEZHSss7/pagbKhZb9oTt6XSca/form"
-            target="_blank"
-            style="
+        <a href="https://airtable.com/appI9YfF3gEZHSss7/pagbKhZb9oTt6XSca/form" target="_blank" style="
               display: flex;
               align-items: center;
               gap: 15px;
@@ -730,40 +589,29 @@
               text-decoration: none;
               color: var(--text-primary);
               transition: transform 0.2s;
-            "
-            onmouseover="this.style.transform = 'scale(1.02)'"
-            onmouseout="this.style.transform = 'scale(1)'"
-          >
-            <img
-              src="./imgs/implementation.png"
-              alt="Idea"
-              style="
+            " onmouseover="this.style.transform = 'scale(1.02)'" onmouseout="this.style.transform = 'scale(1)'">
+          <img src="./imgs/implementation.png" alt="Idea" style="
                 width: 36px;
                 height: 36px;
                 object-fit: contain;
                 flex-shrink: 0;
-              "
-            />
-            <div style="text-align: left">
-              <div style="font-weight: bold; font-size: 16px">
-                Nueva Solicitud
-              </div>
-              <div
-                style="
+              " />
+          <div style="text-align: left">
+            <div style="font-weight: bold; font-size: 16px">
+              Nueva Solicitud
+            </div>
+            <div style="
                   font-size: 12px;
                   color: var(--text-secondary);
                   margin-top: 4px;
-                "
-              >
-                Solicitar nuevas funciones o herramientas.
-              </div>
+                ">
+              Solicitar nuevas funciones o herramientas.
             </div>
-          </a>
+          </div>
+        </a>
 
-          <a
-            href="https://docs.google.com/forms/d/e/1FAIpQLSejjP-2PUMCuB3FlH7XqjUQj-L_qo-KixvAmhC9gYfwE7dfHw/viewform"
-            target="_blank"
-            style="
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSejjP-2PUMCuB3FlH7XqjUQj-L_qo-KixvAmhC9gYfwE7dfHw/viewform"
+          target="_blank" style="
               display: flex;
               align-items: center;
               gap: 15px;
@@ -774,43 +622,31 @@
               text-decoration: none;
               color: var(--text-primary);
               transition: transform 0.2s;
-            "
-            onmouseover="this.style.transform = 'scale(1.02)'"
-            onmouseout="this.style.transform = 'scale(1)'"
-          >
-            <img
-              src="./imgs/design.png"
-              alt="Gráficas"
-              style="
+            " onmouseover="this.style.transform = 'scale(1.02)'" onmouseout="this.style.transform = 'scale(1)'">
+          <img src="./imgs/design.png" alt="Gráficas" style="
                 width: 36px;
                 height: 36px;
                 object-fit: contain;
                 flex-shrink: 0;
-              "
-              onerror="this.src = './imgs/implementation.png'"
-            />
-            <div style="text-align: left">
-              <div style="font-weight: bold; font-size: 16px">
-                Solicitud de Gráficas
-              </div>
-              <div
-                style="
+              " onerror="this.src = './imgs/implementation.png'" />
+          <div style="text-align: left">
+            <div style="font-weight: bold; font-size: 16px">
+              Solicitud de Gráficas
+            </div>
+            <div style="
                   font-size: 12px;
                   color: var(--text-secondary);
                   margin-top: 4px;
-                "
-              >
-                Petición de nuevas gráficas o diseños.
-              </div>
+                ">
+              Petición de nuevas gráficas o diseños.
             </div>
-          </a>
-        </div>
+          </div>
+        </a>
       </div>
     </div>
+  </div>
 
-    <div
-      id="signatureModal"
-      style="
+  <div id="signatureModal" style="
         display: none;
         position: fixed;
         top: 0;
@@ -822,10 +658,8 @@
         z-index: 9999;
         justify-content: center;
         align-items: center;
-      "
-    >
-      <div
-        style="
+      ">
+    <div style="
           background: var(--bg-card);
           padding: 30px;
           border-radius: 16px;
@@ -835,11 +669,8 @@
           box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
           text-align: center;
           position: relative;
-        "
-      >
-        <button
-          onclick="closeSignatureModal()"
-          style="
+        ">
+      <button onclick="closeSignatureModal()" style="
             position: absolute;
             top: 15px;
             right: 15px;
@@ -849,59 +680,45 @@
             font-size: 18px;
             cursor: pointer;
             padding: 5px;
-          "
-        >
-          ✖
-        </button>
+          ">
+        ✖
+      </button>
 
-        <h3
-          style="
+      <h3 style="
             margin-top: 0;
             margin-bottom: 5px;
             color: var(--text-primary);
             font-size: 22px;
-          "
-        >
-          Mi Firma Maestra
-        </h3>
-        <p
-          style="
+          ">
+        Mi Firma Maestra
+      </h3>
+      <p style="
             color: var(--text-secondary);
             font-size: 13px;
             margin-bottom: 20px;
-          "
-        >
-          Dibuja tu firma. Esta se adjuntará automáticamente a los reportes que
-          emitas.
-        </p>
+          ">
+        Dibuja tu firma. Esta se adjuntará automáticamente a los reportes que
+        emitas.
+      </p>
 
-        <div
-          style="
+      <div style="
             background: #ffffff;
             border: 2px dashed #ccc;
             border-radius: 8px;
             margin-bottom: 20px;
             overflow: hidden;
             touch-action: none;
-          "
-        >
-          <canvas
-            id="signature-canvas"
-            width="450"
-            height="200"
-            style="
+          ">
+        <canvas id="signature-canvas" width="450" height="200" style="
               cursor: crosshair;
               display: block;
               width: 100%;
               touch-action: none;
-            "
-          ></canvas>
-        </div>
+            "></canvas>
+      </div>
 
-        <div style="display: flex; gap: 10px">
-          <button
-            onclick="clearCanvas()"
-            style="
+      <div style="display: flex; gap: 10px">
+        <button onclick="clearCanvas()" style="
               flex: 1;
               padding: 10px;
               background: transparent;
@@ -910,25 +727,18 @@
               color: var(--text-primary);
               cursor: pointer;
               transition: 0.2s;
-            "
-          >
-            Limpiar
-          </button>
-          <button
-            onclick="saveSignature()"
-            id="btnSaveSign"
-            class="btn-primary"
-            style="flex: 2; padding: 10px; border-radius: 8px"
-          >
-            Guardar Firma
-          </button>
-        </div>
+            ">
+          Limpiar
+        </button>
+        <button onclick="saveSignature()" id="btnSaveSign" class="btn-primary"
+          style="flex: 2; padding: 10px; border-radius: 8px">
+          Guardar Firma
+        </button>
       </div>
     </div>
+  </div>
 
-    <div
-      id="signReportModal"
-      style="
+  <div id="signReportModal" style="
         display: none;
         position: fixed;
         top: 0;
@@ -940,10 +750,8 @@
         z-index: 10000;
         justify-content: center;
         align-items: center;
-      "
-    >
-      <div
-        style="
+      ">
+    <div style="
           background: var(--bg-card);
           padding: 30px;
           border-radius: 16px;
@@ -952,11 +760,8 @@
           max-width: 500px;
           box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
           position: relative;
-        "
-      >
-        <button
-          onclick="closeSignReportModal()"
-          style="
+        ">
+      <button onclick="closeSignReportModal()" style="
             position: absolute;
             top: 15px;
             right: 15px;
@@ -966,97 +771,73 @@
             font-size: 18px;
             cursor: pointer;
             padding: 5px;
-          "
-        >
-          ✖
-        </button>
+          ">
+        ✖
+      </button>
 
-        <h3
-          style="
+      <h3 style="
             margin-top: 0;
             margin-bottom: 15px;
             color: var(--text-primary);
             font-size: 20px;
             border-bottom: 1px solid var(--border);
             padding-bottom: 10px;
-          "
-        >
-          Revisión de Documento
-        </h3>
+          ">
+        Revisión de Documento
+      </h3>
 
-        <div
-          id="report-details-container"
-          style="
+      <div id="report-details-container" style="
             margin-bottom: 20px;
             font-size: 14px;
             color: var(--text-secondary);
             line-height: 1.6;
-          "
-        >
-          <p><strong>Tipo:</strong> <span id="r-type">Cargando...</span></p>
-          <p>
-            <strong>Asunto:</strong> <span id="r-subject">Cargando...</span>
-          </p>
-          <p id="row-severity">
-            <strong>Severidad:</strong>
-            <span
-              id="r-severity"
-              style="font-weight: bold; color: var(--danger)"
-              >Cargando...</span
-            >
-          </p>
-          <p>
-            <strong>Descripción:</strong> <span id="r-desc">Cargando...</span>
-          </p>
+          ">
+        <p><strong>Tipo:</strong> <span id="r-type">Cargando...</span></p>
+        <p>
+          <strong>Asunto:</strong> <span id="r-subject">Cargando...</span>
+        </p>
+        <p id="row-severity">
+          <strong>Severidad:</strong>
+          <span id="r-severity" style="font-weight: bold; color: var(--danger)">Cargando...</span>
+        </p>
+        <p>
+          <strong>Descripción:</strong> <span id="r-desc">Cargando...</span>
+        </p>
 
-          <div id="row-evidences" style="margin-top: 15px">
-            <strong>Evidencias:</strong>
-            <div
-              id="r-evidences"
-              style="display: flex; gap: 10px; margin-top: 5px; flex-wrap: wrap"
-            ></div>
-          </div>
+        <div id="row-evidences" style="margin-top: 15px">
+          <strong>Evidencias:</strong>
+          <div id="r-evidences" style="display: flex; gap: 10px; margin-top: 5px; flex-wrap: wrap"></div>
         </div>
+      </div>
 
-        <p
-          style="
+      <p style="
             color: var(--text-primary);
             font-size: 14px;
             margin-bottom: 10px;
             font-weight: 600;
-          "
-        >
-          Por favor, dibuje su firma para dar conformidad:
-        </p>
+          ">
+        Por favor, dibuje su firma para dar conformidad:
+      </p>
 
-        <div
-          style="
+      <div style="
             background: #ffffff;
             border: 2px dashed #ccc;
             border-radius: 8px;
             margin-bottom: 20px;
             overflow: hidden;
             touch-action: none;
-          "
-        >
-          <canvas
-            id="report-signature-canvas"
-            width="450"
-            height="150"
-            style="
+          ">
+        <canvas id="report-signature-canvas" width="450" height="150" style="
               cursor: crosshair;
               display: block;
               width: 100%;
               touch-action: none;
-            "
-          ></canvas>
-        </div>
+            "></canvas>
+      </div>
 
-        <input type="hidden" id="current-report-id" />
-        <div style="display: flex; gap: 10px">
-          <button
-            onclick="clearReportCanvas()"
-            style="
+      <input type="hidden" id="current-report-id" />
+      <div style="display: flex; gap: 10px">
+        <button onclick="clearReportCanvas()" style="
               flex: 1;
               padding: 10px;
               background: transparent;
@@ -1065,24 +846,17 @@
               color: var(--text-primary);
               cursor: pointer;
               transition: 0.2s;
-            "
-          >
-            Limpiar
-          </button>
-          <button
-            onclick="submitReportSignature()"
-            id="btnSubmitReportSign"
-            class="btn-primary"
-            style="flex: 2; padding: 10px; border-radius: 8px"
-          >
-            Aceptar y Firmar
-          </button>
-        </div>
+            ">
+          Limpiar
+        </button>
+        <button onclick="submitReportSignature()" id="btnSubmitReportSign" class="btn-primary"
+          style="flex: 2; padding: 10px; border-radius: 8px">
+          Aceptar y Firmar
+        </button>
+      </div>
 
-        <!-- Loading overlay dentro del modal -->
-        <div
-          id="signLoadingOverlay"
-          style="
+      <!-- Loading overlay dentro del modal -->
+      <div id="signLoadingOverlay" style="
             display: none;
             position: absolute;
             inset: 0;
@@ -1094,45 +868,37 @@
             align-items: center;
             flex-direction: column;
             gap: 12px;
-          "
-        >
-          <div
-            style="
+          ">
+        <div style="
               width: 40px;
               height: 40px;
               border: 3px solid var(--border);
               border-top-color: var(--accent);
               border-radius: 50%;
               animation: spinSign 0.8s linear infinite;
-            "
-          ></div>
-          <p
-            id="signLoadingText"
-            style="
+            "></div>
+        <p id="signLoadingText" style="
               color: white;
               font-weight: 600;
               font-size: 14px;
               text-align: center;
               margin: 0;
-            "
-          >
-            Procesando firma...
-          </p>
-        </div>
-        <style>
-          @keyframes spinSign {
-            to {
-              transform: rotate(360deg);
-            }
-          }
-        </style>
+            ">
+          Procesando firma...
+        </p>
       </div>
+      <style>
+        @keyframes spinSign {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      </style>
     </div>
+  </div>
 
-    <!-- ✅ MODAL ESTILIZADO para reemplazar alert() -->
-    <div
-      id="wsResultModal"
-      style="
+  <!-- ✅ MODAL ESTILIZADO para reemplazar alert() -->
+  <div id="wsResultModal" style="
         display: none;
         position: fixed;
         inset: 0;
@@ -1141,10 +907,8 @@
         z-index: 20000;
         justify-content: center;
         align-items: center;
-      "
-    >
-      <div
-        style="
+      ">
+    <div style="
           background: var(--bg-card);
           border: 1px solid var(--border);
           border-radius: 20px;
@@ -1154,34 +918,25 @@
           text-align: center;
           box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
           animation: wsModalSlide 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        "
-      >
-        <div id="wsResultIcon" style="font-size: 48px; margin-bottom: 12px">
-          ✅
-        </div>
-        <h3
-          id="wsResultTitle"
-          style="
+        ">
+      <div id="wsResultIcon" style="font-size: 48px; margin-bottom: 12px">
+        ✅
+      </div>
+      <h3 id="wsResultTitle" style="
             color: var(--text-primary);
             font-size: 18px;
             font-weight: 800;
             margin: 0 0 8px 0;
-          "
-        >
-          ¡Éxito!
-        </h3>
-        <p
-          id="wsResultMsg"
-          style="
+          ">
+        ¡Éxito!
+      </h3>
+      <p id="wsResultMsg" style="
             color: var(--text-secondary);
             font-size: 14px;
             line-height: 1.5;
             margin: 0 0 25px 0;
-          "
-        ></p>
-        <button
-          onclick="closeWsResultModal()"
-          style="
+          "></p>
+      <button onclick="closeWsResultModal()" style="
             background: var(--accent);
             color: white;
             border: none;
@@ -1192,845 +947,845 @@
             cursor: pointer;
             transition: all 0.2s;
             box-shadow: 0 4px 15px rgba(94, 106, 210, 0.35);
-          "
-        >
-          Aceptar
-        </button>
-      </div>
+          ">
+        Aceptar
+      </button>
     </div>
-    <style>
-      @keyframes wsModalSlide {
-        from {
-          opacity: 0;
-          transform: translateY(30px) scale(0.95);
-        }
-
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
+  </div>
+  <style>
+    @keyframes wsModalSlide {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
       }
-    </style>
 
-    <script>
-      const API_BASE = "https://general-cashouts-production.up.railway.app/api";
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+  </style>
 
-      const loginView = document.getElementById("login-view");
-      const dashboardView = document.getElementById("dashboard-view");
-      const loginForm = document.getElementById("loginForm");
-      const errorMsg = document.getElementById("error-msg");
+  <script>
+    const API_BASE = "https://general-cashouts-production.up.railway.app/api";
 
-      let socket;
+    const loginView = document.getElementById("login-view");
+    const dashboardView = document.getElementById("dashboard-view");
+    const loginForm = document.getElementById("loginForm");
+    const errorMsg = document.getElementById("error-msg");
 
-      // ✅ INICIALIZAR EL FONDO TECNOLÓGICO (NODOS)
-      if (typeof particlesJS !== "undefined") {
-        particlesJS("particles-js", {
-          particles: {
-            number: { value: 60, density: { enable: true, value_area: 800 } },
-            color: { value: "#5e6ad2" },
-            shape: { type: "circle" },
-            opacity: { value: 0.3, random: false },
-            size: { value: 3, random: true },
-            line_linked: {
-              enable: true,
-              distance: 150,
-              color: "#5e6ad2",
-              opacity: 0.2,
-              width: 1,
-            },
-            move: {
-              enable: true,
-              speed: 1.5,
-              direction: "none",
-              random: false,
-              straight: false,
-              out_mode: "out",
-              bounce: false,
-            },
+    let socket;
+
+    // ✅ INICIALIZAR EL FONDO TECNOLÓGICO (NODOS)
+    if (typeof particlesJS !== "undefined") {
+      particlesJS("particles-js", {
+        particles: {
+          number: { value: 60, density: { enable: true, value_area: 800 } },
+          color: { value: "#5e6ad2" },
+          shape: { type: "circle" },
+          opacity: { value: 0.3, random: false },
+          size: { value: 3, random: true },
+          line_linked: {
+            enable: true,
+            distance: 150,
+            color: "#5e6ad2",
+            opacity: 0.2,
+            width: 1,
           },
-          interactivity: {
-            detect_on: "window",
-            events: {
-              onhover: { enable: true, mode: "grab" },
-              onclick: { enable: true, mode: "push" },
-              resize: true,
-            },
-            modes: {
-              grab: { distance: 200, line_linked: { opacity: 0.6 } },
-              push: { particles_nb: 4 },
-            },
+          move: {
+            enable: true,
+            speed: 1.5,
+            direction: "none",
+            random: false,
+            straight: false,
+            out_mode: "out",
+            bounce: false,
           },
-          retina_detect: true,
-        });
-      }
-
-      // Función para abrir/cerrar el menú de perfil
-      function toggleProfileMenu() {
-        document.getElementById("profileDropdown").classList.toggle("active");
-      }
-
-      // Cierra el menú si haces clic fuera de él
-      window.onclick = function (event) {
-        if (!event.target.closest(".profile-menu")) {
-          const dropdown = document.getElementById("profileDropdown");
-          if (dropdown && dropdown.classList.contains("active")) {
-            dropdown.classList.remove("active");
-          }
-        }
-      };
-
-      // Función para verificar si el token JWT expiró
-      function isTokenExpired(token) {
-        try {
-          const payloadBase64 = token.split(".")[1];
-          const payloadDecoded = atob(payloadBase64);
-          const payload = JSON.parse(payloadDecoded);
-
-          if (payload.exp) {
-            const currentTime = Math.floor(Date.now() / 1000);
-            return payload.exp < currentTime;
-          }
-          return false;
-        } catch (e) {
-          return true; // Token inválido o corrupto
-        }
-      }
-
-      // Al cargar la página
-      document.addEventListener("DOMContentLoaded", () => {
-        const token = localStorage.getItem("token");
-        const userStr = localStorage.getItem("user");
-
-        if (token && userStr) {
-          if (isTokenExpired(token)) {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            return;
-          }
-          const user = JSON.parse(userStr);
-          mostrarDashboard(user);
-        }
-      });
-
-      // Formulario de login
-      loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById("loginBtn");
-        btn.textContent = "Verificando...";
-        btn.disabled = true;
-        errorMsg.style.display = "none";
-
-        try {
-          const res = await fetch(`${API_BASE}/auth/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              username: document.getElementById("username").value.trim(),
-              password: document.getElementById("password").value,
-            }),
-          });
-
-          const data = await res.json();
-          if (!res.ok)
-            throw new Error(data.error || "Credenciales incorrectas");
-
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("user", JSON.stringify(data.user));
-
-          mostrarDashboard(data.user);
-        } catch (err) {
-          errorMsg.textContent = err.message;
-          errorMsg.style.display = "block";
-        } finally {
-          btn.textContent = "Ingresar";
-          btn.disabled = false;
-        }
-      });
-
-      // Mostrar el dashboard y llenar los datos (CON ROLES ACTUALIZADOS)
-      function mostrarDashboard(user) {
-        loginView.style.display = "none";
-        dashboardView.style.display = "block";
-
-        // ✅ DEBUG: Ver qué trae el objeto user
-
-        // ✅ CONECTAMOS EL SOCKET AQUÍ (con fallback al token JWT)
-        const socketUserId =
-          user.id || user._id || user.userId || extraerIdDelToken();
-        inicializarSockets(socketUserId);
-
-        const primerNombre = user.fullName.split(" ")[0];
-        document.getElementById("triggerName").textContent = primerNombre;
-
-        const welcomeName = document.getElementById("welcomeName");
-        if (welcomeName) welcomeName.textContent = primerNombre;
-
-        document.getElementById("profileFullName").textContent = user.fullName;
-        document.getElementById("profileUsername").textContent =
-          "@" + user.username;
-
-        const roleBadge = document.getElementById("profileRole");
-        roleBadge.textContent = user.role.toUpperCase();
-
-        const cardCashouts = document.getElementById("card-cashouts");
-        const cardOperapedia = document.getElementById("card-operapedia");
-        const cardKyc = document.getElementById("card-kyc");
-        const cardBalance = document.getElementById("card-balance");
-        const cardLocations = document.getElementById("card-locations");
-        const cardHelpDesk = document.getElementById("card-helpdesk");
-        const cardTierlock = document.getElementById("card-tierlock");
-        const cardShiftlog = document.getElementById("card-shiftlog");
-        const cardManageTeam = document.getElementById("card-manage-team");
-        const cardIncidencias = document.getElementById(
-          "card-operational-errors",
-        );
-
-        // 1. Reseteamos la vista por defecto (mostrar todas)
-        if (cardCashouts) cardCashouts.style.display = "flex";
-        if (cardOperapedia) cardOperapedia.style.display = "flex";
-        if (cardKyc) cardKyc.style.display = "none"; // Exclusivo de supervisor
-        if (cardBalance) cardBalance.style.display = "flex";
-        if (cardLocations) cardLocations.style.display = "none";
-        if (cardTierlock) cardTierlock.style.display = "none"; // Exclusivo de supervisor/analista
-        if (cardShiftlog) cardShiftlog.style.display = "none"; // Exclusivo de supervisor/analista/chats
-        if (cardIncidencias) cardIncidencias.style.display = "none"; // Exclusivo de supervisor/RRHH
-
-        if (cardHelpDesk) cardHelpDesk.style.display = "none";
-        if (cardManageTeam) cardManageTeam.style.display = "none";
-
-        // 2. Colores y permisos según el rol
-        if (user.role === "supervisor") {
-          roleBadge.style.background = "rgba(94, 106, 210, 0.15)";
-          roleBadge.style.color = "#6f7bf0";
-          roleBadge.style.border = "1px solid rgba(94, 106, 210, 0.3)";
-
-          if (cardHelpDesk) cardHelpDesk.style.display = "flex";
-          if (cardManageTeam) cardManageTeam.style.display = "flex";
-          if (cardLocations) cardLocations.style.display = "flex";
-          if (cardKyc) cardKyc.style.display = "flex";
-          if (cardTierlock) cardTierlock.style.display = "flex";
-          if (cardShiftlog) cardShiftlog.style.display = "flex";
-          if (cardIncidencias) cardIncidencias.style.display = "flex";
-          const btnSignature = document.getElementById("btnOpenSignature");
-          if (btnSignature) btnSignature.style.display = "block";
-        } else if (user.role === "analista") {
-          roleBadge.style.background = "rgba(46, 204, 113, 0.15)";
-          roleBadge.style.color = "#2ecc71";
-          roleBadge.style.border = "1px solid rgba(46, 204, 113, 0.3)";
-
-          if (cardBalance) cardBalance.style.display = "none";
-          if (cardTierlock) cardTierlock.style.display = "flex";
-          if (cardShiftlog) cardShiftlog.style.display = "flex";
-        } else if (user.role === "chats") {
-          roleBadge.style.background = "rgba(243, 156, 18, 0.15)";
-          roleBadge.style.color = "#f39c12";
-          roleBadge.style.border = "1px solid rgba(243, 156, 18, 0.3)";
-
-          if (cardCashouts) cardCashouts.style.display = "none";
-          if (cardBalance) cardBalance.style.display = "none";
-          if (cardKyc) cardKyc.style.display = "flex"; // Role 'chats' puede ver KYC
-          if (cardShiftlog) cardShiftlog.style.display = "flex";
-        } else if (user.role === "asistente") {
-          roleBadge.style.background = "rgba(52, 152, 219, 0.15)";
-          roleBadge.style.color = "#3498db";
-          roleBadge.style.border = "1px solid rgba(52, 152, 219, 0.3)";
-
-          if (cardCashouts) cardCashouts.style.display = "none";
-          if (cardOperapedia) cardOperapedia.style.display = "none";
-        } else if (user.role === "recursos_humanos") {
-          roleBadge.style.background = "rgba(155, 89, 182, 0.15)";
-          roleBadge.style.color = "#9b59b2";
-          roleBadge.style.border = "1px solid rgba(155, 89, 182, 0.3)";
-
-          if (cardIncidencias) cardIncidencias.style.display = "flex";
-        } else if (user.role === "movimientos") {
-          roleBadge.style.background = "rgba(26, 188, 156, 0.15)";
-          roleBadge.style.color = "#1abc9c";
-          roleBadge.style.border = "1px solid rgba(26, 188, 156, 0.3)";
-
-          // Rol restringido: Solo Operapedia y ShiftLog
-          if (cardCashouts) cardCashouts.style.display = "none";
-          if (cardKyc) cardKyc.style.display = "none";
-          if (cardBalance) cardBalance.style.display = "none";
-          if (cardLocations) cardLocations.style.display = "none";
-          if (cardTierlock) cardTierlock.style.display = "none";
-          if (cardIncidencias) cardIncidencias.style.display = "none";
-
-          if (cardOperapedia) cardOperapedia.style.display = "flex";
-          if (cardShiftlog) cardShiftlog.style.display = "flex";
-        } else if (user.role === "cajero") {
-          roleBadge.style.background = "rgba(241, 196, 15, 0.15)";
-          roleBadge.style.color = "#f1c40f";
-          roleBadge.style.border = "1px solid rgba(241, 196, 15, 0.3)";
-        }
-      }
-
-      function logout() {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        location.reload();
-      }
-      // ================= LÓGICA MODAL HELP DESK =================
-      function openHelpDeskModal() {
-        document.getElementById("helpDeskModal").style.display = "flex";
-      }
-
-      function closeHelpDeskModal() {
-        document.getElementById("helpDeskModal").style.display = "none";
-      }
-      // ================= LÓGICA MODO CLARO / OSCURO (SWITCH) =================
-      function toggleTheme() {
-        document.body.classList.toggle("light-mode");
-        const isLight = document.body.classList.contains("light-mode");
-        localStorage.setItem("workspaceTheme", isLight ? "light" : "dark");
-
-        // Sincronizar el estado del switch en Login y Dashboard
-        const checkboxes = document.querySelectorAll(".theme-checkbox");
-        checkboxes.forEach((chk) => (chk.checked = isLight));
-      }
-
-      function loadTheme() {
-        const savedTheme = localStorage.getItem("workspaceTheme");
-        const isLight = savedTheme === "light";
-
-        if (isLight) {
-          document.body.classList.add("light-mode");
-        }
-
-        // Marcar los checkboxes correctamente al cargar la página
-        const checkboxes = document.querySelectorAll(".theme-checkbox");
-        checkboxes.forEach((chk) => (chk.checked = isLight));
-      }
-
-      // ================= LÓGICA DE FIRMA MAESTRA (CANVAS) =================
-      const btnOpenSignature = document.getElementById("btnOpenSignature");
-
-      // (OPCIONAL) Busca tu función mostrarDashboard(user) y agrega esta línea
-      // dentro del if (user.role === "supervisor") { ... }
-      // if (btnOpenSignature) btnOpenSignature.style.display = "block";
-
-      function openSignatureModal() {
-        document.getElementById("signatureModal").style.display = "flex";
-        document.getElementById("profileDropdown").classList.remove("active"); // Cierra el menú
-      }
-
-      function closeSignatureModal() {
-        document.getElementById("signatureModal").style.display = "none";
-      }
-
-      const canvas = document.getElementById("signature-canvas");
-      const ctx = canvas.getContext("2d");
-      let drawing = false;
-
-      // Estilo del trazo
-      ctx.strokeStyle = "#0f172a"; // Azul muy oscuro/negro
-      ctx.lineWidth = 2.5;
-      ctx.lineCap = "round";
-
-      // Eventos para Mouse y Táctil (Móviles)
-      const startDraw = (e) => {
-        drawing = true;
-        draw(e);
-      };
-      const stopDraw = () => {
-        drawing = false;
-        ctx.beginPath();
-      };
-
-      canvas.addEventListener("mousedown", startDraw);
-      canvas.addEventListener("mouseup", stopDraw);
-      canvas.addEventListener("mousemove", draw);
-      canvas.addEventListener("mouseout", stopDraw);
-
-      canvas.addEventListener(
-        "touchstart",
-        (e) => {
-          e.preventDefault();
-          startDraw(e.touches[0]);
         },
-        { passive: false },
-      );
-      canvas.addEventListener("touchend", stopDraw);
-      canvas.addEventListener(
-        "touchmove",
-        (e) => {
-          e.preventDefault();
-          draw(e.touches[0]);
+        interactivity: {
+          detect_on: "window",
+          events: {
+            onhover: { enable: true, mode: "grab" },
+            onclick: { enable: true, mode: "push" },
+            resize: true,
+          },
+          modes: {
+            grab: { distance: 200, line_linked: { opacity: 0.6 } },
+            push: { particles_nb: 4 },
+          },
         },
-        { passive: false },
-      );
+        retina_detect: true,
+      });
+    }
 
-      function draw(e) {
-        if (!drawing) return;
-        const rect = canvas.getBoundingClientRect();
-        // Calculamos la escala por si el canvas se achicó en móviles
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
+    // Función para abrir/cerrar el menú de perfil
+    function toggleProfileMenu() {
+      document.getElementById("profileDropdown").classList.toggle("active");
+    }
 
-        const x = (e.clientX - rect.left) * scaleX;
-        const y = (e.clientY - rect.top) * scaleY;
-
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(x, y);
+    // Cierra el menú si haces clic fuera de él
+    window.onclick = function (event) {
+      if (!event.target.closest(".profile-menu")) {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown && dropdown.classList.contains("active")) {
+          dropdown.classList.remove("active");
+        }
       }
+    };
 
-      function clearCanvas() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.beginPath();
+    // Función para verificar si el token JWT expiró
+    function isTokenExpired(token) {
+      try {
+        const payloadBase64 = token.split(".")[1];
+        const payloadDecoded = atob(payloadBase64);
+        const payload = JSON.parse(payloadDecoded);
+
+        if (payload.exp) {
+          const currentTime = Math.floor(Date.now() / 1000);
+          return payload.exp < currentTime;
+        }
+        return false;
+      } catch (e) {
+        return true; // Token inválido o corrupto
       }
+    }
 
-      async function saveSignature() {
-        // Validar si el canvas está vacío
-        const blank = document.createElement("canvas");
-        blank.width = canvas.width;
-        blank.height = canvas.height;
-        if (canvas.toDataURL() === blank.toDataURL()) {
-          alert("Por favor, dibuja tu firma antes de guardar.");
+    // Al cargar la página
+    document.addEventListener("DOMContentLoaded", () => {
+      const token = localStorage.getItem("token");
+      const userStr = localStorage.getItem("user");
+
+      if (token && userStr) {
+        if (isTokenExpired(token)) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
           return;
         }
+        const user = JSON.parse(userStr);
+        mostrarDashboard(user);
+      }
+    });
 
-        const btn = document.getElementById("btnSaveSign");
-        const dataURL = canvas.toDataURL("image/png"); // Convertir a Base64
+    // Formulario de login
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("loginBtn");
+      btn.textContent = "Verificando...";
+      btn.disabled = true;
+      errorMsg.style.display = "none";
 
-        btn.disabled = true;
-        btn.innerText = "Guardando...";
+      try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: document.getElementById("username").value.trim(),
+            password: document.getElementById("password").value,
+          }),
+        });
 
-        try {
-          const res = await fetch(`${API_BASE}/users/profile/signature`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-            body: JSON.stringify({ signatureBase64: dataURL }),
+        const data = await res.json();
+        if (!res.ok)
+          throw new Error(data.error || "Credenciales incorrectas");
+
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        mostrarDashboard(data.user);
+      } catch (err) {
+        errorMsg.textContent = err.message;
+        errorMsg.style.display = "block";
+      } finally {
+        btn.textContent = "Ingresar";
+        btn.disabled = false;
+      }
+    });
+
+    // Mostrar el dashboard y llenar los datos (CON ROLES ACTUALIZADOS)
+    function mostrarDashboard(user) {
+      loginView.style.display = "none";
+      dashboardView.style.display = "block";
+
+      // ✅ DEBUG: Ver qué trae el objeto user
+
+      // ✅ CONECTAMOS EL SOCKET AQUÍ (con fallback al token JWT)
+      const socketUserId =
+        user.id || user._id || user.userId || extraerIdDelToken();
+      inicializarSockets(socketUserId);
+
+      const primerNombre = user.fullName.split(" ")[0];
+      document.getElementById("triggerName").textContent = primerNombre;
+
+      const welcomeName = document.getElementById("welcomeName");
+      if (welcomeName) welcomeName.textContent = primerNombre;
+
+      document.getElementById("profileFullName").textContent = user.fullName;
+      document.getElementById("profileUsername").textContent =
+        "@" + user.username;
+
+      const roleBadge = document.getElementById("profileRole");
+      roleBadge.textContent = user.role.toUpperCase();
+
+      const cardCashouts = document.getElementById("card-cashouts");
+      const cardOperapedia = document.getElementById("card-operapedia");
+      const cardKyc = document.getElementById("card-kyc");
+      const cardBalance = document.getElementById("card-balance");
+      const cardLocations = document.getElementById("card-locations");
+      const cardHelpDesk = document.getElementById("card-helpdesk");
+      const cardTierlock = document.getElementById("card-tierlock");
+      const cardShiftlog = document.getElementById("card-shiftlog");
+      const cardManageTeam = document.getElementById("card-manage-team");
+      const cardIncidencias = document.getElementById(
+        "card-operational-errors",
+      );
+
+      // 1. Reseteamos la vista por defecto (mostrar todas)
+      if (cardCashouts) cardCashouts.style.display = "flex";
+      if (cardOperapedia) cardOperapedia.style.display = "flex";
+      if (cardKyc) cardKyc.style.display = "none"; // Exclusivo de supervisor
+      if (cardBalance) cardBalance.style.display = "flex";
+      if (cardLocations) cardLocations.style.display = "none";
+      if (cardTierlock) cardTierlock.style.display = "none"; // Exclusivo de supervisor/analista
+      if (cardShiftlog) cardShiftlog.style.display = "none"; // Exclusivo de supervisor/analista/chats
+      if (cardIncidencias) cardIncidencias.style.display = "none"; // Exclusivo de supervisor/RRHH
+
+      if (cardHelpDesk) cardHelpDesk.style.display = "none";
+      if (cardManageTeam) cardManageTeam.style.display = "none";
+
+      // 2. Colores y permisos según el rol
+      if (user.role === "supervisor") {
+        roleBadge.style.background = "rgba(94, 106, 210, 0.15)";
+        roleBadge.style.color = "#6f7bf0";
+        roleBadge.style.border = "1px solid rgba(94, 106, 210, 0.3)";
+
+        if (cardHelpDesk) cardHelpDesk.style.display = "flex";
+        if (cardManageTeam) cardManageTeam.style.display = "flex";
+        if (cardLocations) cardLocations.style.display = "flex";
+        if (cardKyc) cardKyc.style.display = "flex";
+        if (cardTierlock) cardTierlock.style.display = "flex";
+        if (cardShiftlog) cardShiftlog.style.display = "flex";
+        if (cardIncidencias) cardIncidencias.style.display = "flex";
+        const btnSignature = document.getElementById("btnOpenSignature");
+        if (btnSignature) btnSignature.style.display = "block";
+      } else if (user.role === "analista") {
+        roleBadge.style.background = "rgba(46, 204, 113, 0.15)";
+        roleBadge.style.color = "#2ecc71";
+        roleBadge.style.border = "1px solid rgba(46, 204, 113, 0.3)";
+
+        if (cardBalance) cardBalance.style.display = "none";
+        if (cardTierlock) cardTierlock.style.display = "flex";
+        if (cardShiftlog) cardShiftlog.style.display = "flex";
+      } else if (user.role === "chats") {
+        roleBadge.style.background = "rgba(243, 156, 18, 0.15)";
+        roleBadge.style.color = "#f39c12";
+        roleBadge.style.border = "1px solid rgba(243, 156, 18, 0.3)";
+
+        if (cardCashouts) cardCashouts.style.display = "none";
+        if (cardBalance) cardBalance.style.display = "none";
+        if (cardKyc) cardKyc.style.display = "flex"; // Role 'chats' puede ver KYC
+        if (cardShiftlog) cardShiftlog.style.display = "flex";
+      } else if (user.role === "asistente") {
+        roleBadge.style.background = "rgba(52, 152, 219, 0.15)";
+        roleBadge.style.color = "#3498db";
+        roleBadge.style.border = "1px solid rgba(52, 152, 219, 0.3)";
+
+        if (cardCashouts) cardCashouts.style.display = "none";
+        if (cardOperapedia) cardOperapedia.style.display = "none";
+      } else if (user.role === "recursos_humanos") {
+        roleBadge.style.background = "rgba(155, 89, 182, 0.15)";
+        roleBadge.style.color = "#9b59b2";
+        roleBadge.style.border = "1px solid rgba(155, 89, 182, 0.3)";
+
+        if (cardIncidencias) cardIncidencias.style.display = "flex";
+      } else if (user.role === "movimientos") {
+        roleBadge.style.background = "rgba(26, 188, 156, 0.15)";
+        roleBadge.style.color = "#1abc9c";
+        roleBadge.style.border = "1px solid rgba(26, 188, 156, 0.3)";
+
+        // Rol restringido: Solo Operapedia y ShiftLog
+        if (cardCashouts) cardCashouts.style.display = "none";
+        if (cardKyc) cardKyc.style.display = "none";
+        if (cardBalance) cardBalance.style.display = "none";
+        if (cardLocations) cardLocations.style.display = "none";
+        if (cardTierlock) cardTierlock.style.display = "none";
+        if (cardIncidencias) cardIncidencias.style.display = "none";
+
+        if (cardOperapedia) cardOperapedia.style.display = "flex";
+        if (cardShiftlog) cardShiftlog.style.display = "flex";
+      } else if (user.role === "cajero") {
+        roleBadge.style.background = "rgba(241, 196, 15, 0.15)";
+        roleBadge.style.color = "#f1c40f";
+        roleBadge.style.border = "1px solid rgba(241, 196, 15, 0.3)";
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      location.reload();
+    }
+    // ================= LÓGICA MODAL HELP DESK =================
+    function openHelpDeskModal() {
+      document.getElementById("helpDeskModal").style.display = "flex";
+    }
+
+    function closeHelpDeskModal() {
+      document.getElementById("helpDeskModal").style.display = "none";
+    }
+    // ================= LÓGICA MODO CLARO / OSCURO (SWITCH) =================
+    function toggleTheme() {
+      document.body.classList.toggle("light-mode");
+      const isLight = document.body.classList.contains("light-mode");
+      localStorage.setItem("workspaceTheme", isLight ? "light" : "dark");
+
+      // Sincronizar el estado del switch en Login y Dashboard
+      const checkboxes = document.querySelectorAll(".theme-checkbox");
+      checkboxes.forEach((chk) => (chk.checked = isLight));
+    }
+
+    function loadTheme() {
+      const savedTheme = localStorage.getItem("workspaceTheme");
+      const isLight = savedTheme === "light";
+
+      if (isLight) {
+        document.body.classList.add("light-mode");
+      }
+
+      // Marcar los checkboxes correctamente al cargar la página
+      const checkboxes = document.querySelectorAll(".theme-checkbox");
+      checkboxes.forEach((chk) => (chk.checked = isLight));
+    }
+
+    // ================= LÓGICA DE FIRMA MAESTRA (CANVAS) =================
+    const btnOpenSignature = document.getElementById("btnOpenSignature");
+
+    // (OPCIONAL) Busca tu función mostrarDashboard(user) y agrega esta línea
+    // dentro del if (user.role === "supervisor") { ... }
+    // if (btnOpenSignature) btnOpenSignature.style.display = "block";
+
+    function openSignatureModal() {
+      document.getElementById("signatureModal").style.display = "flex";
+      document.getElementById("profileDropdown").classList.remove("active"); // Cierra el menú
+    }
+
+    function closeSignatureModal() {
+      document.getElementById("signatureModal").style.display = "none";
+    }
+
+    const canvas = document.getElementById("signature-canvas");
+    const ctx = canvas.getContext("2d");
+    let drawing = false;
+
+    // Estilo del trazo
+    ctx.strokeStyle = "#0f172a"; // Azul muy oscuro/negro
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = "round";
+
+    // Eventos para Mouse y Táctil (Móviles)
+    const startDraw = (e) => {
+      drawing = true;
+      draw(e);
+    };
+    const stopDraw = () => {
+      drawing = false;
+      ctx.beginPath();
+    };
+
+    canvas.addEventListener("mousedown", startDraw);
+    canvas.addEventListener("mouseup", stopDraw);
+    canvas.addEventListener("mousemove", draw);
+    canvas.addEventListener("mouseout", stopDraw);
+
+    canvas.addEventListener(
+      "touchstart",
+      (e) => {
+        e.preventDefault();
+        startDraw(e.touches[0]);
+      },
+      { passive: false },
+    );
+    canvas.addEventListener("touchend", stopDraw);
+    canvas.addEventListener(
+      "touchmove",
+      (e) => {
+        e.preventDefault();
+        draw(e.touches[0]);
+      },
+      { passive: false },
+    );
+
+    function draw(e) {
+      if (!drawing) return;
+      const rect = canvas.getBoundingClientRect();
+      // Calculamos la escala por si el canvas se achicó en móviles
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+    }
+
+    async function saveSignature() {
+      // Validar si el canvas está vacío
+      const blank = document.createElement("canvas");
+      blank.width = canvas.width;
+      blank.height = canvas.height;
+      if (canvas.toDataURL() === blank.toDataURL()) {
+        alert("Por favor, dibuja tu firma antes de guardar.");
+        return;
+      }
+
+      const btn = document.getElementById("btnSaveSign");
+      const dataURL = canvas.toDataURL("image/png"); // Convertir a Base64
+
+      btn.disabled = true;
+      btn.innerText = "Guardando...";
+
+      try {
+        const res = await fetch(`${API_BASE}/users/profile/signature`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ signatureBase64: dataURL }),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          alert("✅ Firma guardada con éxito.");
+          closeSignatureModal();
+        } else {
+          alert("Error: " + (data.error || "No se pudo guardar la firma."));
+        }
+      } catch (err) {
+        alert("Error de conexión al guardar la firma.");
+        console.error(err);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Guardar Firma";
+      }
+    }
+
+    // Modificamos el window.onclick para que cierre ambos menús
+    window.onclick = function (event) {
+      if (
+        !event.target.closest(".profile-menu") &&
+        !event.target.closest(".notification-menu")
+      ) {
+        const pDropdown = document.getElementById("profileDropdown");
+        const nDropdown = document.getElementById("notif-dropdown");
+        if (pDropdown) pDropdown.classList.remove("active");
+        if (nDropdown) nDropdown.style.display = "none";
+      }
+    };
+
+    function toggleNotifDropdown() {
+      const dropdown = document.getElementById("notif-dropdown");
+      const isVisible = dropdown.style.display === "flex";
+      document.getElementById("profileDropdown").classList.remove("active"); // Cierra el de perfil
+      dropdown.style.display = isVisible ? "none" : "flex";
+    }
+
+    // ✅ Fallback: extraer el userId del token JWT
+    function extraerIdDelToken() {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return null;
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return (
+          payload.id || payload._id || payload.userId || payload.sub || null
+        );
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function inicializarSockets(userId) {
+      if (!userId) return;
+
+      socket = io("https://general-cashouts-production.up.railway.app");
+
+      socket.on("connect", () => {
+        console.log("✅ WebSocket conectado | ID:", socket.id);
+        socket.emit("join_room", userId);
+      });
+
+      socket.on("connect_error", (err) => {
+        console.error("❌ Error de WebSocket:", err.message);
+      });
+
+      socket.on("new_notification", (data) => {
+        renderNotificacion(data, true);
+      });
+
+      // --- CARGAR HISTORIAL ---
+      try {
+        const res = await fetch(`${API_BASE}/reports/notifications`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        const result = await res.json();
+
+        if (result.success && result.data.length > 0) {
+          document.getElementById("notif-items-container").innerHTML = "";
+          result.data.forEach((notif) => {
+            renderNotificacion(
+              {
+                type: "Reporte Pendiente",
+                message: notif.message,
+                reportId: notif.reportId,
+              },
+              true,
+            );
           });
-
-          const data = await res.json();
-          if (data.success) {
-            alert("✅ Firma guardada con éxito.");
-            closeSignatureModal();
-          } else {
-            alert("Error: " + (data.error || "No se pudo guardar la firma."));
-          }
-        } catch (err) {
-          alert("Error de conexión al guardar la firma.");
-          console.error(err);
-        } finally {
-          btn.disabled = false;
-          btn.innerText = "Guardar Firma";
         }
+      } catch (err) {
+        console.error("❌ Error al cargar historial de notificaciones:", err);
+      }
+    }
+
+    function renderNotificacion(data, incrementBadge = true) {
+      const badge = document.getElementById("notif-badge");
+      const container = document.getElementById("notif-items-container");
+
+      if (badge.style.display === "none") {
+        container.innerHTML = ""; // Borra el mensaje de "No hay firmas"
+        badge.style.display = "block";
       }
 
-      // Modificamos el window.onclick para que cierre ambos menús
-      window.onclick = function (event) {
-        if (
-          !event.target.closest(".profile-menu") &&
-          !event.target.closest(".notification-menu")
-        ) {
-          const pDropdown = document.getElementById("profileDropdown");
-          const nDropdown = document.getElementById("notif-dropdown");
-          if (pDropdown) pDropdown.classList.remove("active");
-          if (nDropdown) nDropdown.style.display = "none";
-        }
-      };
-
-      function toggleNotifDropdown() {
-        const dropdown = document.getElementById("notif-dropdown");
-        const isVisible = dropdown.style.display === "flex";
-        document.getElementById("profileDropdown").classList.remove("active"); // Cierra el de perfil
-        dropdown.style.display = isVisible ? "none" : "flex";
+      if (incrementBadge) {
+        let count = parseInt(badge.innerText || "0") + 1;
+        badge.innerText = count;
       }
 
-      // ✅ Fallback: extraer el userId del token JWT
-      function extraerIdDelToken() {
-        try {
-          const token = localStorage.getItem("token");
-          if (!token) return null;
-          const payload = JSON.parse(atob(token.split(".")[1]));
-          return (
-            payload.id || payload._id || payload.userId || payload.sub || null
-          );
-        } catch (e) {
-          return null;
-        }
-      }
+      const item = document.createElement("div");
+      item.className = "notif-item";
+      item.style =
+        "padding: 15px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s;";
+      item.onmouseover = () => (item.style.background = "rgba(0,0,0,0.05)");
+      item.onmouseout = () => (item.style.background = "transparent");
 
-      async function inicializarSockets(userId) {
-        if (!userId) return;
-
-        socket = io("https://general-cashouts-production.up.railway.app");
-
-        socket.on("connect", () => {
-          console.log("✅ WebSocket conectado | ID:", socket.id);
-          socket.emit("join_room", userId);
-        });
-
-        socket.on("connect_error", (err) => {
-          console.error("❌ Error de WebSocket:", err.message);
-        });
-
-        socket.on("new_notification", (data) => {
-          renderNotificacion(data, true);
-        });
-
-        // --- CARGAR HISTORIAL ---
-        try {
-          const res = await fetch(`${API_BASE}/reports/notifications`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          });
-
-          const result = await res.json();
-
-          if (result.success && result.data.length > 0) {
-            document.getElementById("notif-items-container").innerHTML = "";
-            result.data.forEach((notif) => {
-              renderNotificacion(
-                {
-                  type: "Reporte Pendiente",
-                  message: notif.message,
-                  reportId: notif.reportId,
-                },
-                true,
-              );
-            });
-          }
-        } catch (err) {
-          console.error("❌ Error al cargar historial de notificaciones:", err);
-        }
-      }
-
-      function renderNotificacion(data, incrementBadge = true) {
-        const badge = document.getElementById("notif-badge");
-        const container = document.getElementById("notif-items-container");
-
-        if (badge.style.display === "none") {
-          container.innerHTML = ""; // Borra el mensaje de "No hay firmas"
-          badge.style.display = "block";
-        }
-
-        if (incrementBadge) {
-          let count = parseInt(badge.innerText || "0") + 1;
-          badge.innerText = count;
-        }
-
-        const item = document.createElement("div");
-        item.className = "notif-item";
-        item.style =
-          "padding: 15px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s;";
-        item.onmouseover = () => (item.style.background = "rgba(0,0,0,0.05)");
-        item.onmouseout = () => (item.style.background = "transparent");
-
-        item.innerHTML = `
+      item.innerHTML = `
                 <div style="font-weight: 600; font-size: 13px; color: var(--text-primary); margin-bottom: 4px;">${data.type}</div>
                 <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.4;">${data.message}</div>
                 <div style="font-size: 10px; color: #5e6ad2; margin-top: 8px; font-weight: bold;">CLIC PARA FIRMAR</div>
             `;
 
-        item.onclick = () => openReportToSign(data.reportId);
-        container.prepend(item); // Pone las más nuevas arriba
-      }
-      // ================= LÓGICA PARA FIRMAR REPORTES (MODAL) =================
-      const reportCanvas = document.getElementById("report-signature-canvas");
-      const reportCtx = reportCanvas.getContext("2d");
-      let reportDrawing = false;
+      item.onclick = () => openReportToSign(data.reportId);
+      container.prepend(item); // Pone las más nuevas arriba
+    }
+    // ================= LÓGICA PARA FIRMAR REPORTES (MODAL) =================
+    const reportCanvas = document.getElementById("report-signature-canvas");
+    const reportCtx = reportCanvas.getContext("2d");
+    let reportDrawing = false;
 
-      reportCtx.strokeStyle = "#0f172a";
-      reportCtx.lineWidth = 2.5;
-      reportCtx.lineCap = "round";
+    reportCtx.strokeStyle = "#0f172a";
+    reportCtx.lineWidth = 2.5;
+    reportCtx.lineCap = "round";
 
-      const startReportDraw = (e) => {
-        reportDrawing = true;
-        drawReport(e);
-      };
-      const stopReportDraw = () => {
-        reportDrawing = false;
-        reportCtx.beginPath();
-      };
+    const startReportDraw = (e) => {
+      reportDrawing = true;
+      drawReport(e);
+    };
+    const stopReportDraw = () => {
+      reportDrawing = false;
+      reportCtx.beginPath();
+    };
 
-      reportCanvas.addEventListener("mousedown", startReportDraw);
-      reportCanvas.addEventListener("mouseup", stopReportDraw);
-      reportCanvas.addEventListener("mousemove", drawReport);
-      reportCanvas.addEventListener("mouseout", stopReportDraw);
-      reportCanvas.addEventListener(
-        "touchstart",
-        (e) => {
-          e.preventDefault();
-          startReportDraw(e.touches[0]);
-        },
-        { passive: false },
-      );
-      reportCanvas.addEventListener("touchend", stopReportDraw);
-      reportCanvas.addEventListener(
-        "touchmove",
-        (e) => {
-          e.preventDefault();
-          drawReport(e.touches[0]);
-        },
-        { passive: false },
-      );
+    reportCanvas.addEventListener("mousedown", startReportDraw);
+    reportCanvas.addEventListener("mouseup", stopReportDraw);
+    reportCanvas.addEventListener("mousemove", drawReport);
+    reportCanvas.addEventListener("mouseout", stopReportDraw);
+    reportCanvas.addEventListener(
+      "touchstart",
+      (e) => {
+        e.preventDefault();
+        startReportDraw(e.touches[0]);
+      },
+      { passive: false },
+    );
+    reportCanvas.addEventListener("touchend", stopReportDraw);
+    reportCanvas.addEventListener(
+      "touchmove",
+      (e) => {
+        e.preventDefault();
+        drawReport(e.touches[0]);
+      },
+      { passive: false },
+    );
 
-      function drawReport(e) {
-        if (!reportDrawing) return;
-        const rect = reportCanvas.getBoundingClientRect();
-        const scaleX = reportCanvas.width / rect.width;
-        const scaleY = reportCanvas.height / rect.height;
-        const x = (e.clientX - rect.left) * scaleX;
-        const y = (e.clientY - rect.top) * scaleY;
-        reportCtx.lineTo(x, y);
-        reportCtx.stroke();
-        reportCtx.beginPath();
-        reportCtx.moveTo(x, y);
-      }
+    function drawReport(e) {
+      if (!reportDrawing) return;
+      const rect = reportCanvas.getBoundingClientRect();
+      const scaleX = reportCanvas.width / rect.width;
+      const scaleY = reportCanvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      reportCtx.lineTo(x, y);
+      reportCtx.stroke();
+      reportCtx.beginPath();
+      reportCtx.moveTo(x, y);
+    }
 
-      function clearReportCanvas() {
-        reportCtx.clearRect(0, 0, reportCanvas.width, reportCanvas.height);
-        reportCtx.beginPath();
-      }
+    function clearReportCanvas() {
+      reportCtx.clearRect(0, 0, reportCanvas.width, reportCanvas.height);
+      reportCtx.beginPath();
+    }
 
-      function closeSignReportModal() {
-        document.getElementById("signReportModal").style.display = "none";
-        clearReportCanvas();
-      }
+    function closeSignReportModal() {
+      document.getElementById("signReportModal").style.display = "none";
+      clearReportCanvas();
+    }
 
-      // ✅ REEMPLAZAMOS EL ALERT POR ESTA FUNCIÓN
+    // ✅ REEMPLAZAMOS EL ALERT POR ESTA FUNCIÓN
 
-      // Variable global para guardar el reporte temporalmente
-      let currentReportData = null;
+    // Variable global para guardar el reporte temporalmente
+    let currentReportData = null;
 
-      async function openReportToSign(reportId) {
-        document.getElementById("notif-dropdown").style.display = "none";
-        document.getElementById("signReportModal").style.display = "flex";
-        document.getElementById("current-report-id").value = reportId;
+    async function openReportToSign(reportId) {
+      document.getElementById("notif-dropdown").style.display = "none";
+      document.getElementById("signReportModal").style.display = "flex";
+      document.getElementById("current-report-id").value = reportId;
 
-        try {
-          const res = await fetch(`${API_BASE}/reports/${reportId}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          });
-          const result = await res.json();
-
-          if (result.success) {
-            currentReportData = result.data;
-
-            document.getElementById("r-type").innerText =
-              currentReportData.type;
-            document.getElementById("r-subject").innerText =
-              currentReportData.subject;
-            document.getElementById("r-desc").innerText =
-              currentReportData.description;
-
-            // ✅ Mostrar/ocultar campos según el tipo
-            const isError = currentReportData.type === "Error Operacional";
-
-            // Severidad: solo visible en Error Operacional
-            const rowSeverity = document.getElementById("row-severity");
-            if (isError) {
-              rowSeverity.style.display = "block";
-              document.getElementById("r-severity").innerText =
-                currentReportData.severity;
-            } else {
-              rowSeverity.style.display = "none";
-            }
-
-            // Evidencias: solo visible en Error Operacional
-            const rowEvidences = document.getElementById("row-evidences");
-            const evContainer = document.getElementById("r-evidences");
-            evContainer.innerHTML = "";
-
-            if (isError) {
-              rowEvidences.style.display = "block";
-              if (
-                currentReportData.evidences &&
-                currentReportData.evidences.length > 0
-              ) {
-                currentReportData.evidences.forEach((img) => {
-                  evContainer.innerHTML += `<a href="${img.url}" target="_blank"><img src="${img.url}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); cursor: pointer;"></a>`;
-                });
-              } else {
-                evContainer.innerHTML =
-                  '<span style="font-size:12px;">Sin imágenes adjuntas.</span>';
-              }
-            } else {
-              rowEvidences.style.display = "none";
-            }
-          }
-        } catch (err) {
-          console.error(err);
-          alert("Error al cargar el reporte.");
-          closeSignReportModal();
-        }
-      }
-
-      // ✅ Función auxiliar para comprimir una firma Base64 a un tamaño razonable
-      function comprimirFirmaBase64(base64, maxWidth = 300, quality = 0.6) {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.onload = () => {
-            const canvas = document.createElement("canvas");
-            const ratio = Math.min(maxWidth / img.width, 1);
-            canvas.width = img.width * ratio;
-            canvas.height = img.height * ratio;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            resolve(canvas.toDataURL("image/png", quality));
-          };
-          img.onerror = () => resolve(base64); // Si falla, devuelve la original
-          img.src = base64;
+      try {
+        const res = await fetch(`${API_BASE}/reports/${reportId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         });
-      }
+        const result = await res.json();
 
-      // ✅ Modal estilizado para reemplazar alert()
-      function showWsResult(icon, title, message, onClose) {
-        document.getElementById("wsResultIcon").textContent = icon;
-        document.getElementById("wsResultTitle").textContent = title;
-        document.getElementById("wsResultMsg").textContent = message;
-        document.getElementById("wsResultModal").style.display = "flex";
-        window._wsResultOnClose = onClose || null;
-      }
+        if (result.success) {
+          currentReportData = result.data;
 
-      function closeWsResultModal() {
-        document.getElementById("wsResultModal").style.display = "none";
-        if (window._wsResultOnClose) {
-          window._wsResultOnClose();
-          window._wsResultOnClose = null;
-        }
-      }
+          document.getElementById("r-type").innerText =
+            currentReportData.type;
+          document.getElementById("r-subject").innerText =
+            currentReportData.subject;
+          document.getElementById("r-desc").innerText =
+            currentReportData.description;
 
-      async function submitReportSignature() {
-        const blank = document.createElement("canvas");
-        blank.width = reportCanvas.width;
-        blank.height = reportCanvas.height;
-        if (reportCanvas.toDataURL() === blank.toDataURL()) {
-          return showWsResult(
-            "✍️",
-            "Firma requerida",
-            "Por favor, dibuje su firma para dar conformidad.",
-          );
-        }
+          // ✅ Mostrar/ocultar campos según el tipo
+          const isError = currentReportData.type === "Error Operacional";
 
-        const btn = document.getElementById("btnSubmitReportSign");
-        const dataURL = reportCanvas.toDataURL("image/png");
-        const reportId = document.getElementById("current-report-id").value;
-        const loadingOverlay = document.getElementById("signLoadingOverlay");
-        const loadingText = document.getElementById("signLoadingText");
+          // Severidad: solo visible en Error Operacional
+          const rowSeverity = document.getElementById("row-severity");
+          if (isError) {
+            rowSeverity.style.display = "block";
+            document.getElementById("r-severity").innerText =
+              currentReportData.severity;
+          } else {
+            rowSeverity.style.display = "none";
+          }
 
-        btn.disabled = true;
-        loadingOverlay.style.display = "flex";
-        loadingText.textContent = "Guardando firma...";
+          // Evidencias: solo visible en Error Operacional
+          const rowEvidences = document.getElementById("row-evidences");
+          const evContainer = document.getElementById("r-evidences");
+          evContainer.innerHTML = "";
 
-        try {
-          // 1. Guardamos la firma en el Backend
-          const res = await fetch(`${API_BASE}/reports/${reportId}/sign`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-            body: JSON.stringify({ signatureBase64: dataURL }),
-          });
-          const data = await res.json();
-
-          if (data.success) {
-            // 2. Comprimimos las firmas
-            loadingText.textContent = "Preparando envío de correo...";
-
-            let firmaColabComprimida = "";
-            let firmaSuperComprimida = "";
-
-            try {
-              firmaColabComprimida = await comprimirFirmaBase64(dataURL);
-            } catch (e) {
-              firmaColabComprimida = dataURL;
-            }
-
-            try {
-              if (currentReportData.supervisorSignature) {
-                firmaSuperComprimida = await comprimirFirmaBase64(
-                  currentReportData.supervisorSignature,
-                );
-              }
-            } catch (e) {
-              firmaSuperComprimida =
-                currentReportData.supervisorSignature || "";
-            }
-
-            const emailPayload = {
-              tipo_informe: currentReportData.type,
-              colaborador: currentReportData.collaboratorName,
-              supervisor:
-                currentReportData.supervisorId?.fullName || "Supervisor",
-              numero_incidencia: currentReportData.incidenceNumber,
-              fecha: new Date(currentReportData.createdAt)
-                .toISOString()
-                .split("T")[0],
-              asunto: currentReportData.subject,
-              severidad: currentReportData.severity,
-              descripcion: currentReportData.description,
-              destinatarios: currentReportData.recipients || [],
-              firma_supervisor_img: firmaSuperComprimida,
-              firma_colaborador_img: firmaColabComprimida,
-              imagenes: currentReportData.evidences
-                ? currentReportData.evidences.map((e) => e.url)
-                : [],
-            };
-
-            loadingText.textContent = "Enviando correo...";
-
-            const WEB_APP_URL =
-              "https://script.google.com/macros/s/AKfycbx3jizg2XR490i21wrladFc7-BQthgxkb7HODvsrCzxCUJrCFYiZz6WsAlE0ESg2z1S2w/exec";
-
-            try {
-              await fetch(WEB_APP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "text/plain" },
-                body: JSON.stringify(emailPayload),
+          if (isError) {
+            rowEvidences.style.display = "block";
+            if (
+              currentReportData.evidences &&
+              currentReportData.evidences.length > 0
+            ) {
+              currentReportData.evidences.forEach((img) => {
+                evContainer.innerHTML += `<a href="${img.url}" target="_blank"><img src="${img.url}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); cursor: pointer;"></a>`;
               });
-            } catch (emailErr) {
-              console.warn(
-                "⚠️ El correo pudo no haberse enviado:",
-                emailErr.message,
+            } else {
+              evContainer.innerHTML =
+                '<span style="font-size:12px;">Sin imágenes adjuntas.</span>';
+            }
+          } else {
+            rowEvidences.style.display = "none";
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Error al cargar el reporte.");
+        closeSignReportModal();
+      }
+    }
+
+    // ✅ Función auxiliar para comprimir una firma Base64 a un tamaño razonable
+    function comprimirFirmaBase64(base64, maxWidth = 300, quality = 0.6) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const ratio = Math.min(maxWidth / img.width, 1);
+          canvas.width = img.width * ratio;
+          canvas.height = img.height * ratio;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL("image/png", quality));
+        };
+        img.onerror = () => resolve(base64); // Si falla, devuelve la original
+        img.src = base64;
+      });
+    }
+
+    // ✅ Modal estilizado para reemplazar alert()
+    function showWsResult(icon, title, message, onClose) {
+      document.getElementById("wsResultIcon").textContent = icon;
+      document.getElementById("wsResultTitle").textContent = title;
+      document.getElementById("wsResultMsg").textContent = message;
+      document.getElementById("wsResultModal").style.display = "flex";
+      window._wsResultOnClose = onClose || null;
+    }
+
+    function closeWsResultModal() {
+      document.getElementById("wsResultModal").style.display = "none";
+      if (window._wsResultOnClose) {
+        window._wsResultOnClose();
+        window._wsResultOnClose = null;
+      }
+    }
+
+    async function submitReportSignature() {
+      const blank = document.createElement("canvas");
+      blank.width = reportCanvas.width;
+      blank.height = reportCanvas.height;
+      if (reportCanvas.toDataURL() === blank.toDataURL()) {
+        return showWsResult(
+          "✍️",
+          "Firma requerida",
+          "Por favor, dibuje su firma para dar conformidad.",
+        );
+      }
+
+      const btn = document.getElementById("btnSubmitReportSign");
+      const dataURL = reportCanvas.toDataURL("image/png");
+      const reportId = document.getElementById("current-report-id").value;
+      const loadingOverlay = document.getElementById("signLoadingOverlay");
+      const loadingText = document.getElementById("signLoadingText");
+
+      btn.disabled = true;
+      loadingOverlay.style.display = "flex";
+      loadingText.textContent = "Guardando firma...";
+
+      try {
+        // 1. Guardamos la firma en el Backend
+        const res = await fetch(`${API_BASE}/reports/${reportId}/sign`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ signatureBase64: dataURL }),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          // 2. Comprimimos las firmas
+          loadingText.textContent = "Preparando envío de correo...";
+
+          let firmaColabComprimida = "";
+          let firmaSuperComprimida = "";
+
+          try {
+            firmaColabComprimida = await comprimirFirmaBase64(dataURL);
+          } catch (e) {
+            firmaColabComprimida = dataURL;
+          }
+
+          try {
+            if (currentReportData.supervisorSignature) {
+              firmaSuperComprimida = await comprimirFirmaBase64(
+                currentReportData.supervisorSignature,
               );
             }
+          } catch (e) {
+            firmaSuperComprimida =
+              currentReportData.supervisorSignature || "";
+          }
 
-            loadingOverlay.style.display = "none";
-            closeSignReportModal();
-            showWsResult(
-              "",
-              "¡Documento firmado!",
-              "La firma se guardó exitosamente y el correo fue enviado.",
-              () => {
-                location.reload();
-              },
-            );
-          } else {
-            loadingOverlay.style.display = "none";
-            showWsResult(
-              "❌",
-              "Error",
-              data.message || "No se pudo procesar la firma.",
+          const emailPayload = {
+            tipo_informe: currentReportData.type,
+            colaborador: currentReportData.collaboratorName,
+            supervisor:
+              currentReportData.supervisorId?.fullName || "Supervisor",
+            numero_incidencia: currentReportData.incidenceNumber,
+            fecha: new Date(currentReportData.createdAt)
+              .toISOString()
+              .split("T")[0],
+            asunto: currentReportData.subject,
+            severidad: currentReportData.severity,
+            descripcion: currentReportData.description,
+            destinatarios: currentReportData.recipients || [],
+            firma_supervisor_img: firmaSuperComprimida,
+            firma_colaborador_img: firmaColabComprimida,
+            imagenes: currentReportData.evidences
+              ? currentReportData.evidences.map((e) => e.url)
+              : [],
+          };
+
+          loadingText.textContent = "Enviando correo...";
+
+          const WEB_APP_URL =
+            "https://script.google.com/macros/s/AKfycbx3jizg2XR490i21wrladFc7-BQthgxkb7HODvsrCzxCUJrCFYiZz6WsAlE0ESg2z1S2w/exec";
+
+          try {
+            await fetch(WEB_APP_URL, {
+              method: "POST",
+              mode: "no-cors",
+              headers: { "Content-Type": "text/plain" },
+              body: JSON.stringify(emailPayload),
+            });
+          } catch (emailErr) {
+            console.warn(
+              "⚠️ El correo pudo no haberse enviado:",
+              emailErr.message,
             );
           }
-        } catch (err) {
-          console.error("❌ Error completo:", err);
+
+          loadingOverlay.style.display = "none";
+          closeSignReportModal();
+          showWsResult(
+            "",
+            "¡Documento firmado!",
+            "La firma se guardó exitosamente y el correo fue enviado.",
+            () => {
+              location.reload();
+            },
+          );
+        } else {
           loadingOverlay.style.display = "none";
           showWsResult(
             "❌",
-            "Error de conexión",
-            "No se pudo conectar con el servidor. Verifica tu internet e intenta de nuevo.",
+            "Error",
+            data.message || "No se pudo procesar la firma.",
           );
-        } finally {
-          btn.disabled = false;
-          btn.innerText = "Aceptar y Firmar";
         }
+      } catch (err) {
+        console.error("❌ Error completo:", err);
+        loadingOverlay.style.display = "none";
+        showWsResult(
+          "❌",
+          "Error de conexión",
+          "No se pudo conectar con el servidor. Verifica tu internet e intenta de nuevo.",
+        );
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Aceptar y Firmar";
       }
+    }
 
-      loadTheme();
-    </script>
-  </body>
+    loadTheme();
+  </script>
+</body>
+
 </html>
