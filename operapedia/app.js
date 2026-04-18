@@ -322,8 +322,8 @@ let localCatalog = gameCatalog.map(g => ({ ...g }));
   });
 
   // ==================== PARTNER FILTER ====================
-  const PARTNERS = ['Dragon', 'Tierlock', 'Taparcadia', 'Wysaro'];
-  const PARTNER_ICONS = { Dragon: '🐲', Tierlock: '🔒', Taparcadia: '🎮', Wysaro: '⭐' };
+  const PARTNERS = ['Dragon', 'Tierlock', 'Taparcadia', 'Wysaro', 'Manual'];
+  const PARTNER_ICONS = { Dragon: '🐲', Tierlock: '🔒', Taparcadia: '🎮', Wysaro: '⭐', Manual: '⚙️' };
 
   // Load saved partner filters from localStorage (default: empty = show all)
   let activePartnerFilters = [];
@@ -2295,14 +2295,12 @@ const finishEdit = async () => {
         // Add to local array
         currentCompany.games.push(...newGames);
 
-        // Save all to Firebase
+        // Save all to MongoDB
         try {
-          const gamesObj = {};
-          currentCompany.games.forEach(g => { gamesObj[g.id] = g; });
-          await window.firebaseSet(
-            window.firebaseRef(window.db, `companies/${currentCompany.id}/games`),
-            gamesObj
-          );
+          await apiFetch(`/companies/${currentCompany.id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ games: currentCompany.games })
+          });
           toast.textContent = `✅ ${newGames.length} juegos importados de ${source.name}`;
           toast.classList.add('show');
           setTimeout(() => toast.classList.remove('show'), 2500);
@@ -2492,6 +2490,7 @@ if (editModeBtn) {
           <option value="Tierlock">🔒 Tierlock</option>
           <option value="Taparcadia">🎮 Taparcadia</option>
           <option value="Wysaro">⭐ Wysaro</option>
+          <option value="Manual">⚙️ Manual</option>
         </select>
       </div>
 
@@ -2794,6 +2793,7 @@ if (editModeBtn) {
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 2000);
 
+      } finally {
         createBtn.disabled = false;
         createBtn.textContent = 'Crear compañía';
       }
