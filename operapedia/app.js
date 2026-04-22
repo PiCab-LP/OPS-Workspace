@@ -4,17 +4,30 @@ document.addEventListener('DOMContentLoaded', () => {
   let isEditMode = false;
   let currentTab = 'credenciales';
   let selectedCompanyId = null;
+
+  const ICON_COPY = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 408 480"><path fill="currentColor" d="M299 5v43H43v299H0V48q0-18 12.5-30.5T43 5h256zm64 86q17 0 29.5 12.5T405 133v299q0 18-12.5 30.5T363 475H128q-18 0-30.5-12.5T85 432V133q0-17 12.5-29.5T128 91h235zm0 341V133H128v299h235z"/></svg>`;
+  const ICON_EXTERNAL = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4m-8-2l8-8m0 0v5m0-5h-5"/></svg>`;
+
   let adminLoggedIn = localStorage.getItem('credentialsAdminLoggedIn') === 'true';
 
-  const companiesList = document.getElementById('companiesList');
   const gamesGrid = document.getElementById('gamesGrid');
   const companyTitle = document.getElementById('companyTitle');
   const gameSearch = document.getElementById('gameSearch');
   const globalSearch = document.getElementById('globalSearch');
   const toast = document.getElementById('toast');
-  const localFilterList = document.getElementById('localFilterList');
   const editModeBtn = document.getElementById('editModeBtn');
   const tabsContainer = document.getElementById('tabsContainer');
+
+  // New Dropdown Elements
+  const companySelectorCard = document.getElementById('companySelectorCard');
+  const companyDropdown = document.getElementById('companyDropdown');
+  const dropdownSearchInput = document.getElementById('dropdownSearchInput');
+  const dropdownList = document.getElementById('dropdownList');
+  const selectedCompanyName = document.getElementById('selectedCompanyName');
+  const companyLinkWrapper = document.getElementById('companyLinkWrapper');
+  const companyGlobalLink = document.getElementById('companyGlobalLink');
+  const companyIconImg = document.getElementById('companyIconImg');
+  const companyIconText = document.getElementById('companyIconText');
 
 
   // ==================== CONFIGURACIÓN API (MONGODB) ====================
@@ -255,17 +268,7 @@ let localCatalog = gameCatalog.map(g => ({ ...g }));
   });
   // ==================== FIN THEME SYNC ====================
 
-  // ==================== SIDEBAR COMPANY SEARCH ====================
-  const sidebarSearch = document.getElementById('sidebarSearch');
-  let sidebarSearchTerm = '';
-
-  if (sidebarSearch) {
-    sidebarSearch.addEventListener('input', e => {
-      sidebarSearchTerm = e.target.value.toLowerCase().trim();
-      renderCompanies();
-    });
-  }
-
+  // ==================== SIDEBAR COMPANY SEARCH (Removed, using dropdown) ====================
   // ==================== SEARCH FILTERS PANEL ====================
   const searchFiltersPanel = document.getElementById('searchFilters');
   let activeSearchCompanyIds = []; // empty = all companies
@@ -322,8 +325,14 @@ let localCatalog = gameCatalog.map(g => ({ ...g }));
   });
 
   // ==================== PARTNER FILTER ====================
-  const PARTNERS = ['Dragon', 'Tierlock', 'Taparcadia', 'Wysaro', 'Manual'];
-  const PARTNER_ICONS = { Dragon: '🐲', Tierlock: '🔒', Taparcadia: '🎮', Wysaro: '⭐', Manual: '⚙️' };
+  const PARTNERS = ['Dragon', 'Eterniplay', 'Taparcadia', 'Wysaro', 'Manual'];
+  const PARTNER_ICONS = { 
+    Dragon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M200.947 18.686c-6.98.087-14.64.774-22.85 1.9c27.57 20.468 51.098 45.25 67.594 70.527c1.66 0 3.312.012 4.958.047c18.066.39 35.487 2.906 53.217 7.2c-15.695-28.457-29.935-50.19-47.45-63.22c-13.817-10.278-30.063-16.168-52.52-16.454c-.967-.013-1.95-.013-2.948 0zm-91.66 22.96c-.73-.002-1.46.006-2.195.022c-14.045.31-29.36 3.92-46.86 11.13c56.18 18.807 106.985 50.468 133.907 83.585c18.377-5.13 29.44-14.72 36.454-28.817C195.84 78.18 168.118 56.19 140.65 46.96c-10.168-3.418-20.433-5.306-31.363-5.315zm-.203 52.786c-39.42 6.758-74.73 31.854-87.822 74.19v322.345h212.73C100.352 442.58 61.19 206.49 187.115 230.104c5.838-14.164 9.92-28.027 11.018-41.465l18.627 1.522c-1.684 20.592-8.828 40.49-18.033 59.943c-.732 2.035-1.472 4.12-2.186 6.063c32.842 85.24 113.77 160.69 169.495 168.197c.915.033 1.905-.002 2.953-.09c17.016 1.035 35.86-4.222 52.21-22.304l7.984-8.83l-10.473-5.658c-6.507-3.515-14.29-7.094-18.167-10.925c-1.938-1.916-2.793-3.47-3.074-5.194c-.282-1.725-.13-4.227 2.23-8.578l10.673-19.656l-21.484 6.222c-6.304 1.825-17.305-3.032-23.224-10.71c-2.96-3.84-4.408-7.907-4.387-10.843c.02-2.938.72-5.125 4.747-8.05l19.453-14.125l-23.884-2.72c-9.974-1.137-16.37-6.658-19.17-12.294c-2.802-5.634-2.312-10.084 1.375-13.31l12.204-10.677l-15.358-5.205c-6.717-2.276-10.296-7.555-10.357-10.633c-.028-1.373.238-2.666 1.843-4.476c10.93-2.39 21.258-.45 28.088 6.374c6.154 6.146 8.35 15.128 6.977 24.832c8.55-2.254 16.985-1.616 24.112 2.494c9.34 5.387 14.647 15.692 15.67 27.965c15.212-10.132 32.152-12.725 45.262-5.164c15.467 8.92 21.36 29.513 16.805 51.75c23.992-33.355 34.588-75.717 5.617-120.43c-46.726-4.442-81.693-30.676-93.293-67.64c-5.026-16.016-21.284-28.67-42-37.904l-.08.217c-29.74-10.823-55.575-17.35-82.604-18.733l.08.155c-2.294-.093-4.56-.16-6.762-.172c-9.537 22.874-28.662 39.9-57.436 46.054l-5.906 1.262l-3.576-4.864c-14.216-19.33-41.23-40.452-74.002-58.074zm156.215 65.26c27.927-.073 44.874 11.617 42.09 44.45c-35.844 3.39-51.933-16.683-63.074-42.632c7.507-1.155 14.538-1.8 20.983-1.817zm48.407 66.363c3.708.07 7.14.994 10.014 2.812a35.171 35.171 0 0 0-4.16 3.543c-5.246 5.24-8.087 12.122-7.956 18.742c.183 9.322 5.27 17.184 12.68 22.56c-3.14 8.103-2.452 17.455 1.407 25.22c3.813 7.668 10.54 14.273 19.302 18.398c-1.445 3.366-2.375 6.862-2.4 10.33c-.062 8.407 3.38 16.042 8.273 22.39c6.792 8.81 16.862 15.936 28.026 17.91c-.183 2.18-.204 4.333.133 6.407c1.05 6.444 4.515 11.66 8.38 15.48c3.41 3.37 7.19 5.892 10.798 7.993c-6.345 4.792-12.414 7.056-18.618 7.79c-6.515-7.937-9.71-19.084-9.41-31.454c-11.767 6.177-24.21 7.156-34.12 1.44c-14.668-8.46-19.393-29.036-13.187-50.33c-11.336 2.77-22.13.92-29.187-6.132c-8.875-8.865-9.535-23.626-3.094-37.95c-3.676-.615-6.963-2.166-9.525-4.725c-8.808-8.798-5.773-26.09 6.776-38.626c7.843-7.835 17.546-11.957 25.87-11.8z"/></svg>`,
+    Eterniplay: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M160 32c-35.3 0-64 28.7-64 64v224c0 35.3 28.7 64 64 64h352c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64zm176 96a80 80 0 1 1 0 160a80 80 0 1 1 0-160m-176 24v-48c0-4.4 3.6-8 8-8h48c4.4 0 8.1 3.6 7.5 8c-3.6 29-26.6 51.9-55.5 55.5c-4.4.5-8-3.1-8-7.5m0 112c0-4.4 3.6-8.1 8-7.5c29 3.6 51.9 26.6 55.5 55.5c.5 4.4-3.1 8-7.5 8h-48c-4.4 0-8-3.6-8-8zm344-104.5c-29-3.6-51.9-26.6-55.5-55.5c-.5-4.4 3.1-8 7.5-8h48c4.4 0 8 3.6 8 8v48c0 4.4-3.6 8.1-8 7.5m8 104.5v48c0 4.4-3.6 8-8 8h-48c-4.4 0-8.1-3.6-7.5-8c3.6-29 26.6-51.9 55.5-55.5c4.4-.5 8 3.1 8 7.5M48 152c0-13.3-10.7-24-24-24S0 138.7 0 152v264c0 35.3 28.7 64 64 64h392c13.3 0 24-10.7 24-24s-10.7-24-24-24H64c-8.8 0-16-7.2-16-16z"/></svg>`,
+    Taparcadia: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 717 669"><path fill="currentColor" d="M143 96V24h72v72h-72zm359-72h71v72h-71V24zm143 215V96h72v287h-72v71h-72v72h72v72h72v71H573v-71h-71v-72H215v72h-72v71H0v-71h72v-72h71v-72H72v-71H0V96h72v143h71v-71h72V96h72v72h143V96h72v72h71v71h72zm-358 72v-72h-72v72h72zm215 0v-72h-72v72h72z"/></svg>`,
+    Wysaro: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><path fill="currentColor" d="M27.287 34.627c-.404 0-.806-.124-1.152-.371L18 28.422l-8.135 5.834a1.97 1.97 0 0 1-2.312-.008a1.971 1.971 0 0 1-.721-2.194l3.034-9.792l-8.062-5.681a1.98 1.98 0 0 1-.708-2.203a1.978 1.978 0 0 1 1.866-1.363L12.947 13l3.179-9.549a1.976 1.976 0 0 1 3.749 0L23 13l10.036.015a1.975 1.975 0 0 1 1.159 3.566l-8.062 5.681l3.034 9.792a1.97 1.97 0 0 1-.72 2.194a1.957 1.957 0 0 1-1.16.379z"/></svg>`,
+    Manual: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 10.27 7 3.34"/><path d="m11 13.73-4 6.93"/><path d="M12 22v-2"/><path d="M12 2v2"/><path d="M14 12h8"/><path d="m17 20.66-1-1.73"/><path d="m17 3.34-1 1.73"/><path d="M2 12h2"/><path d="m20.66 17-1.73-1"/><path d="m20.66 7-1.73 1"/><path d="m3.34 17 1.73-1"/><path d="m3.34 7 1.73 1"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="12" r="8"/></svg>`
+  };
 
   // Load saved partner filters from localStorage (default: empty = show all)
   let activePartnerFilters = [];
@@ -356,7 +365,7 @@ let localCatalog = gameCatalog.map(g => ({ ...g }));
         activePartnerFilters.push(partner);
       }
       savePartnerFilters();
-      // Re-render sidebar and re-trigger search
+      // Re-render dropdown and re-trigger search
       renderCompanies();
       if (globalSearch.value.trim()) {
         renderGlobalResults(globalSearch.value);
@@ -364,100 +373,95 @@ let localCatalog = gameCatalog.map(g => ({ ...g }));
     });
   });
 
-  // ========= FILTRO LOCAL =========
-  let localCompanyFilter = { companyIds: [] };
-
-  const loadLocalFilter = () => {
-    const raw = localStorage.getItem('companyLocalFilter');
-    if (!raw) return;
-    try {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed.companyIds)) {
-        localCompanyFilter = { companyIds: parsed.companyIds };
-      }
-    } catch {
-      localCompanyFilter = { companyIds: [] };
-    }
-  };
-
-  const saveLocalFilter = () => {
-    localStorage.setItem('companyLocalFilter', JSON.stringify(localCompanyFilter));
-  };
-
-  const renderLocalFilterList = () => {
-    if (!localFilterList) return;
-    localFilterList.innerHTML = '';
-    companies.forEach(company => {
-      const wrapper = document.createElement('label');
-      wrapper.className = 'local-filter-item';
-      const checked = localCompanyFilter.companyIds.includes(company.id);
-      wrapper.innerHTML = `
-        <input type="checkbox" data-company-id="${company.id}" ${checked ? 'checked' : ''}>
-        <span>${company.name}</span>
-      `;
-      localFilterList.appendChild(wrapper);
-    });
-  };
-
-  if (localFilterList) {
-    localFilterList.addEventListener('change', e => {
-      const input = e.target.closest('input[type="checkbox"]');
-      if (!input) return;
-      const idStr = input.getAttribute('data-company-id');
-      const id = isNaN(Number(idStr)) ? idStr : Number(idStr);
-
-      if (input.checked) {
-        if (!localCompanyFilter.companyIds.includes(id)) {
-          localCompanyFilter.companyIds.push(id);
-        }
-      } else {
-        localCompanyFilter.companyIds =
-          localCompanyFilter.companyIds.filter(x => x !== id);
-      }
-
-      saveLocalFilter();
-      renderCompanies();
-    });
-  }
 
 
 
-// ========= MONGO: TOGGLE JUEGO =========
-  const updateRemoteToggle = async (company, game) => {
-    try {
-      await apiFetch(`/companies/${company.id}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ games: company.games }) // Enviamos el array de juegos actualizado
-      });
-    } catch (e) {
-      console.error("Error al cambiar estado del juego:", e);
-    }
-  };
 
 
   // ========= RENDER COMPAÑÍAS =========
+  let dropdownSearchTerm = '';
+  
+  if (dropdownSearchInput) {
+    dropdownSearchInput.addEventListener('input', e => {
+      dropdownSearchTerm = e.target.value.toLowerCase().trim();
+      renderCompanies();
+    });
+  }
+  
+  if (companySelectorCard) {
+    companySelectorCard.addEventListener('click', () => {
+      const isOpen = companyDropdown.style.display === 'flex';
+      if (isOpen) {
+        companyDropdown.style.display = 'none';
+        companySelectorCard.classList.remove('open');
+      } else {
+        companyDropdown.style.display = 'flex';
+        companySelectorCard.classList.add('open');
+        dropdownSearchInput.focus();
+        renderCompanies(); // re-render to make sure it's up to date
+      }
+    });
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.company-selector-container')) {
+        companyDropdown.style.display = 'none';
+        companySelectorCard.classList.remove('open');
+      }
+    });
+  }
+
   const renderCompanies = () => {
-    companiesList.innerHTML = '';
+    if (!dropdownList) return;
+    dropdownList.innerHTML = '';
 
     const visibleCompanies = companies.filter(c => {
-      const passesLocalFilter = localCompanyFilter.companyIds.length === 0 || localCompanyFilter.companyIds.includes(c.id);
-      const passesSidebarSearch = !sidebarSearchTerm || c.name.toLowerCase().includes(sidebarSearchTerm);
+      const passesSearch = !dropdownSearchTerm || c.name.toLowerCase().includes(dropdownSearchTerm);
       const passesPartnerFilter = activePartnerFilters.length === 0 || activePartnerFilters.includes(c.partner || '');
-      return passesLocalFilter && passesSidebarSearch && passesPartnerFilter;
+      return passesSearch && passesPartnerFilter;
+    });
+
+    const partnerSortOrder = {
+      'Dragon': 1,
+      'Taparcadia': 2,
+      'Eterniplay': 3,
+      'Wysaro': 4,
+      'Manual': 5
+    };
+
+    visibleCompanies.sort((a, b) => {
+      const orderA = partnerSortOrder[a.partner] || 99;
+      const orderB = partnerSortOrder[b.partner] || 99;
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      return a.name.localeCompare(b.name);
     });
 
     visibleCompanies.forEach(company => {
-      const activeCount = company.games.filter(g => g.active).length;
-      const partnerTag = company.partner ? `<span class="partner-badge-sm" data-partner="${company.partner}">${company.partner}</span>` : '';
+      const isActive = currentCompany && String(currentCompany.id) === String(company.id);
       const item = document.createElement('div');
-      item.className = 'company-item';
+      item.className = `dropdown-item ${isActive ? 'active' : ''}`;
+      
+      const iconContent = company.iconUrl 
+        ? `<img src="${company.iconUrl}" style="width:24px; height:24px; object-fit:cover; border-radius:4px;" />` 
+        : `<div style="width:24px; height:24px; background:${company.color}; border-radius:4px;"></div>`;
+
+      let partnerHtml = '';
+      if (company.partner) {
+        const partnerIcon = PARTNER_ICONS[company.partner] || '';
+        partnerHtml = `<span class="partner-badge" data-partner="${company.partner}" style="transform: scale(0.85); margin-left: auto;">${partnerIcon} ${company.partner}</span>`;
+      }
+
       item.innerHTML = `
-        <div class="company-color" style="background:${company.color}"></div>
-        <span class="company-name">${company.name}</span>
-        ${partnerTag}
-        <span class="company-count">${activeCount}</span>
+        ${iconContent}
+        <span style="font-size: 13px; font-weight: 500; flex: 1;">${company.name}</span>
+        ${partnerHtml}
       `;
+
       item.addEventListener('click', () => {
+        companyDropdown.style.display = 'none';
+        companySelectorCard.classList.remove('open');
+
         // Guard: block company switch while in edit mode
         if (isEditMode && currentCompany && String(currentCompany.id) !== String(company.id)) {
           showConfirmModal(
@@ -473,32 +477,28 @@ let localCatalog = gameCatalog.map(g => ({ ...g }));
                 editModeBtn.innerHTML = '<span class="btn-edit-icon">✏️</span><span class="btn-edit-label">Editar</span>';
               }
               updateAddCompanyBtnVisibility();
-              document.querySelectorAll('.company-item').forEach(el => el.classList.remove('active'));
-              item.classList.add('active');
               selectCompany(company);
             }
           });
           return;
         }
-        document
-          .querySelectorAll('.company-item')
-          .forEach(el => el.classList.remove('active'));
-        item.classList.add('active');
+        
         selectCompany(company);
       });
-      companiesList.appendChild(item);
+      dropdownList.appendChild(item);
     });
-
-    // Update sidebar badge
-    const badge = document.getElementById('companyCountBadge');
-    if (badge) badge.textContent = visibleCompanies.length;
 
     if (
       currentCompany &&
-      !visibleCompanies.find(c => String(c.id) === String(currentCompany.id))
+      !companies.find(c => String(c.id) === String(currentCompany.id))
     ) {
       currentCompany = null;
-      companyTitle.textContent = 'Selecciona una compañía';
+      selectedCompanyName.textContent = 'Selecciona una compañía';
+      companyIconImg.style.display = 'none';
+      companyIconText.style.display = 'block';
+      companyIconText.textContent = '🏛️';
+      companyLinkWrapper.style.display = 'none';
+
       if (editModeBtn) {
         isEditMode = false;
         editModeBtn.textContent = 'Editar';
@@ -522,7 +522,7 @@ let localCatalog = gameCatalog.map(g => ({ ...g }));
     const company = currentCompany;
     if (company.partner) {
       const icon = PARTNER_ICONS[company.partner] || '';
-      partnerBadge.textContent = `${icon} ${company.partner}`;
+      partnerBadge.innerHTML = `${icon} <span>${company.partner}</span>`;
       partnerBadge.setAttribute('data-partner', company.partner);
       partnerBadge.style.display = 'inline-flex';
       partnerBadge.title = isEditMode ? 'Clic para cambiar partner' : '';
@@ -545,7 +545,7 @@ let localCatalog = gameCatalog.map(g => ({ ...g }));
       const sel = document.createElement('select');
       sel.style.cssText = 'padding:4px 10px;background:var(--bg-input);border:1px solid var(--accent);border-radius:var(--radius-sm);color:var(--text-primary);font-size:12px;font-family:inherit;outline:none;';
       sel.innerHTML = `<option value="">Sin partner</option>` +
-        PARTNERS.map(p => `<option value="${p}" ${company.partner === p ? 'selected' : ''}>${PARTNER_ICONS[p]} ${p}</option>`).join('');
+        PARTNERS.map(p => `<option value="${p}" ${company.partner === p ? 'selected' : ''}>${p}</option>`).join('');
       partnerBadge.replaceWith(sel);
       sel.focus();
 
@@ -641,10 +641,29 @@ const finishEdit = async () => {
   const selectCompany = company => {
     currentCompany = company;
     selectedCompanyId = company.id;
-    companyTitle.innerHTML = `
-      <div class="company-title-bar" style="background:${company.color}"></div>
-      ${company.name}
-    `;
+    selectedCompanyName.textContent = company.name;
+    
+    // Set the icon
+    if (company.iconUrl) {
+      companyIconImg.src = company.iconUrl;
+      companyIconImg.style.display = 'block';
+      companyIconText.style.display = 'none';
+      companyIconBox.style.background = 'transparent';
+    } else {
+      companyIconImg.style.display = 'none';
+      companyIconText.style.display = 'block';
+      companyIconText.textContent = company.name.charAt(0).toUpperCase();
+      companyIconBox.style.background = company.color || 'var(--bg-elevated)';
+    }
+
+    // Set the global link if available
+    if (company.globalLink) {
+      companyGlobalLink.href = company.globalLink;
+      companyGlobalLink.textContent = company.globalLink;
+      companyLinkWrapper.style.display = 'block';
+    } else {
+      companyLinkWrapper.style.display = 'none';
+    }
     // Update partner badge in header
     updatePartnerBadge();
     updateDeleteBtn();
@@ -712,17 +731,8 @@ const finishEdit = async () => {
       case 'cashout':
         renderCashout(currentCompany);
         break;
-      case 'consideraciones':
-        renderConsideraciones(currentCompany);
-        break;
       case 'promociones':
         renderPromociones(currentCompany);
-        break;
-      case 'terminos':
-        renderTerminos(currentCompany);
-        break;
-      case 'canales':
-        renderCanales(currentCompany);
         break;
       case 'notas':
         renderNotas(currentCompany);
@@ -756,48 +766,34 @@ const finishEdit = async () => {
     } else if (filtered.length) {
       html += filtered
         .map(g => {
-          const disabledAttr = g.active ? '' : 'disabled';
-          const disabledClass = g.active ? '' : 'disabled';
-
           if (!isEditMode) {
             return `
-          <div class="game-card ${g.active ? '' : 'inactive'}">
+          <div class="game-card">
             <div class="game-header">
               <div class="game-name">${g.name}</div>
-              <div class="game-status">
-                <div class="status-toggle ${g.active ? 'active' : ''}"
-                     data-company-id="${currentCompany.id}"
-                     data-game-id="${g.id}"></div>
-              </div>
             </div>
             <div class="game-details">
               <div class="detail-row">
                 <span class="detail-label">Username:</span>
                 <span class="detail-value">${g.username}</span>
-                <button class="copy-btn ${disabledClass}" ${disabledAttr} data-copy="${g.username}">Copiar</button>
+                <button class="copy-btn" data-copy="${g.username}">${ICON_COPY}</button>
               </div>
               <div class="detail-row">
                 <span class="detail-label">Link:</span>
                 <span class="detail-value">${g.link}</span>
-                <button class="link-btn ${disabledClass}" ${disabledAttr}
-                        data-link="${g.link}" title="Abrir enlace">🔗</button>
+                <button class="link-btn"
+                        data-link="${g.link}" title="Abrir enlace">${ICON_EXTERNAL}</button>
               </div>
             </div>
-            <div class="last-modified">Última mod: ${g.lastModified}</div>
           </div>
         `;
           }
 
           return `
-        <div class="game-card ${g.active ? '' : 'inactive'}" data-edit-card="1"
+        <div class="game-card" data-edit-card="1"
              data-company-id="${currentCompany.id}" data-game-id="${g.id}">
           <div class="game-header">
             <div class="game-name">${g.name}</div>
-            <div class="game-status">
-              <div class="status-toggle ${g.active ? 'active' : ''}"
-                   data-company-id="${currentCompany.id}"
-                   data-game-id="${g.id}"></div>
-            </div>
           </div>
           <div class="game-details">
             <div class="detail-row">
@@ -827,7 +823,6 @@ const finishEdit = async () => {
               Eliminar
             </button>
           </div>
-          <div class="last-modified">Última mod: ${g.lastModified}</div>
         </div>
       `;
         })
@@ -919,24 +914,31 @@ const finishEdit = async () => {
         return;
       }
 
-      let html = '<div class="tab-info-card"><h3>Métodos de depósito</h3>';
+      let html = '<div class="section-header"><h3>Métodos de depósito</h3></div><div class="methods-grid">';
 
       metodos.forEach((metodo) => {
+        const title = metodo.metodo || metodo.metodoPago || 'Método de depósito';
+        const provider = metodo.proveedor || 'N/A';
+        const min = metodo.montoMinimo || 'N/A';
+        const max = metodo.montoMaximo || 'N/A';
+        
         html += `
-          <div class="metodo-deposito-item">
-            <div class="metodo-titulo">${metodo.metodo || metodo.metodoPago || 'Método de depósito'}</div>
-            <div class="metodo-detalles">
-              <div class="metodo-row">
-                <span class="metodo-label">Proveedor:</span>
-                <span class="metodo-value">${metodo.proveedor || 'N/A'}</span>
+          <div class="method-card">
+            <div class="method-header">
+              <div class="method-title">${title}</div>
+            </div>
+            <div class="method-details">
+              <div class="method-row">
+                <span class="method-label">Proveedor</span>
+                <span class="method-value">${provider}</span>
               </div>
-              <div class="metodo-row">
-                <span class="metodo-label">Monto mínimo:</span>
-                <span class="metodo-value">${metodo.montoMinimo || 'N/A'}</span>
+              <div class="method-row">
+                <span class="method-label">Monto mínimo</span>
+                <span class="method-value highlight">${min}</span>
               </div>
-              <div class="metodo-row">
-                <span class="metodo-label">Monto máximo:</span>
-                <span class="metodo-value">${metodo.montoMaximo || 'N/A'}</span>
+              <div class="method-row">
+                <span class="method-label">Monto máximo</span>
+                <span class="method-value highlight">${max}</span>
               </div>
             </div>
           </div>
@@ -1021,24 +1023,31 @@ const finishEdit = async () => {
         return;
       }
 
-      let html = '<div class="tab-info-card"><h3>Métodos de cashout</h3>';
+      let html = '<div class="section-header"><h3>Métodos de cashout</h3></div><div class="methods-grid">';
 
       metodos.forEach((metodo) => {
+        const title = metodo.metodo || metodo.metodoPago || 'Método de cashout';
+        const provider = metodo.proveedor || 'N/A';
+        const min = metodo.montoMinimo || 'N/A';
+        const max = metodo.montoMaximo || 'N/A';
+
         html += `
-          <div class="metodo-deposito-item">
-            <div class="metodo-titulo">${metodo.metodo || metodo.metodoPago || 'Método de cashout'}</div>
-            <div class="metodo-detalles">
-              <div class="metodo-row">
-                <span class="metodo-label">Proveedor:</span>
-                <span class="metodo-value">${metodo.proveedor || 'N/A'}</span>
+          <div class="method-card">
+            <div class="method-header">
+              <div class="method-title">${title}</div>
+            </div>
+            <div class="method-details">
+              <div class="method-row">
+                <span class="method-label">Proveedor</span>
+                <span class="method-value">${provider}</span>
               </div>
-              <div class="metodo-row">
-                <span class="metodo-label">Monto mínimo:</span>
-                <span class="metodo-value">${metodo.montoMinimo || 'N/A'}</span>
+              <div class="method-row">
+                <span class="method-label">Monto mínimo</span>
+                <span class="method-value highlight">${min}</span>
               </div>
-              <div class="metodo-row">
-                <span class="metodo-label">Monto máximo:</span>
-                <span class="metodo-value">${metodo.montoMaximo || 'N/A'}</span>
+              <div class="method-row">
+                <span class="method-label">Monto máximo</span>
+                <span class="method-value highlight">${max}</span>
               </div>
             </div>
           </div>
@@ -1105,44 +1114,7 @@ const finishEdit = async () => {
     }
   };
 
-  // ========= RENDER CONSIDERACIONES =========
-  const renderConsideraciones = (company) => {
-    const container = document.getElementById('consideracionesContent');
-    if (!container) return;
 
-    const consideraciones = company.consideracionesCashout || '';
-
-    if (!isEditMode) {
-      if (!consideraciones) {
-        container.innerHTML = `
-          <div class="tab-info-card">
-            <h3>Consideraciones para cashouts</h3>
-            <p>No hay consideraciones disponibles.</p>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = `
-        <div class="tab-info-card">
-          <h3>Consideraciones para cashouts</h3>
-          <p style="white-space: pre-wrap; line-height: 1.6;">${consideraciones}</p>
-        </div>
-      `;
-    } else {
-      container.innerHTML = `
-        <div class="edit-section">
-          <h3>Consideraciones para cashouts</h3>
-          <textarea 
-            id="consideracionesTextarea"
-            class="edit-textarea" 
-            rows="10"
-            placeholder="Escribe las consideraciones para cashouts..."
-          >${consideraciones}</textarea>
-        </div>
-      `;
-    }
-  };
 
   // ========= RENDER PROMOCIONES =========
   const renderPromociones = (company) => {
@@ -1218,132 +1190,7 @@ const finishEdit = async () => {
     }
   };
 
-  // ========= RENDER TÉRMINOS =========
-  const renderTerminos = (company) => {
-    const container = document.getElementById('terminosContent');
-    if (!container) return;
 
-    const link = company.terminosLink || company.terminosCondiciones || '';
-
-    if (!isEditMode) {
-      if (!link) {
-        container.innerHTML = `
-          <div class="tab-info-card">
-            <h3>Términos y condiciones</h3>
-            <p>No hay información disponible.</p>
-          </div>
-        `;
-        return;
-      }
-
-      if (typeof link === 'string' && (link.startsWith('http://') || link.startsWith('https://'))) {
-        container.innerHTML = `
-          <div class="tab-info-card">
-            <h3>Términos y condiciones</h3>
-            <p style="margin-bottom: 16px;">Consulta los términos y condiciones completos en el siguiente enlace:</p>
-            <a href="${link}" target="_blank" rel="noopener noreferrer" class="terminos-link-btn">
-              Ver términos y condiciones completos →
-            </a>
-          </div>
-        `;
-      } else {
-        container.innerHTML = `
-          <div class="tab-info-card">
-            <h3>Términos y condiciones</h3>
-            <p style="white-space: pre-wrap;">${link}</p>
-          </div>
-        `;
-      }
-    } else {
-      container.innerHTML = `
-        <div class="edit-section">
-          <h3>Términos y condiciones</h3>
-          <label>URL o texto de términos y condiciones:</label>
-          <input 
-            type="text" 
-            id="terminosInput"
-            class="edit-input" 
-            value="${link}" 
-            placeholder="https://example.com/terminos o texto directo"
-          />
-        </div>
-      `;
-    }
-  };
-
-  // ========= RENDER CANALES =========
-  const renderCanales = (company) => {
-    const container = document.getElementById('canalesContent');
-    if (!container) return;
-
-    const canales = company.canales || company.canalesAtencion || [];
-
-    if (!isEditMode) {
-      if (canales.length === 0) {
-        container.innerHTML = `
-          <div class="tab-info-card">
-            <h3>Canales de atención</h3>
-            <p>No hay canales de atención disponibles.</p>
-          </div>
-        `;
-        return;
-      }
-
-      let html = '<div class="tab-info-card"><h3>Canales de atención</h3><div class="canales-list">';
-
-      canales.forEach((canal) => {
-        if (typeof canal === 'string') {
-          html += `
-            <div class="canal-item">
-              <div class="canal-nombre">${canal}</div>
-            </div>
-          `;
-        } else {
-          const nombre = canal.nombre || canal.tipo || 'Canal de atención';
-          const contacto = canal.contacto || canal.valor || canal.link || '';
-
-          html += `
-            <div class="canal-item">
-              <div class="canal-nombre">${nombre}</div>
-              ${contacto ? `<div class="canal-contacto">${contacto}</div>` : ''}
-            </div>
-          `;
-        }
-      });
-
-      html += '</div></div>';
-      container.innerHTML = html;
-    } else {
-      let html = '<div class="edit-section"><h3>Canales de atención</h3>';
-
-      canales.forEach((canal, index) => {
-        const canalTexto = typeof canal === 'string' ? canal : (canal.nombre || '');
-        html += `
-          <div class="edit-canal-card">
-            <div class="edit-card-header">
-              <input 
-                type="text" 
-                class="edit-input" 
-                value="${canalTexto}" 
-                data-index="${index}"
-                placeholder="Nombre del canal (ej: WhatsApp: +123456789)"
-              />
-              <button class="delete-btn" data-index="${index}" data-type="canales">🗑️</button>
-            </div>
-          </div>
-        `;
-      });
-
-      html += `
-        <button class="add-new-btn" data-type="canales">
-          + Agregar canal de atención
-        </button>
-      `;
-
-      html += '</div>';
-      container.innerHTML = html;
-    }
-  };
 
   // ========= RENDER NOTAS (TIMELINE) =========
   const renderNotas = (company) => {
@@ -1492,11 +1339,6 @@ const finishEdit = async () => {
           currentCompany.metodosCashout = metodosCashout;
           break;
 
-        case 'consideraciones':
-          updateData.consideracionesCashout = document.getElementById('consideracionesTextarea').value;
-          currentCompany.consideracionesCashout = updateData.consideracionesCashout;
-          break;
-
         case 'promociones':
           const promocionesContainer = document.getElementById('promocionesContent');
           const promociones = [];
@@ -1508,21 +1350,6 @@ const finishEdit = async () => {
           });
           updateData.promociones = promociones;
           currentCompany.promociones = promociones;
-          break;
-
-        case 'terminos':
-          updateData.terminosLink = document.getElementById('terminosInput').value;
-          currentCompany.terminosLink = updateData.terminosLink;
-          break;
-
-        case 'canales':
-          const canalesContainer = document.getElementById('canalesContent');
-          const canales = [];
-          canalesContainer.querySelectorAll('.edit-canal-card input').forEach((input) => {
-            if (input.value.trim()) canales.push(input.value.trim());
-          });
-          updateData.canales = canales;
-          currentCompany.canales = canales;
           break;
 
         case 'notas':
@@ -1578,11 +1405,6 @@ const finishEdit = async () => {
           currentCompany.promociones.push({ titulo: '', descripcion: '' });
           renderPromociones(currentCompany);
           break;
-        case 'canales':
-          if (!currentCompany.canales) currentCompany.canales = [];
-          currentCompany.canales.push('');
-          renderCanales(currentCompany);
-          break;
         case 'nota':
           const textarea = document.getElementById('newNotaTextarea');
           if (!textarea) return;
@@ -1634,10 +1456,6 @@ const finishEdit = async () => {
         case 'promociones':
           currentCompany.promociones.splice(index, 1);
           renderPromociones(currentCompany);
-          break;
-        case 'canales':
-          currentCompany.canales.splice(index, 1);
-          renderCanales(currentCompany);
           break;
         case 'nota':
           if (Array.isArray(currentCompany.notas)) {
@@ -1720,26 +1538,20 @@ const finishEdit = async () => {
     const shouldSearch = (category) => activeCategoryFilters.length === 0 || activeCategoryFilters.includes(category);
 
     companies.forEach(company => {
-      // Company filter: check omnibar company pills + local filter + partner filter
-      const isVisibleByLocalFilter =
-        localCompanyFilter.companyIds.length === 0 ||
-        localCompanyFilter.companyIds.includes(company.id);
+      // Company filter: check omnibar company pills + partner filter
       const isVisibleBySearchFilter =
         activeSearchCompanyIds.length === 0 ||
         activeSearchCompanyIds.includes(company.id);
       const isVisibleByPartner =
         activePartnerFilters.length === 0 ||
         activePartnerFilters.includes(company.partner || '');
-      if (!isVisibleByLocalFilter || !isVisibleBySearchFilter || !isVisibleByPartner) return;
+      if (!isVisibleBySearchFilter || !isVisibleByPartner) return;
 
       const matches = {
         credenciales: [],
         deposito: [],
         cashout: [],
-        consideraciones: null,
         promociones: [],
-        terminos: null,
-        canales: [],
         notas: []
       };
 
@@ -1781,14 +1593,7 @@ const finishEdit = async () => {
         });
       }
 
-      // 4. BUSCAR EN CONSIDERACIONES
-      if (shouldSearch('consideraciones')) {
-        const consideraciones = company.consideracionesCashout || '';
-        if (consideraciones.toLowerCase().includes(t)) {
-          matches.consideraciones = consideraciones;
-          hasMatches = true;
-        }
-      }
+
 
       // 5. BUSCAR EN PROMOCIONES
       if (shouldSearch('promociones') && Array.isArray(company.promociones)) {
@@ -1801,26 +1606,7 @@ const finishEdit = async () => {
         });
       }
 
-      // 6. BUSCAR EN TÉRMINOS
-      if (shouldSearch('terminos')) {
-        const terminos = company.terminosLink || company.terminosCondiciones || '';
-        if (terminos.toLowerCase().includes(t)) {
-          matches.terminos = terminos;
-          hasMatches = true;
-        }
-      }
 
-      // 7. BUSCAR EN CANALES
-      if (shouldSearch('canales')) {
-        const canales = company.canales || company.canalesAtencion || [];
-        canales.forEach(c => {
-          const searchText = typeof c === 'string' ? c : `${c.nombre || ''} ${c.contacto || ''}`;
-          if (searchText.toLowerCase().includes(t)) {
-            matches.canales.push(c);
-            hasMatches = true;
-          }
-        });
-      }
 
       // 8. BUSCAR EN NOTAS
       if (shouldSearch('notas') && Array.isArray(company.notas)) {
@@ -1862,29 +1648,23 @@ const finishEdit = async () => {
           const disabledAttr = g.active ? '' : 'disabled';
           const disabledClass = g.active ? '' : 'disabled';
           html += `
-          <div class="game-card ${g.active ? '' : 'inactive'}">
+          <div class="game-card">
             <div class="game-header">
               <div class="game-name">${g.name}</div>
-              <div class="game-status">
-                <div class="status-toggle ${g.active ? 'active' : ''}"
-                     data-company-id="${company.id}"
-                     data-game-id="${g.id}"></div>
-              </div>
             </div>
             <div class="game-details">
               <div class="detail-row">
                 <span class="detail-label">Username:</span>
                 <span class="detail-value">${g.username}</span>
-                <button class="copy-btn ${disabledClass}" ${disabledAttr} data-copy="${g.username}">Copiar</button>
+                <button class="copy-btn" data-copy="${g.username}">${ICON_COPY}</button>
               </div>
               <div class="detail-row">
                 <span class="detail-label">Link:</span>
                 <span class="detail-value">${g.link}</span>
-                <button class="link-btn ${disabledClass}" ${disabledAttr}
-                        data-link="${g.link}" title="Abrir enlace">🔗</button>
+                <button class="link-btn"
+                        data-link="${g.link}" title="Abrir enlace">${ICON_EXTERNAL}</button>
               </div>
             </div>
-            <div class="last-modified">Última mod: ${g.lastModified}</div>
           </div>
         `;
         });
@@ -1943,23 +1723,7 @@ const finishEdit = async () => {
         html += '</div>';
       }
 
-      // TÉRMINOS
-      if (matches.terminos) {
-        html += `<div class="result-section"><h4>📜 Términos y condiciones</h4>`;
-        const preview = matches.terminos.substring(0, 150) + (matches.terminos.length > 150 ? '...' : '');
-        html += `<div class="search-result-card"><div class="search-result-text">${preview}</div></div>`;
-        html += '</div>';
-      }
 
-      // CANALES
-      if (matches.canales.length > 0) {
-        html += `<div class="result-section"><h4>📞 Canales de atención (${matches.canales.length})</h4>`;
-        matches.canales.forEach(c => {
-          const texto = typeof c === 'string' ? c : `${c.nombre || 'Canal'}: ${c.contacto || ''}`;
-          html += `<div class="search-result-card"><div class="search-result-text">${texto}</div></div>`;
-        });
-        html += '</div>';
-      }
 
       // NOTAS
       if (matches.notas.length > 0) {
@@ -2050,9 +1814,7 @@ const finishEdit = async () => {
     }
 
     const newId = getNextGameId(currentCompany);
-    const today = new Date().toISOString().split('T')[0];
-
-    const newGame = { id: newId, name, username, link, active: true, lastModified: today };
+    const newGame = { id: newId, name, username, link, active: true };
 
     const ok = await showConfirmModal(
       '¿Crear juego?',
@@ -2101,11 +1863,11 @@ const finishEdit = async () => {
           'Copiado: ' +
           (text.length > 20 ? text.slice(0, 20) + '…' : text);
         toast.classList.add('show');
-        copyBtn.textContent = '✓';
+        copyBtn.innerHTML = '✓';
         copyBtn.classList.add('copied');
         setTimeout(() => {
           toast.classList.remove('show');
-          copyBtn.textContent = 'Copiar';
+          copyBtn.innerHTML = ICON_COPY;
           copyBtn.classList.remove('copied');
         }, 1500);
       });
@@ -2159,7 +1921,6 @@ const finishEdit = async () => {
       // Actualizamos los datos en la memoria local
       game.username = newUsername;
       game.link = newLink;
-      game.lastModified = new Date().toISOString().split('T')[0];
 
       // ===============================================
       // ✅ NUEVA LLAMADA A MONGODB (Reemplaza a Firebase)
@@ -2318,38 +2079,7 @@ const finishEdit = async () => {
       return;
     }
 
-    const toggle = e.target.closest('.status-toggle');
-    if (toggle) {
-      const companyIdAttr = toggle.getAttribute('data-company-id');
-      const gameIdAttr = toggle.getAttribute('data-game-id');
 
-      const companyId = companyIdAttr;
-      const gameId = gameIdAttr;
-
-      const company = companies.find(c => String(c.id) === String(companyId));
-      if (!company) {
-        console.warn('No se encontró company para toggle', { companyId, companies });
-        return;
-      }
-
-      const game = company.games.find(g => String(g.id) === String(gameId));
-      if (!game) {
-        console.warn('No se encontró game para toggle', { companyId, gameId, company });
-        return;
-      }
-
-      game.active = !game.active;
-      game.lastModified = new Date().toISOString().split('T')[0];
-
-      updateRemoteToggle(company, game);
-
-      renderCompanies();
-      if (globalSearch.value) {
-        renderGlobalResults(globalSearch.value);
-      } else if (currentCompany && String(currentCompany.id) === String(company.id)) {
-        renderGames(currentCompany.games, gameSearch.value);
-      }
-    }
   });
 
   // ========= BOTÓN EDITAR =========
@@ -2409,8 +2139,6 @@ if (editModeBtn) {
 
     updateAddCompanyBtnVisibility();
 
-    loadLocalFilter();
-    renderLocalFilterList();
     renderCompanies();
 
     if (!companies.length) return;
@@ -2418,37 +2146,14 @@ if (editModeBtn) {
     let target = null;
 
     if (selectedCompanyId != null) {
-      target = companies.find(
-        c =>
-          String(c.id) === String(selectedCompanyId) &&
-          (localCompanyFilter.companyIds.length === 0 ||
-            localCompanyFilter.companyIds.includes(c.id))
-      );
+      target = companies.find(c => String(c.id) === String(selectedCompanyId));
     }
 
     if (!target) {
-      target = companies.find(c => {
-        return (
-          localCompanyFilter.companyIds.length === 0 ||
-          localCompanyFilter.companyIds.includes(c.id)
-        );
-      });
+      target = companies[0];
     }
 
     if (target) {
-      const items = companiesList.querySelectorAll('.company-item');
-      items.forEach(el => el.classList.remove('active'));
-
-      const targetItem = Array.from(companiesList.querySelectorAll('.company-item'))
-        .find(el => {
-          const nameEl = el.querySelector('.company-name');
-          return nameEl && nameEl.textContent.trim() === String(target.name);
-        });
-
-      if (targetItem) {
-        targetItem.classList.add('active');
-      }
-
       selectCompany(target);
     }
   };
@@ -2487,7 +2192,7 @@ if (editModeBtn) {
         <select id="companyPartner" style="width:100%;padding:9px 12px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:13px;font-family:inherit;outline:none;">
           <option value="" disabled selected>Selecciona un partner</option>
           <option value="Dragon">🐲 Dragon</option>
-          <option value="Tierlock">🔒 Tierlock</option>
+          <option value="Eterniplay">🔒 Eterniplay</option>
           <option value="Taparcadia">🎮 Taparcadia</option>
           <option value="Wysaro">⭐ Wysaro</option>
           <option value="Manual">⚙️ Manual</option>
@@ -2812,7 +2517,7 @@ if (editModeBtn) {
   const updateAddCompanyBtnVisibility = () => {
     if (addCompanyBtn) {
       const shouldShow = adminLoggedIn && isEditMode;
-      addCompanyBtn.style.display = shouldShow ? 'block' : 'none';
+      addCompanyBtn.style.display = shouldShow ? 'inline-flex' : 'none';
     }
   };
 
@@ -2832,7 +2537,7 @@ if (editModeBtn) {
       const catJson = await catRes.json();
 
       if (compJson.success && compJson.data) {
-        companies = compJson.data;
+        companies = compJson.data.map(c => { if (c.partner === 'Tierlock') c.partner = 'Eterniplay'; return c; });
       }
       
       // Aseguramos que el catálogo cargue ANTES de arrancar la interfaz
@@ -2865,7 +2570,7 @@ if (editModeBtn) {
         const json = await res.json();
 
         if (json.success && json.data) {
-          companies = json.data;
+          companies = json.data.map(c => { if (c.partner === 'Tierlock') c.partner = 'Eterniplay'; return c; });
           if (currentCompany) {
             currentCompany = companies.find(c => c.id === currentCompany.id) || currentCompany;
           }
