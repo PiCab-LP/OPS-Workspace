@@ -746,7 +746,9 @@ textarea,
 }
 
 .dropdown-chevron {
-  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--text-tertiary);
   transition: transform 0.2s;
 }
