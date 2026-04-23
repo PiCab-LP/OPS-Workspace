@@ -8,9 +8,13 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="icon" type="image/png" href="../imgs/dashboard.png" />
   <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 </head>
 
 <body>
+  <!-- PARTICLES BACKGROUND -->
+  <div id="particles-js" style="position: fixed; inset: 0; z-index: -1; pointer-events: none;"></div>
+
   <script>
     if (localStorage.getItem("workspaceTheme") === "light") {
       document.body.classList.add("light-mode");
@@ -67,12 +71,24 @@
         </select>
       </div>
       <div class="filter-group">
+        <i class="fas fa-tasks" style="color:#10b981;font-size:10px"></i>
+        <select id="filterEstado" onchange="updateClearBtn()">
+          <option value="">Estado</option>
+          <option value="Pendiente">Pendiente</option>
+          <option value="Firmado">Firmado</option>
+        </select>
+      </div>
+      <div class="filter-group">
         <input type="date" id="filterFechaInicio" oninput="updateClearBtn()" />
         <span class="filter-sep">–</span>
         <input type="date" id="filterFechaFin" oninput="updateClearBtn()" />
       </div>
-      <button class="btn-apply" onclick="applyFilters()"><i class="fas fa-check"></i> Aplicar</button>
-      <button class="btn-clear" onclick="clearFilters()"><i class="fas fa-times"></i></button>
+      <div class="filter-actions">
+        <button class="btn-apply" onclick="applyFilters()"><i class="fas fa-check"></i> Aplicar</button>
+        <button class="btn-clear" onclick="clearFilters()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
     </div>
 
     <!-- KPI CARDS -->
@@ -249,6 +265,7 @@
       const sup = document.getElementById("filterSupervisor").value;
       const col = document.getElementById("filterColaborador").value;
       const sev = document.getElementById("filterSeveridad").value;
+      const estado = document.getElementById("filterEstado").value;
       const fi = document.getElementById("filterFechaInicio").value;
       const ff = document.getElementById("filterFechaFin").value;
 
@@ -256,6 +273,12 @@
         if (sup && (r.supervisorId?._id || "") !== sup) return false;
         if (col && r.collaboratorId !== col) return false;
         if (sev && r.severity !== sev) return false;
+        
+        if (estado) {
+          const statusLabel = r.status === "Completado" ? "Firmado" : "Pendiente";
+          if (statusLabel !== estado) return false;
+        }
+
         if (fi) {
           const d = new Date(r.createdAt).toISOString().split("T")[0];
           if (d < fi) return false;
@@ -276,6 +299,7 @@
         document.getElementById("filterSupervisor").value !== "" ||
         document.getElementById("filterColaborador").value !== "" ||
         document.getElementById("filterSeveridad").value !== "" ||
+        document.getElementById("filterEstado").value !== "" ||
         document.getElementById("filterFechaInicio").value !== "" ||
         document.getElementById("filterFechaFin").value !== "";
 
@@ -286,6 +310,7 @@
       document.getElementById("filterSupervisor").value = "";
       document.getElementById("filterColaborador").value = "";
       document.getElementById("filterSeveridad").value = "";
+      document.getElementById("filterEstado").value = "";
       document.getElementById("filterFechaInicio").value = "";
       document.getElementById("filterFechaFin").value = "";
       filteredReports = [...allReports];
@@ -498,7 +523,30 @@
     }
 
     // =================== INIT ===================
-    document.addEventListener("DOMContentLoaded", loadReports);
+    document.addEventListener("DOMContentLoaded", () => {
+      loadReports();
+      
+      // Initialize Particles
+      if (typeof particlesJS !== "undefined") {
+        particlesJS("particles-js", {
+          particles: {
+            number: { value: 60, density: { enable: true, value_area: 800 } },
+            color: { value: "#5e6ad2" },
+            shape: { type: "circle" },
+            opacity: { value: 0.3, random: false },
+            size: { value: 3, random: true },
+            line_linked: { enable: true, distance: 150, color: "#5e6ad2", opacity: 0.2, width: 1 },
+            move: { enable: true, speed: 1.5, direction: "none", random: false, straight: false, out_mode: "out", bounce: false }
+          },
+          interactivity: {
+            detect_on: "canvas",
+            events: { onhover: { enable: true, mode: "grab" }, resize: true },
+            modes: { grab: { distance: 140, line_linked: { opacity: 1 } } }
+          },
+          retina_detect: true
+        });
+      }
+    });
   </script>
 </body>
 
