@@ -6,33 +6,125 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Control de Ubicaciones - Workspace</title>
   <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="../imgs/dashboard.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
   <style>
     /* Pequeños ajustes para la tabla dentro de las tarjetas */
     .turno-table th {
-      padding: 12px;
-      font-size: 11px;
+      padding: 10px 8px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      border-bottom: 2px solid var(--border);
     }
 
     .turno-table td {
-      padding: 12px;
-      font-size: 13px;
+      padding: 10px 8px;
+      font-size: 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
     }
 
-    .role-badge {
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 9px;
+    .turno-table tr {
+      transition: all 0.2s ease;
+    }
+
+    .turno-table tr:hover {
+      background: rgba(94, 106, 210, 0.05);
+    }
+
+    .operator-name-cell {
       font-weight: 700;
+      color: var(--text-primary);
+      font-size: 12px;
+      letter-spacing: -0.2px;
+    }
+
+    .station-cell {
+      font-weight: 800;
+      color: var(--accent);
+      font-size: 12px;
+    }
+
+    /* Botones de acción */
+    .break-btn,
+    .volver-btn {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 800;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+
+    .break-btn {
+      background: rgba(243, 156, 18, 0.12);
+      color: #f39c12;
+      border-color: rgba(243, 156, 18, 0.2);
+    }
+
+    .break-btn:hover {
+      background: #f39c12;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+    }
+
+    .volver-btn {
+      background: rgba(46, 204, 113, 0.12);
+      color: #2ecc71;
+      border-color: rgba(46, 204, 113, 0.2);
+    }
+
+    .volver-btn:hover {
+      background: #2ecc71;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+    }
+
+    .status-ready {
+      color: #2ecc71;
+      font-weight: 800;
+      font-size: 11px;
+      text-transform: uppercase;
+      background: rgba(46, 204, 113, 0.1);
+      padding: 6px 12px;
+      border-radius: 8px;
+    }
+
+    .delete-btn {
+      background: rgba(231, 76, 60, 0.05);
+      border: 1px solid rgba(231, 76, 60, 0.1);
+      color: var(--danger);
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .delete-btn:hover {
+      background: var(--danger);
+      color: white;
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
     }
 
     /* Grid de turnos */
     .shifts-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      gap: 12px;
       align-items: start;
     }
 
@@ -58,6 +150,45 @@
       align-items: flex-end;
       justify-content: flex-start;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Header de turnos */
+    .shift-header {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .shift-header h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .shift-morning-header {
+      background: rgba(94, 106, 210, 0.08);
+    }
+
+    .shift-morning-header h3 {
+      color: #5e6ad2;
+    }
+
+    .shift-afternoon-header {
+      background: rgba(243, 156, 18, 0.08);
+    }
+
+    .shift-afternoon-header h3 {
+      color: #f39c12;
+    }
+
+    .shift-night-header {
+      background: rgba(46, 204, 113, 0.08);
+    }
+
+    .shift-night-header h3 {
+      color: #2ecc71;
     }
 
     /* ===== RESPONSIVE: Laptops pequeñas (≤1280px) ===== */
@@ -263,7 +394,7 @@
 
 <body class="location-page">
   <div id="particles-js"></div>
-  <div class="container" style="max-width: 95%; margin-top: 40px; position: relative; z-index: 1;">
+  <div class="container" style="max-width: 95%; margin-top: 10px; position: relative; z-index: 1;">
 
     <div style="max-width: 1400px; margin: 0 auto 30px auto">
       <header class="ubicaciones-header">
@@ -334,9 +465,8 @@
 
       <div
         style="background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-        <div
-          style="background: rgba(94, 106, 210, 0.1); padding: 15px; border-bottom: 2px solid rgba(94, 106, 210, 0.3);">
-          <h3 style="margin: 0; color: #5e6ad2; font-size: 16px; text-align: center;">Turno Mañana</h3>
+        <div class="shift-header shift-morning-header">
+          <h3>Turno Mañana</h3>
         </div>
         <div>
           <table class="turno-table" style="width: 100%; border-collapse: collapse;">
@@ -356,9 +486,8 @@
 
       <div
         style="background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-        <div
-          style="background: rgba(243, 156, 18, 0.1); padding: 15px; border-bottom: 2px solid rgba(243, 156, 18, 0.3);">
-          <h3 style="margin: 0; color: #f39c12; font-size: 16px; text-align: center;">Turno Tarde</h3>
+        <div class="shift-header shift-afternoon-header">
+          <h3>Turno Tarde</h3>
         </div>
         <div>
           <table class="turno-table" style="width: 100%; border-collapse: collapse;">
@@ -378,9 +507,8 @@
 
       <div
         style="background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-        <div
-          style="background: rgba(46, 204, 113, 0.1); padding: 15px; border-bottom: 2px solid rgba(46, 204, 113, 0.3);">
-          <h3 style="margin: 0; color: #2ecc71; font-size: 16px; text-align: center;">Turno Noche</h3>
+        <div class="shift-header shift-night-header">
+          <h3>Turno Noche</h3>
         </div>
         <div>
           <table class="turno-table" style="width: 100%; border-collapse: collapse;">
@@ -511,32 +639,26 @@
         const hInicio = loc.breakStart ? loc.breakStart.split(" ")[1] : "--:--";
         const hFin = loc.breakEnd ? loc.breakEnd.split(" ")[1] : "--:--";
 
-        const usuario = usuariosData.find((u) => u.fullName === loc.operatorName);
-        const rol = usuario ? usuario.role : "analista";
-
-        let bgBadge = "rgba(255,255,255,0.1)"; let colBadge = "#ccc";
-        if (rol === "supervisor") { bgBadge = "rgba(94, 106, 210, 0.15)"; colBadge = "#6f7bf0"; }
-        else if (rol === "chats") { bgBadge = "rgba(243, 156, 18, 0.15)"; colBadge = "#f39c12"; }
-        else if (rol === "analista") { bgBadge = "rgba(46, 204, 113, 0.15)"; colBadge = "#2ecc71"; }
-        else if (rol === "asistente") { bgBadge = "rgba(52, 152, 219, 0.15)"; colBadge = "#3498db"; }
-
         return `
-            <tr style="border-bottom: 1px solid var(--border);">
-                <td style="font-weight: 800; color: var(--text-primary); max-width: 180px; word-break: break-word;">${loc.station}</td>
+            <tr>
+                <td class="station-cell" style="max-width: 180px; word-break: break-word;">${loc.station}</td>
                 <td>
-                    <div style="font-weight: 600; color: var(--text-primary); line-height: 1.2;">${loc.operatorName}</div>
-                    <span class="role-badge" style="background: ${bgBadge}; color: ${colBadge}; display: inline-block; margin-top: 3px;">${rol}</span>
+                    <div class="operator-name-cell">${loc.operatorName}</div>
                 </td>
                 <td style="text-align: center; font-family: monospace; color: var(--text-primary); font-size: 14px;">${hInicio}</td>
                 <td style="text-align: center; font-family: monospace; color: var(--text-primary); font-size: 14px;">${hFin}</td>
                 <td style="text-align: right; white-space: nowrap;">
-                    ${!loc.breakStart
-            ? `<button onclick="controlBreak('${loc._id}', 'start')" style="background:#f39c12; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-weight:bold; font-size: 10px; transition:0.3s;">Break</button>`
+                    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
+                        ${!loc.breakStart
+            ? `<button onclick="controlBreak('${loc._id}', 'start')" class="break-btn">Break</button>`
             : !loc.breakEnd
-              ? `<button onclick="controlBreak('${loc._id}', 'end')" style="background:#27ae60; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-weight:bold; font-size: 10px; transition:0.3s;">Volver</button>`
-              : '<span style="color:#27ae60; font-weight:bold; font-size: 11px;">Listo</span>'
+              ? `<button onclick="controlBreak('${loc._id}', 'end')" class="volver-btn">Volver</button>`
+              : '<span class="status-ready">Listo</span>'
           }
-                    <button onclick="liberarEstacion('${loc._id}')" style="background:transparent; border:none; color:var(--danger); cursor:pointer; font-size:14px; margin-left: 5px;" title="Eliminar / Liberar">🗑️</button>
+                        <button onclick="liberarEstacion('${loc._id}')" class="delete-btn" title="Eliminar / Liberar">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
           `;
