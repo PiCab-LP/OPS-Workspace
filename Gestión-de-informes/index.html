@@ -16,6 +16,15 @@
   <div id="particles-js" style="position: fixed; inset: 0; z-index: -1; pointer-events: none;"></div>
 
   <script>
+    // ✅ SEGURIDAD: Solo Supervisor y RRHH pueden entrar
+    (function() {
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const allowedRoles = ["supervisor", "recursos_humanos"];
+      if (!allowedRoles.includes(user.role)) {
+        window.location.href = "/";
+      }
+    })();
+
     if (localStorage.getItem("workspaceTheme") === "light") {
       document.body.classList.add("light-mode");
     }
