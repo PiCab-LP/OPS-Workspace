@@ -315,12 +315,6 @@
 
         const user = JSON.parse(userStr);
 
-        // 🛑 SEGURIDAD NUEVA: Si es asistente, no tiene nada que hacer aquí, pa' fuera
-        if (user.role === "asistente") {
-          window.location.href = "/";
-          return; // 👈 Vital para detener la ejecución inmediatamente
-        }
-
         // Magia pura: Si es supervisor, le damos permisos de admin en Operapedia automáticamente
         if (user.role === "supervisor") {
           localStorage.setItem("credentialsAdminLoggedIn", "true");

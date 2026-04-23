@@ -1295,8 +1295,10 @@
         roleBadge.style.color = "#3498db";
         roleBadge.style.border = "1px solid rgba(52, 152, 219, 0.3)";
 
+        // Solo Operapedia
         if (cardCashouts) cardCashouts.style.display = "none";
-        if (cardOperapedia) cardOperapedia.style.display = "none";
+        if (cardBalance) cardBalance.style.display = "flex";
+        if (cardOperapedia) cardOperapedia.style.display = "flex";
       } else if (user.role === "recursos_humanos") {
         roleBadge.style.background = "rgba(155, 89, 182, 0.15)";
         roleBadge.style.color = "#9b59b2";
