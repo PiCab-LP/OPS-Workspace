@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de Informes - Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="icon" type="image/png" href="../imgs/dashboard.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <script>
+    if (localStorage.getItem("workspaceTheme") === "light") {
+      document.body.classList.add("light-mode");
+    }
+  </script>
+
+  <!-- LOADER -->
+  <div id="mainLoader" class="loader-container">
+    <div class="loader-content">
+      <div class="spinner"></div>
+      <p style="font-weight: 600; letter-spacing: -0.5px;">Cargando Informes...</p>
+    </div>
+  </div>
+
+  <!-- BACK BUTTON -->
+  <a href="/" class="back-btn">
+    <i class="fas fa-arrow-left"></i> Regresar al Hub
+  </a>
+
+  <div class="dashboard-wrapper">
+    <!-- HEADER -->
+    <div class="dash-header">
+      <div class="dash-header-left">
+        <i class="fas fa-chart-bar dash-header-icon"></i>
+        <div>
+          <h1>Gestión de Informes</h1>
+          <p class="subtitle">Visualización y seguimiento de errores operacionales e incidencias</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters-bar">
+      <div class="filter-group">
+        <i class="fas fa-user-tie"></i>
+        <select id="filterSupervisor" onchange="updateClearBtn()">
+          <option value="">Supervisor</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <i class="fas fa-user"></i>
+        <select id="filterColaborador" onchange="updateClearBtn()">
+          <option value="">Colaborador</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <i class="fas fa-circle" style="color:#ef4444;font-size:10px"></i>
+        <select id="filterSeveridad" onchange="updateClearBtn()">
+          <option value="">Severidad</option>
+          <option value="Leve">Leve</option>
+          <option value="Media">Media</option>
+          <option value="Grave">Grave</option>
+          <option value="Crítica">Crítica</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <input type="date" id="filterFechaInicio" oninput="updateClearBtn()" />
+        <span class="filter-sep">–</span>
+        <input type="date" id="filterFechaFin" oninput="updateClearBtn()" />
+      </div>
+      <button class="btn-apply" onclick="applyFilters()"><i class="fas fa-check"></i> Aplicar</button>
+      <button class="btn-clear" onclick="clearFilters()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-row">
+      <div class="kpi-card kpi-green">
+        <div class="kpi-icon-wrap green"><i class="fas fa-check-circle"></i></div>
+        <div class="kpi-info">
+          <span class="kpi-label">Firmados</span>
+          <span class="kpi-value" id="kpiFirmados">0</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-yellow">
+        <div class="kpi-icon-wrap yellow"><i class="fas fa-clock"></i></div>
+        <div class="kpi-info">
+          <span class="kpi-label">Pendientes</span>
+          <span class="kpi-value" id="kpiPendientes">0</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-blue">
+        <div class="kpi-icon-wrap blue"><i class="fas fa-folder-open"></i></div>
+        <div class="kpi-info">
+          <span class="kpi-label">Total</span>
+          <span class="kpi-value" id="kpiTotal">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="charts-row">
+      <!-- DONUT CHART -->
+      <div class="chart-card">
+        <h3 class="chart-title"><i class="fas fa-chart-pie"></i> Distribución Tipo</h3>
+        <div class="donut-container">
+          <div class="donut" id="donutChart"></div>
+          <div class="donut-legend">
+            <div class="legend-item"><span class="legend-dot" style="background:#6366f1"></span> Incidencias <strong
+                id="legendInc">0%</strong></div>
+            <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> Errores <strong
+                id="legendErr">0%</strong></div>
+          </div>
+        </div>
+      </div>
+      <!-- SEVERITY BARS -->
+      <div class="chart-card">
+        <h3 class="chart-title"><i class="fas fa-signal"></i> Severidad de Casos</h3>
+        <div class="severity-bars">
+          <div class="sev-row"><span class="sev-label">Leve</span>
+            <div class="sev-track">
+              <div class="sev-fill green" id="sevLeve" style="width:0%"></div>
+            </div><span class="sev-pct" id="sevLevePct">0%</span>
+          </div>
+          <div class="sev-row"><span class="sev-label">Media</span>
+            <div class="sev-track">
+              <div class="sev-fill yellow" id="sevMedia" style="width:0%"></div>
+            </div><span class="sev-pct" id="sevMediaPct">0%</span>
+          </div>
+          <div class="sev-row"><span class="sev-label">Grave</span>
+            <div class="sev-track">
+              <div class="sev-fill orange" id="sevGrave" style="width:0%"></div>
+            </div><span class="sev-pct" id="sevGravePct">0%</span>
+          </div>
+          <div class="sev-row"><span class="sev-label">Crítica</span>
+            <div class="sev-track">
+              <div class="sev-fill red" id="sevCritica" style="width:0%"></div>
+            </div><span class="sev-pct" id="sevCriticaPct">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY TABLE -->
+    <div class="table-card">
+      <h3 class="chart-title"><i class="fas fa-history"></i> Historial de Informes</h3>
+      <div class="table-scroll">
+        <table id="historyTable">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Tipo</th>
+              <th>Colaborador</th>
+              <th>Severidad</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td colspan="6" class="empty-state"><i class="fas fa-spinner fa-spin"></i> Cargando informes...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Pagination -->
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+
+  <!-- DETAIL SIDE PANEL -->
+  <div class="panel-overlay" id="panelOverlay"></div>
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-header">
+      <h3><i class="fas fa-file-alt"></i> Detalle del Informe</h3>
+      <button class="close-panel" onclick="closeDetail()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="detail-body" id="detailBody">
+      <!-- Filled dynamically -->
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "https://general-cashouts-production.up.railway.app/api";
+    const token = localStorage.getItem("token");
+    const userData = JSON.parse(localStorage.getItem("user") || "{}");
+
+    // Redirect unauthorized
+    if (!token || !["supervisor", "recursos_humanos"].includes(userData.role)) {
+      window.location.href = "/";
+    }
+
+    let allReports = [];
+    let filteredReports = [];
+    let currentPage = 1;
+    const PAGE_SIZE = 10;
+
+    // =================== LOAD DATA ===================
+    async function loadReports() {
+      try {
+        const res = await fetch(`${API_BASE}/reports/all`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+          allReports = data.data;
+          filteredReports = [...allReports];
+          populateFilterDropdowns();
+          renderAll();
+        }
+      } catch (err) {
+        console.error("Error cargando reportes:", err);
+        document.getElementById("tableBody").innerHTML =
+          '<tr><td colspan="6" class="empty-state">Error al cargar los datos</td></tr>';
+      } finally {
+        setTimeout(() => {
+          document.getElementById("mainLoader").classList.add("hidden");
+        }, 500); // Pequeño delay para suavidad
+      }
+    }
+
+    function populateFilterDropdowns() {
+      const supervisors = new Map();
+      const collaborators = new Map();
+      allReports.forEach(r => {
+        const supName = r.supervisorId?.fullName || "Desconocido";
+        const supId = r.supervisorId?._id || "";
+        if (supId) supervisors.set(supId, supName);
+        collaborators.set(r.collaboratorId, r.collaboratorName);
+      });
+
+      const selSup = document.getElementById("filterSupervisor");
+      selSup.innerHTML = '<option value="">Supervisor</option>';
+      supervisors.forEach((name, id) => {
+        selSup.innerHTML += `<option value="${id}">${name}</option>`;
+      });
+
+      const selCol = document.getElementById("filterColaborador");
+      selCol.innerHTML = '<option value="">Colaborador</option>';
+      collaborators.forEach((name, id) => {
+        selCol.innerHTML += `<option value="${id}">${name}</option>`;
+      });
+    }
+
+    // =================== FILTERS ===================
+    function applyFilters() {
+      const sup = document.getElementById("filterSupervisor").value;
+      const col = document.getElementById("filterColaborador").value;
+      const sev = document.getElementById("filterSeveridad").value;
+      const fi = document.getElementById("filterFechaInicio").value;
+      const ff = document.getElementById("filterFechaFin").value;
+
+      filteredReports = allReports.filter(r => {
+        if (sup && (r.supervisorId?._id || "") !== sup) return false;
+        if (col && r.collaboratorId !== col) return false;
+        if (sev && r.severity !== sev) return false;
+        if (fi) {
+          const d = new Date(r.createdAt).toISOString().split("T")[0];
+          if (d < fi) return false;
+        }
+        if (ff) {
+          const d = new Date(r.createdAt).toISOString().split("T")[0];
+          if (d > ff) return false;
+        }
+        return true;
+      });
+      currentPage = 1;
+      renderAll();
+      updateClearBtn();
+    }
+
+    function updateClearBtn() {
+      const hasValue =
+        document.getElementById("filterSupervisor").value !== "" ||
+        document.getElementById("filterColaborador").value !== "" ||
+        document.getElementById("filterSeveridad").value !== "" ||
+        document.getElementById("filterFechaInicio").value !== "" ||
+        document.getElementById("filterFechaFin").value !== "";
+
+      document.querySelector(".btn-clear").style.display = hasValue ? "flex" : "none";
+    }
+
+    function clearFilters() {
+      document.getElementById("filterSupervisor").value = "";
+      document.getElementById("filterColaborador").value = "";
+      document.getElementById("filterSeveridad").value = "";
+      document.getElementById("filterFechaInicio").value = "";
+      document.getElementById("filterFechaFin").value = "";
+      filteredReports = [...allReports];
+      currentPage = 1;
+      renderAll();
+      updateClearBtn();
+    }
+
+    // =================== RENDER ALL ===================
+    function renderAll() {
+      renderKPIs();
+      renderDonut();
+      renderSeverity();
+      renderTable();
+    }
+
+    // =================== KPIs ===================
+    function renderKPIs() {
+      const firmados = filteredReports.filter(r => r.status === "Completado").length;
+      const pendientes = filteredReports.filter(r => r.status === "Pendiente").length;
+      const total = filteredReports.length;
+      animateValue("kpiFirmados", firmados);
+      animateValue("kpiPendientes", pendientes);
+      animateValue("kpiTotal", total);
+    }
+
+    function animateValue(id, end) {
+      const el = document.getElementById(id);
+      const start = parseInt(el.textContent) || 0;
+      if (start === end) { el.textContent = end; return; }
+      const duration = 600;
+      const startTime = performance.now();
+      function tick(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(start + (end - start) * eased);
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    // =================== DONUT ===================
+    function renderDonut() {
+      const errors = filteredReports.filter(r => r.type === "Error Operacional").length;
+      const incidents = filteredReports.filter(r => r.type === "Incidencia").length;
+      const total = errors + incidents || 1;
+      const errPct = Math.round((errors / total) * 100);
+      const incPct = 100 - errPct;
+
+      const donut = document.getElementById("donutChart");
+      donut.style.background = `conic-gradient(#6366f1 0% ${incPct}%, #f59e0b ${incPct}% 100%)`;
+      document.getElementById("legendInc").textContent = incPct + "%";
+      document.getElementById("legendErr").textContent = errPct + "%";
+    }
+
+    // =================== SEVERITY ===================
+    function renderSeverity() {
+      const sevOnly = filteredReports.filter(r => r.severity && r.severity !== "N/A");
+      const total = sevOnly.length || 1;
+      const counts = { Leve: 0, Media: 0, Grave: 0, "Crítica": 0 };
+      sevOnly.forEach(r => { if (counts[r.severity] !== undefined) counts[r.severity]++; });
+
+      ["Leve", "Media", "Grave", "Crítica"].forEach(s => {
+        const key = s === "Crítica" ? "Critica" : s;
+        const pct = Math.round((counts[s] / total) * 100);
+        const barId = "sev" + (s === "Crítica" ? "Critica" : s);
+        document.getElementById(barId).style.width = pct + "%";
+        document.getElementById(barId + "Pct").textContent = pct + "%";
+      });
+    }
+
+    // =================== TABLE ===================
+    function renderTable() {
+      const tbody = document.getElementById("tableBody");
+      const start = (currentPage - 1) * PAGE_SIZE;
+      const page = filteredReports.slice(start, start + PAGE_SIZE);
+
+      if (page.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No se encontraron informes</td></tr>';
+        document.getElementById("pagination").innerHTML = "";
+        return;
+      }
+
+      tbody.innerHTML = page.map(r => {
+        const fecha = new Date(r.createdAt).toLocaleDateString("es-MX", { day: "2-digit", month: "2-digit", year: "numeric" });
+        const displaySeverity = r.severity === "N/A" || !r.severity ? "Incidencia" : r.severity;
+        const sevClass = { Leve: "badge-green", Media: "badge-yellow", Grave: "badge-orange", "Crítica": "badge-red", "Informativa": "badge-gray", "N/A": "badge-gray" }[displaySeverity] || "badge-gray";
+        const statusClass = r.status === "Completado" ? "badge-green" : "badge-yellow";
+        const statusLabel = r.status === "Completado" ? "Firmado" : "Pendiente";
+        return `<tr>
+          <td>${fecha}</td>
+          <td><span class="type-label">${r.type === "Error Operacional" ? "⚠️" : "💬"} ${r.type}</span></td>
+          <td>${r.collaboratorName}</td>
+          <td><span class="badge ${sevClass}">${displaySeverity}</span></td>
+          <td><span class="badge ${statusClass}">${statusLabel}</span></td>
+          <td><button class="btn-view" onclick="openDetail('${r._id}')"><i class="fas fa-eye"></i></button></td>
+        </tr>`;
+      }).join("");
+
+      renderPagination();
+    }
+
+    function renderPagination() {
+      const totalPages = Math.ceil(filteredReports.length / PAGE_SIZE);
+      if (totalPages <= 1) { document.getElementById("pagination").innerHTML = ""; return; }
+      let html = "";
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+      }
+      document.getElementById("pagination").innerHTML = html;
+    }
+
+    function goPage(p) { currentPage = p; renderTable(); }
+
+    // =================== DETAIL PANEL ===================
+    async function openDetail(id) {
+      document.body.classList.add("no-scroll");
+      document.getElementById("panelOverlay").classList.add("active");
+      document.getElementById("detailPanel").classList.add("active");
+      document.getElementById("detailBody").innerHTML = '<div class="detail-loading"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
+
+      try {
+        const res = await fetch(`${API_BASE}/reports/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const result = await res.json();
+        if (!result.success) throw new Error("Not found");
+        renderDetail(result.data);
+      } catch (err) {
+        document.getElementById("detailBody").innerHTML = '<p class="detail-error">Error al cargar el detalle</p>';
+      }
+    }
+
+    function renderDetail(r) {
+      const fecha = new Date(r.createdAt).toLocaleDateString("es-MX", { day: "2-digit", month: "2-digit", year: "numeric" });
+      const supName = r.supervisorId?.fullName || "Desconocido";
+      const statusLabel = r.status === "Completado" ? "Firmado" : "Pendiente";
+      const statusClass = r.status === "Completado" ? "badge-green" : "badge-yellow";
+
+      let evidencesHTML = "";
+      if (r.evidences && r.evidences.length > 0) {
+        evidencesHTML = r.evidences.map(e =>
+          `<a href="${e.url}" target="_blank" class="evidence-thumb"><img src="${e.url}" alt="Evidencia" /></a>`
+        ).join("");
+      } else {
+        evidencesHTML = '<span class="no-data">Sin evidencias adjuntas</span>';
+      }
+
+      let signaturesHTML = "";
+      if (r.supervisorSignature) {
+        signaturesHTML += `<div class="sig-block"><span class="sig-label">Firma Supervisor</span><img src="${r.supervisorSignature}" class="sig-img" /></div>`;
+      }
+      if (r.collaboratorSignature) {
+        signaturesHTML += `<div class="sig-block"><span class="sig-label">Firma Colaborador</span><img src="${r.collaboratorSignature}" class="sig-img" /></div>`;
+      }
+      if (!r.supervisorSignature && !r.collaboratorSignature) {
+        signaturesHTML = '<span class="no-data">Sin firmas registradas</span>';
+      }
+
+      const displaySeverity = r.severity === "N/A" || !r.severity ? "Informativa" : r.severity;
+      const sevClassDetail = { Leve: "badge-green", Media: "badge-yellow", Grave: "badge-orange", "Crítica": "badge-red", "Informativa": "badge-gray" }[displaySeverity] || "badge-gray";
+
+      document.getElementById("detailBody").innerHTML = `
+        <div class="detail-section">
+          <div class="detail-field"><span class="field-label">Tipo</span><span class="field-value">${r.type}</span></div>
+          <div class="detail-field"><span class="field-label">Supervisor</span><span class="field-value">${supName}</span></div>
+          <div class="detail-field"><span class="field-label">Colaborador</span><span class="field-value">${r.collaboratorName}</span></div>
+          <div class="detail-field"><span class="field-label">N° Incidencia</span><span class="field-value">${r.incidenceNumber || "-"}</span></div>
+          <div class="detail-field"><span class="field-label">Severidad</span><span class="field-value badge ${sevClassDetail}">${displaySeverity}</span></div>
+          <div class="detail-field"><span class="field-label">Estado</span><span class="field-value badge ${statusClass}">${statusLabel}</span></div>
+          <div class="detail-field"><span class="field-label">Fecha</span><span class="field-value">${fecha}</span></div>
+        </div>
+
+        <div class="detail-section">
+          <h4><i class="fas fa-align-left"></i> Título del Error</h4>
+          <p class="detail-text">${r.subject}</p>
+        </div>
+
+        <div class="detail-section">
+          <h4><i class="fas fa-file-alt"></i> Descripción</h4>
+          <div class="detail-desc">${r.description || "Sin descripción"}</div>
+        </div>
+
+        <div class="detail-section">
+          <h4><i class="fas fa-paperclip"></i> Evidencias</h4>
+          <div class="evidence-grid">${evidencesHTML}</div>
+        </div>
+
+        <div class="detail-section">
+          <h4><i class="fas fa-pen-nib"></i> Firmas</h4>
+          <div class="sig-grid">${signaturesHTML}</div>
+        </div>
+
+        <div class="detail-section">
+          <h4><i class="fas fa-history"></i> Historial</h4>
+          <div class="timeline">
+            <div class="timeline-item done"><div class="tl-dot"></div><span>Creado</span><small>${fecha}</small></div>
+            <div class="timeline-item done"><div class="tl-dot"></div><span>Enviado</span></div>
+            <div class="timeline-item ${r.status === 'Completado' ? 'done' : 'pending'}"><div class="tl-dot"></div><span>Firmado</span>${r.completedAt ? `<small>${new Date(r.completedAt).toLocaleDateString("es-MX")}</small>` : ""}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function closeDetail() {
+      document.body.classList.remove("no-scroll");
+      document.getElementById("panelOverlay").classList.remove("active");
+      document.getElementById("detailPanel").classList.remove("active");
+    }
+
+    // =================== INIT ===================
+    document.addEventListener("DOMContentLoaded", loadReports);
+  </script>
+</body>
+
+</html>
