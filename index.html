@@ -1291,7 +1291,9 @@
         if (cardShiftlog) cardShiftlog.style.display = "flex";
         if (cardIncidencias) cardIncidencias.style.display = "flex";
         if (cardDashboardReports) cardDashboardReports.style.display = "flex";
-        if (cardPartnerReport) cardPartnerReport.style.display = "flex";
+        if (cardPartnerReport && ["brandy", "admin"].includes(user.username)) {
+          cardPartnerReport.style.display = "flex";
+        }
         const btnSignature = document.getElementById("btnOpenSignature");
         if (btnSignature) btnSignature.style.display = "block";
       } else if (user.role === "analista") {

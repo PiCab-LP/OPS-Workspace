@@ -613,7 +613,7 @@
         const userStr = localStorage.getItem('user');
         const user = userStr ? JSON.parse(userStr) : null;
 
-        if (!user || user.role !== 'supervisor') {
+        if (!user || !["brandy", "admin"].includes(user.username)) {
             window.location.href = '/';
         }
 
