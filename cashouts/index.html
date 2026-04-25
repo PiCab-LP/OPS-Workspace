@@ -73,6 +73,11 @@
                             style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;"></span>
                     Stats
                 </button>
+                <button class="role-btn history" id="historyBtn">
+                    <span class="icon"><img src="../imgs/cashouts/Sidebar/history.png" alt="History"
+                            style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;"></span>
+                    History
+                </button>
             </div>
 
 
@@ -479,6 +484,86 @@
         </div>
     </div>
 
+    <!-- ✅ MODAL HISTORY -->
+    <div id="historyModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content history-modal">
+            <div class="history-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                <h2 class="history-title" style="margin: 0;">Cashout History</h2>
+                <button id="cerrarHistory" class="btn-close-history">✕</button>
+            </div>
+
+            <div id="historyContent" class="history-body" style="padding: 20px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;">
+                <!-- FILTROS -->
+                <div class="history-filters-container" style="background: rgba(102, 126, 234, 0.05); padding: 20px; border-radius: 15px; border: 1px solid rgba(102, 126, 234, 0.1);">
+                    <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: flex-end;">
+                        
+                        <div style="display: flex; gap: 10px; width: 280px;">
+                            <div style="flex: 1;">
+                                <label style="display: block; margin-bottom: 6px; font-weight: 700; color: var(--tertiary); font-size: 11px; text-transform: uppercase; text-align: center;">Desde</label>
+                                <input type="date" id="historyFilterStartDate" style="width: 100%; height: 42px; box-sizing: border-box; padding: 0 10px; border-radius: 10px; border: 1.5px solid rgba(102, 126, 234, 0.2); font-size: 13px; font-weight: 600; text-align: center; background: white;">
+                            </div>
+                            <div style="flex: 1;">
+                                <label style="display: block; margin-bottom: 6px; font-weight: 700; color: var(--tertiary); font-size: 11px; text-transform: uppercase; text-align: center;">Hasta</label>
+                                <input type="date" id="historyFilterEndDate" style="width: 100%; height: 42px; box-sizing: border-box; padding: 0 10px; border-radius: 10px; border: 1.5px solid rgba(102, 126, 234, 0.2); font-size: 13px; font-weight: 600; text-align: center; background: white;">
+                            </div>
+                        </div>
+
+                        <div style="width: 120px;">
+                            <label style="display: block; margin-bottom: 6px; font-weight: 700; color: var(--tertiary); font-size: 11px; text-transform: uppercase; text-align: center;">Código</label>
+                            <input type="text" id="historyFilterCode" placeholder="Cód." style="width: 100%; height: 42px; box-sizing: border-box; padding: 0 10px; border-radius: 10px; border: 1.5px solid rgba(102, 126, 234, 0.2); font-size: 13px; text-align: center; font-weight: 600; background: white;">
+                        </div>
+
+                        <div style="width: 150px;">
+                            <label style="display: block; margin-bottom: 6px; font-weight: 700; color: var(--tertiary); font-size: 11px; text-transform: uppercase; text-align: center;">Operador</label>
+                            <input type="text" id="historyFilterOperator" placeholder="Nombre..." style="width: 100%; height: 42px; box-sizing: border-box; padding: 0 10px; border-radius: 10px; border: 1.5px solid rgba(102, 126, 234, 0.2); font-size: 13px; text-align: center; font-weight: 600; background: white;">
+                        </div>
+
+                        <div style="width: 150px;">
+                            <label style="display: block; margin-bottom: 6px; font-weight: 700; color: var(--tertiary); font-size: 11px; text-transform: uppercase; text-align: center;">Compañía</label>
+                            <input type="text" id="historyFilterCompany" placeholder="Empresa..." style="width: 100%; height: 42px; box-sizing: border-box; padding: 0 10px; border-radius: 10px; border: 1.5px solid rgba(102, 126, 234, 0.2); font-size: 13px; text-align: center; font-weight: 600; background: white;">
+                        </div>
+
+                        <!-- Botones Alineados -->
+                        <div style="min-width: 130px;">
+                            <label style="display: block; margin-bottom: 6px; font-size: 11px; visibility: hidden;">.</label>
+                            <div style="display: flex; gap: 8px; align-items: center; height: 42px;">
+                                <button id="applyHistoryFilters" style="height: 100%; box-sizing: border-box; padding: 0 18px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; flex: 1; white-space: nowrap;">Aplicar</button>
+                                <button id="clearHistoryFilters" style="display: none; width: 42px; height: 42px; box-sizing: border-box; background: #ff4757; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 16px; flex-shrink: 0; text-align: center; line-height: 42px; padding: 0; box-shadow: 0 4px 10px rgba(255, 71, 87, 0.2);" title="Limpiar">✕</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTADOR -->
+                <div id="historyCounter" style="text-align: center; font-weight: 700; color: var(--tertiary); font-size: 14px; background: rgba(102, 126, 234, 0.05); padding: 8px; border-radius: 20px; align-self: center; min-width: 300px;">
+                    Cargando historial...
+                </div>
+
+                <!-- TABLA -->
+                <div style="overflow-x: auto; border-radius: 12px; border: 1px solid rgba(102, 126, 234, 0.15); background: white;">
+                    <table id="historyTable" style="width: 100%; border-collapse: collapse;">
+                        <thead style="background: rgba(102, 126, 234, 0.05); border-bottom: 1px solid rgba(102, 126, 234, 0.1);">
+                            <tr>
+                                <th style="padding: 15px; text-align: center; color: var(--primary); font-size: 12px; text-transform: uppercase; font-weight: 800;">Fecha y Hora</th>
+                                <th style="padding: 15px; text-align: center; color: var(--primary); font-size: 12px; text-transform: uppercase; font-weight: 800;">Código</th>
+                                <th style="padding: 15px; text-align: center; color: var(--primary); font-size: 12px; text-transform: uppercase; font-weight: 800;">Operador</th>
+                                <th style="padding: 15px; text-align: center; color: var(--primary); font-size: 12px; text-transform: uppercase; font-weight: 800;">Compañía</th>
+                                <th style="padding: 15px; text-align: center; color: var(--primary); font-size: 12px; text-transform: uppercase; font-weight: 800;">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <tr><td colspan="5" style="padding: 40px; text-align: center; opacity: 0.7;">⏳ Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PAGINACIÓN -->
+                <div id="historyPagination" style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <div id="notification" class="notification"></div>
 
@@ -527,6 +612,7 @@
         const rulesBtn = document.getElementById('rulesBtn');
         const leaderboardBtn = document.getElementById('leaderboardBtn');
         const statsBtn = document.getElementById('statsBtn');
+        const historyBtn = document.getElementById('historyBtn');
 
         // Secciones
         const operatorSection = document.getElementById('operatorSection');
@@ -617,12 +703,15 @@
         // ========================================
 
         function desactivarBotones() {
-            [operatorBtn, reviewBtn, companiesBtn, rulesBtn, leaderboardBtn, statsBtn].forEach(b => {
+            [operatorBtn, reviewBtn, companiesBtn, rulesBtn, leaderboardBtn, statsBtn, historyBtn].forEach(b => {
                 if (b) b.classList.remove('active');
             });
             [operatorSection, reviewSection, companiesSection, rulesSection].forEach(s => {
                 if (s) s.style.display = 'none';
             });
+            // Cerrar modales abiertos
+            const historyModal = document.getElementById('historyModal');
+            if (historyModal) historyModal.style.display = 'none';
             detenerAutoRefresh();
         }
 
@@ -1291,6 +1380,181 @@
             }
         }
 
+
+        // ========================================
+        // ✅ 10. HISTORY (HISTORIAL DE CASHOUTS)
+        // ========================================
+        let historyCurrentPage = 1;
+        let historyTotalPages = 1;
+        let historyTotal = 0;
+        const historyLimit = 30;
+
+        const historyModalEl = document.getElementById('historyModal');
+        const historyTableBody = document.getElementById('historyTableBody');
+        const historyCounter = document.getElementById('historyCounter');
+        const historyPagination = document.getElementById('historyPagination');
+
+        const historyFilterStartDate = document.getElementById('historyFilterStartDate');
+        const historyFilterEndDate = document.getElementById('historyFilterEndDate');
+        const historyFilterCode = document.getElementById('historyFilterCode');
+        const historyFilterOperator = document.getElementById('historyFilterOperator');
+        const historyFilterCompany = document.getElementById('historyFilterCompany');
+
+        function resetHistoryDateRange() {
+            const now = new Date();
+            const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+            if (historyFilterStartDate) historyFilterStartDate.value = today;
+            if (historyFilterEndDate) historyFilterEndDate.value = today;
+        }
+        resetHistoryDateRange();
+
+        historyBtn.addEventListener('click', async () => {
+            desactivarBotones();
+            historyBtn.classList.add('active');
+            historyModalEl.style.display = 'flex';
+            historyCurrentPage = 1;
+            await cargarHistorial();
+        });
+
+        document.getElementById('cerrarHistory').addEventListener('click', () => {
+            historyModalEl.style.display = 'none';
+            operatorBtn.click();
+        });
+
+        const applyHistoryFiltersBtn = document.getElementById('applyHistoryFilters');
+        const clearHistoryFiltersBtn = document.getElementById('clearHistoryFilters');
+
+        function updateClearButtonVisibility() {
+            const now = new Date();
+            const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+            const hasText = historyFilterCode.value || historyFilterOperator.value || historyFilterCompany.value;
+            const datesChanged = historyFilterStartDate.value !== today || historyFilterEndDate.value !== today;
+            
+            if (hasText || datesChanged) {
+                clearHistoryFiltersBtn.style.display = 'block';
+            } else {
+                clearHistoryFiltersBtn.style.display = 'none';
+            }
+        }
+
+        // Ya no cargamos automáticamente, solo actualizamos la visibilidad de la X
+        [historyFilterStartDate, historyFilterEndDate, historyFilterCode, historyFilterOperator, historyFilterCompany].forEach(input => {
+            if (input) {
+                input.addEventListener('change', updateClearButtonVisibility);
+                input.addEventListener('input', updateClearButtonVisibility);
+            }
+        });
+
+        applyHistoryFiltersBtn.addEventListener('click', () => {
+            historyCurrentPage = 1;
+            cargarHistorial();
+        });
+
+        clearHistoryFiltersBtn.addEventListener('click', async () => {
+            resetHistoryDateRange();
+            historyFilterCode.value = '';
+            historyFilterOperator.value = '';
+            historyFilterCompany.value = '';
+            updateClearButtonVisibility();
+            historyCurrentPage = 1;
+            await cargarHistorial();
+        });
+
+        // ── UNA petición por página: ?page=X&limit=30 + filtros ──
+        async function cargarHistorial() {
+            historyTableBody.innerHTML = '<tr><td colspan="5" style="padding:40px;text-align:center;opacity:0.7;">⏳ Cargando...</td></tr>';
+            historyCounter.textContent = 'Buscando...';
+            try {
+                const params = new URLSearchParams({
+                    page: String(historyCurrentPage),
+                    limit: String(historyLimit)
+                });
+                const start = historyFilterStartDate.value;
+                const end = historyFilterEndDate.value;
+                const code = historyFilterCode.value.trim();
+                const operator = historyFilterOperator.value.trim();
+                const company = historyFilterCompany.value.trim();
+                if (start) params.set('startDate', start);
+                if (end) params.set('endDate', end);
+                if (code) params.set('operationCode', code);
+                if (operator) params.set('operatorName', operator);
+                if (company) params.set('company', company);
+
+                const resp = await apiFetch(`/cashouts?${params.toString()}`);
+                const result = await resp.json();
+
+                historyTotal = result.total || 0;
+                historyTotalPages = result.totalPages || 1;
+                historyCurrentPage = result.page || 1;
+                const items = result.data || [];
+
+                renderizarHistorial(items);
+            } catch (err) {
+                console.error('[History Error]:', err);
+                historyTableBody.innerHTML = '<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--error);">❌ Error al cargar</td></tr>';
+                historyCounter.textContent = 'Error';
+            }
+        }
+
+        function renderizarHistorial(items) {
+            const startIdx = (historyCurrentPage - 1) * historyLimit;
+            const endIdx = startIdx + items.length;
+            historyCounter.textContent = `Mostrando ${historyTotal > 0 ? startIdx+1 : 0} - ${endIdx} de ${historyTotal.toLocaleString()} registros`;
+
+            if (items.length === 0) {
+                historyTableBody.innerHTML = '<tr><td colspan="5" style="padding:40px;text-align:center;opacity:0.7;">No se encontraron registros.</td></tr>';
+            } else {
+                historyTableBody.innerHTML = items.map(i => {
+                    const b = getStatusBadge(i.status || 'pending');
+                    return `<tr class="history-row">
+                        <td style="padding:12px;font-size:13px;white-space:nowrap;text-align:center;">${i.cashoutChecking||'<span style="opacity:0.4">Sin fecha</span>'}</td>
+                        <td style="padding:12px;text-align:center;font-weight:800;color:var(--tertiary);font-family:'Courier New',monospace;font-size:14px;letter-spacing:1px;">${i.operationCode||''}</td>
+                        <td style="padding:12px;font-weight:600;text-align:center;">${i.operatorName||''}</td>
+                        <td style="padding:12px;font-weight:600;text-align:center;">${i.company||''}</td>
+                        <td style="padding:12px;text-align:center;">${b}</td></tr>`;
+                }).join('');
+            }
+            renderHistoryPagination();
+        }
+
+        function getStatusBadge(status) {
+            const icons = {
+                paid: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16"><path fill="currentColor" d="M7.3 14.2L.2 9l1.7-2.4l4.8 3.5l6.6-8.5l2.3 1.8z"/></svg>`,
+                pending: `<svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6.5 12a5.5 5.5 0 1 1 0 11a5.5 5.5 0 0 1 0-11zm0 7.88a.625.625 0 1 0 0 1.249a.625.625 0 0 0 0-1.249zM17.75 3A3.25 3.25 0 0 1 21 6.25v11.5A3.25 3.25 0 0 1 17.75 21l-5.773.001a6.47 6.47 0 0 0 .71-1.5l5.063-.001a1.75 1.75 0 0 0 1.75-1.75V6.25a1.75 1.75 0 0 0-1.75-1.75H6.25A1.75 1.75 0 0 0 4.5 6.25v5.064a6.47 6.47 0 0 0-1.501.709L3 6.25A3.25 3.25 0 0 1 6.25 3h11.5zM6.5 14.003c-1.048 0-1.864.817-1.853 1.954a.5.5 0 1 0 1-.01c-.006-.578.36-.944.853-.944c.472 0 .853.392.853.95c0 .224-.075.39-.317.677l-.1.113l-.265.29c-.484.542-.671.892-.671 1.468a.5.5 0 1 0 1 0c0-.233.076-.403.324-.695l.1-.115l.266-.29c.478-.535.663-.882.663-1.448c0-1.104-.822-1.95-1.853-1.95zM11.75 6a.75.75 0 0 1 .743.648l.007.102V12h3.748a.75.75 0 0 1 .102 1.493l-.102.007H11.75a.75.75 0 0 1-.743-.648L11 12.75v-6a.75.75 0 0 1 .75-.75z" fill="currentColor" fill-rule="nonzero"/></svg>`,
+                rejected: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16"><path fill="currentColor" d="M15.854 12.854L11 8l4.854-4.854a.503.503 0 0 0 0-.707L13.561.146a.499.499 0 0 0-.707 0L8 5L3.146.146a.5.5 0 0 0-.707 0L.146 2.439a.499.499 0 0 0 0 .707L5 8L.146 12.854a.5.5 0 0 0 0 .707l2.293 2.293a.499.499 0 0 0 .707 0L8 11l4.854 4.854a.5.5 0 0 0 .707 0l2.293-2.293a.499.499 0 0 0 0-.707z"/></svg>`
+            };
+
+            const m = { 
+                paid: { l: 'Paid', bg: 'rgba(6,214,160,0.12)', c: '#06D6A0', i: icons.paid }, 
+                pending: { l: 'Pending', bg: 'rgba(243,156,18,0.12)', c: '#f39c12', i: icons.pending }, 
+                rejected: { l: 'Rejected', bg: 'rgba(231,57,70,0.12)', c: '#E63946', i: icons.rejected } 
+            };
+
+            const s = m[status] || m.pending;
+            return `<span style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;background:${s.bg};color:${s.c};border:1.5px solid ${s.c};">
+                ${s.i} <span>${s.l}</span>
+            </span>`;
+        }
+
+        function renderHistoryPagination() {
+            const tp = historyTotalPages;
+            if (tp <= 1) { historyPagination.innerHTML = ''; return; }
+            let h = `<button onclick="cambiarPaginaHistory(${historyCurrentPage-1})" ${historyCurrentPage===1?'disabled':''} style="padding:8px 16px;width:auto;font-size:13px;border-radius:8px;">← Anterior</button>`;
+            const mx=7; let sp=Math.max(1,historyCurrentPage-3), ep=Math.min(tp,sp+mx-1);
+            if(ep-sp<mx-1)sp=Math.max(1,ep-mx+1);
+            if(sp>1){h+=`<button onclick="cambiarPaginaHistory(1)" style="padding:8px 12px;width:auto;min-width:38px;font-size:13px;border-radius:8px;background:white;color:var(--primary);border:2px solid var(--primary);box-shadow:none;">1</button>`;if(sp>2)h+=`<span style="padding:0 4px;opacity:0.5;">...</span>`;}
+            for(let i=sp;i<=ep;i++){const a=i===historyCurrentPage;h+=`<button onclick="cambiarPaginaHistory(${i})" style="padding:8px 12px;width:auto;min-width:38px;font-size:13px;border-radius:8px;${a?'background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;':'background:white;color:var(--primary);border:2px solid rgba(102,126,234,0.3);box-shadow:none;'}">${i}</button>`;}
+            if(ep<tp){if(ep<tp-1)h+=`<span style="padding:0 4px;opacity:0.5;">...</span>`;h+=`<button onclick="cambiarPaginaHistory(${tp})" style="padding:8px 12px;width:auto;min-width:38px;font-size:13px;border-radius:8px;background:white;color:var(--primary);border:2px solid var(--primary);box-shadow:none;">${tp}</button>`;}
+            h+=`<button onclick="cambiarPaginaHistory(${historyCurrentPage+1})" ${historyCurrentPage===tp?'disabled':''} style="padding:8px 16px;width:auto;font-size:13px;border-radius:8px;">Siguiente →</button>`;
+            historyPagination.innerHTML = h;
+        }
+
+        window.cambiarPaginaHistory = async function(p) {
+            if (p < 1 || p > historyTotalPages) return;
+            historyCurrentPage = p;
+            await cargarHistorial();
+            document.getElementById('historyTable')?.scrollIntoView({ behavior:'smooth', block:'start' });
+        };
 
         // ========================================
         // ✅ 9. ARRANQUE (BOOTSTRAP)
