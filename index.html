@@ -2,6 +2,12 @@
 <html lang="es">
 
 <head>
+  <script>
+    // ✅ PROTECCIÓN DE RUTA: Si no hay token, fuera de aquí.
+    if (!localStorage.getItem("token")) {
+      window.location.href = "login.html";
+    }
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OPS Workspace</title>
@@ -206,34 +212,8 @@
 <body>
   <div id="particles-js"></div>
 
-  <div id="login-view" style="position: relative">
-    <label class="theme-switch" style="position: absolute; top: 20px; right: 20px" title="Cambiar Tema">
-      <input type="checkbox" class="theme-checkbox" onchange="toggleTheme()" />
-      <span class="slider">
-        <img src="./imgs/daylight.png" alt="Dark" class="switch-icon" />
-        <img src="./imgs/moon (2).png" alt="Light" class="switch-icon" />
-      </span>
-    </label>
-
-    <div class="logo-text">OPS Workspace</div>
-    <p style="color: var(--text-secondary); margin-bottom: 25px"></p>
-
-    <form id="loginForm">
-      <input type="text" id="username" placeholder="Usuario" required />
-      <input type="password" id="password" placeholder="Contraseña" required />
-      <button type="submit" class="btn-primary" id="loginBtn">
-        Ingresar
-      </button>
-    </form>
-    <div id="error-msg" style="
-          color: var(--danger);
-          margin-top: 15px;
-          font-size: 14px;
-          display: none;
-        "></div>
-  </div>
-
-  <div id="dashboard-view" style="display: none">
+  <!-- Dashboard View (Ahora visible por defecto si pasó el script de arriba) -->
+  <div id="dashboard-view">
     <div class="navbar">
       <div class="logo-text" style="
             margin: 0;
@@ -1087,10 +1067,7 @@
   <script>
     const API_BASE = "https://general-cashouts-production.up.railway.app/api";
 
-    const loginView = document.getElementById("login-view");
     const dashboardView = document.getElementById("dashboard-view");
-    const loginForm = document.getElementById("loginForm");
-    const errorMsg = document.getElementById("error-msg");
 
     let socket;
 
@@ -1170,195 +1147,178 @@
 
     // Al cargar la página
     document.addEventListener("DOMContentLoaded", () => {
-      const token = localStorage.getItem("token");
-      const userStr = localStorage.getItem("user");
+      try {
+        const token = localStorage.getItem("token");
+        const userStr = localStorage.getItem("user");
 
-      if (token && userStr) {
-        if (isTokenExpired(token)) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          return;
+        if (token && userStr) {
+          if (isTokenExpired(token)) {
+            logout();
+            return;
+          }
+          const user = JSON.parse(userStr);
+          mostrarDashboard(user);
+        } else {
+          window.location.href = "login.html";
         }
-        const user = JSON.parse(userStr);
-        mostrarDashboard(user);
+      } catch (err) {
+        console.error("❌ Error en inicialización:", err);
+        logout();
       }
     });
 
-    // Formulario de login
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById("loginBtn");
-      btn.textContent = "Verificando...";
-      btn.disabled = true;
-      errorMsg.style.display = "none";
+    // Función para mostrar el dashboard y llenar los datos
+    function mostrarDashboard(user) {
+      if (!user) {
+        logout();
+        return;
+      }
 
       try {
-        const res = await fetch(`${API_BASE}/auth/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: document.getElementById("username").value.trim(),
-            password: document.getElementById("password").value,
-          }),
-        });
+        // Forzar visibilidad por si acaso
+        if (dashboardView) dashboardView.style.display = "block";
 
-        const data = await res.json();
-        if (!res.ok)
-          throw new Error(data.error || "Credenciales incorrectas");
+        renderPins(user);
 
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+        const socketUserId = user.id || user._id || user.userId || extraerIdDelToken();
+        inicializarSockets(socketUserId);
 
-        mostrarDashboard(data.user);
-      } catch (err) {
-        errorMsg.textContent = err.message;
-        errorMsg.style.display = "block";
-      } finally {
-        btn.textContent = "Ingresar";
-        btn.disabled = false;
-      }
-    });
+        const fullName = user.fullName || "Usuario";
+        const primerNombre = fullName.split(" ")[0];
 
-    // Mostrar el dashboard y llenar los datos (CON ROLES ACTUALIZADOS)
-    function mostrarDashboard(user) {
-      renderPins(user);
-      loginView.style.display = "none";
-      dashboardView.style.display = "block";
+        const trigger = document.getElementById("triggerName");
+        if (trigger) trigger.textContent = primerNombre;
 
-      // ✅ DEBUG: Ver qué trae el objeto user
+        const welcomeName = document.getElementById("welcomeName");
+        if (welcomeName) welcomeName.textContent = primerNombre;
 
-      // ✅ CONECTAMOS EL SOCKET AQUÍ (con fallback al token JWT)
-      const socketUserId =
-        user.id || user._id || user.userId || extraerIdDelToken();
-      inicializarSockets(socketUserId);
+        const profileName = document.getElementById("profileFullName");
+        if (profileName) profileName.textContent = fullName;
 
-      const primerNombre = user.fullName.split(" ")[0];
-      document.getElementById("triggerName").textContent = primerNombre;
+        const profileUser = document.getElementById("profileUsername");
+        if (profileUser) profileUser.textContent = "@" + (user.username || "user");
 
-      const welcomeName = document.getElementById("welcomeName");
-      if (welcomeName) welcomeName.textContent = primerNombre;
-
-      document.getElementById("profileFullName").textContent = user.fullName;
-      document.getElementById("profileUsername").textContent =
-        "@" + user.username;
-
-      const roleBadge = document.getElementById("profileRole");
-      roleBadge.textContent = user.role.toUpperCase();
-
-      const cardCashouts = document.getElementById("card-cashouts");
-      const cardOperapedia = document.getElementById("card-operapedia");
-      const cardKyc = document.getElementById("card-kyc");
-      const cardBalance = document.getElementById("card-balance");
-      const cardLocations = document.getElementById("card-locations");
-      const cardHelpDesk = document.getElementById("card-helpdesk");
-      const cardTierlock = document.getElementById("card-tierlock");
-      const cardShiftlog = document.getElementById("card-shiftlog");
-      const cardManageTeam = document.getElementById("card-manage-team");
-      const cardIncidencias = document.getElementById(
-        "card-operational-errors",
-      );
-      const cardDashboardReports = document.getElementById(
-        "card-dashboard-reports",
-      );
-      const cardPartnerReport = document.getElementById("card-partner-report");
-
-      // 1. Reseteamos la vista por defecto (mostrar todas)
-      if (cardCashouts) cardCashouts.style.display = "flex";
-      if (cardOperapedia) cardOperapedia.style.display = "flex";
-      if (cardKyc) cardKyc.style.display = "none"; // Exclusivo de supervisor
-      if (cardBalance) cardBalance.style.display = "flex";
-      if (cardLocations) cardLocations.style.display = "none";
-      if (cardTierlock) cardTierlock.style.display = "none"; // Exclusivo de supervisor/analista
-      if (cardShiftlog) cardShiftlog.style.display = "none"; // Exclusivo de supervisor/analista/chats
-      if (cardIncidencias) cardIncidencias.style.display = "none"; // Exclusivo de supervisor/RRHH
-      if (cardDashboardReports) cardDashboardReports.style.display = "none"; // Exclusivo de supervisor/RRHH
-
-      if (cardHelpDesk) cardHelpDesk.style.display = "none";
-      if (cardManageTeam) cardManageTeam.style.display = "none";
-      if (cardPartnerReport) cardPartnerReport.style.display = "none";
-
-      // 2. Colores y permisos según el rol
-      if (user.role === "supervisor") {
-        roleBadge.style.background = "rgba(94, 106, 210, 0.15)";
-        roleBadge.style.color = "#6f7bf0";
-        roleBadge.style.border = "1px solid rgba(94, 106, 210, 0.3)";
-
-        if (cardHelpDesk) cardHelpDesk.style.display = "flex";
-        if (cardManageTeam) cardManageTeam.style.display = "flex";
-        if (cardLocations) cardLocations.style.display = "flex";
-        if (cardKyc) cardKyc.style.display = "flex";
-        if (cardTierlock) cardTierlock.style.display = "flex";
-        if (cardShiftlog) cardShiftlog.style.display = "flex";
-        if (cardIncidencias) cardIncidencias.style.display = "flex";
-        if (cardDashboardReports) cardDashboardReports.style.display = "flex";
-        if (cardPartnerReport && ["brandy", "admin"].includes(user.username)) {
-          cardPartnerReport.style.display = "flex";
+        const roleBadge = document.getElementById("profileRole");
+        if (roleBadge) {
+          roleBadge.textContent = (user.role || "user").toUpperCase();
         }
-        const btnSignature = document.getElementById("btnOpenSignature");
-        if (btnSignature) btnSignature.style.display = "block";
-      } else if (user.role === "analista") {
-        roleBadge.style.background = "rgba(46, 204, 113, 0.15)";
-        roleBadge.style.color = "#2ecc71";
-        roleBadge.style.border = "1px solid rgba(46, 204, 113, 0.3)";
 
-        if (cardBalance) cardBalance.style.display = "none";
-        if (cardTierlock) cardTierlock.style.display = "flex";
-        if (cardShiftlog) cardShiftlog.style.display = "flex";
-      } else if (user.role === "chats") {
-        roleBadge.style.background = "rgba(243, 156, 18, 0.15)";
-        roleBadge.style.color = "#f39c12";
-        roleBadge.style.border = "1px solid rgba(243, 156, 18, 0.3)";
+        const cardCashouts = document.getElementById("card-cashouts");
+        const cardOperapedia = document.getElementById("card-operapedia");
+        const cardKyc = document.getElementById("card-kyc");
+        const cardBalance = document.getElementById("card-balance");
+        const cardLocations = document.getElementById("card-locations");
+        const cardHelpDesk = document.getElementById("card-helpdesk");
+        const cardTierlock = document.getElementById("card-tierlock");
+        const cardShiftlog = document.getElementById("card-shiftlog");
+        const cardManageTeam = document.getElementById("card-manage-team");
+        const cardIncidencias = document.getElementById("card-operational-errors");
+        const cardDashboardReports = document.getElementById("card-dashboard-reports");
+        const cardPartnerReport = document.getElementById("card-partner-report");
 
-        if (cardCashouts) cardCashouts.style.display = "none";
-        if (cardBalance) cardBalance.style.display = "none";
-        if (cardKyc) cardKyc.style.display = "flex"; // Role 'chats' puede ver KYC
-        if (cardShiftlog) cardShiftlog.style.display = "flex";
-      } else if (user.role === "asistente") {
-        roleBadge.style.background = "rgba(52, 152, 219, 0.15)";
-        roleBadge.style.color = "#3498db";
-        roleBadge.style.border = "1px solid rgba(52, 152, 219, 0.3)";
-
-        // Solo Operapedia
-        if (cardCashouts) cardCashouts.style.display = "none";
-        if (cardBalance) cardBalance.style.display = "flex";
+        // 1. Reseteamos la vista por defecto (mostrar todas)
+        if (cardCashouts) cardCashouts.style.display = "flex";
         if (cardOperapedia) cardOperapedia.style.display = "flex";
-      } else if (user.role === "recursos_humanos") {
-        roleBadge.style.background = "rgba(155, 89, 182, 0.15)";
-        roleBadge.style.color = "#9b59b2";
-        roleBadge.style.border = "1px solid rgba(155, 89, 182, 0.3)";
-
-        if (cardCashouts) cardCashouts.style.display = "none";
-        if (cardOperapedia) cardOperapedia.style.display = "none";
-        if (cardBalance) cardBalance.style.display = "none";
-
-        if (cardIncidencias) cardIncidencias.style.display = "flex";
-        if (cardDashboardReports) cardDashboardReports.style.display = "flex";
-      } else if (user.role === "movimientos") {
-        roleBadge.style.background = "rgba(26, 188, 156, 0.15)";
-        roleBadge.style.color = "#1abc9c";
-        roleBadge.style.border = "1px solid rgba(26, 188, 156, 0.3)";
-
-        // Rol restringido: Solo Operapedia y ShiftLog
-        if (cardCashouts) cardCashouts.style.display = "none";
         if (cardKyc) cardKyc.style.display = "none";
-        if (cardBalance) cardBalance.style.display = "none";
+        if (cardBalance) cardBalance.style.display = "flex";
         if (cardLocations) cardLocations.style.display = "none";
         if (cardTierlock) cardTierlock.style.display = "none";
+        if (cardShiftlog) cardShiftlog.style.display = "none";
         if (cardIncidencias) cardIncidencias.style.display = "none";
+        if (cardDashboardReports) cardDashboardReports.style.display = "none";
+        if (cardHelpDesk) cardHelpDesk.style.display = "none";
+        if (cardManageTeam) cardManageTeam.style.display = "none";
+        if (cardPartnerReport) cardPartnerReport.style.display = "none";
 
-        if (cardOperapedia) cardOperapedia.style.display = "flex";
-        if (cardShiftlog) cardShiftlog.style.display = "flex";
-      } else if (user.role === "cajero") {
-        roleBadge.style.background = "rgba(241, 196, 15, 0.15)";
-        roleBadge.style.color = "#f1c40f";
-        roleBadge.style.border = "1px solid rgba(241, 196, 15, 0.3)";
+        // 2. Colores y permisos según el rol
+        if (user.role === "supervisor") {
+          if (roleBadge) {
+            roleBadge.style.background = "rgba(94, 106, 210, 0.15)";
+            roleBadge.style.color = "#6f7bf0";
+            roleBadge.style.border = "1px solid rgba(94, 106, 210, 0.3)";
+          }
+          if (cardHelpDesk) cardHelpDesk.style.display = "flex";
+          if (cardManageTeam) cardManageTeam.style.display = "flex";
+          if (cardLocations) cardLocations.style.display = "flex";
+          if (cardKyc) cardKyc.style.display = "flex";
+          if (cardTierlock) cardTierlock.style.display = "flex";
+          if (cardShiftlog) cardShiftlog.style.display = "flex";
+          if (cardIncidencias) cardIncidencias.style.display = "flex";
+          if (cardDashboardReports) cardDashboardReports.style.display = "flex";
+          if (cardPartnerReport && ["brandy", "admin"].includes(user.username)) {
+            cardPartnerReport.style.display = "flex";
+          }
+          const btnSignature = document.getElementById("btnOpenSignature");
+          if (btnSignature) btnSignature.style.display = "block";
+        } else if (user.role === "analista") {
+          if (roleBadge) {
+            roleBadge.style.background = "rgba(46, 204, 113, 0.15)";
+            roleBadge.style.color = "#2ecc71";
+            roleBadge.style.border = "1px solid rgba(46, 204, 113, 0.3)";
+          }
+          if (cardBalance) cardBalance.style.display = "none";
+          if (cardTierlock) cardTierlock.style.display = "flex";
+          if (cardShiftlog) cardShiftlog.style.display = "flex";
+        } else if (user.role === "chats") {
+          if (roleBadge) {
+            roleBadge.style.background = "rgba(243, 156, 18, 0.15)";
+            roleBadge.style.color = "#f39c12";
+            roleBadge.style.border = "1px solid rgba(243, 156, 18, 0.3)";
+          }
+          if (cardCashouts) cardCashouts.style.display = "none";
+          if (cardBalance) cardBalance.style.display = "none";
+          if (cardKyc) cardKyc.style.display = "flex";
+          if (cardShiftlog) cardShiftlog.style.display = "flex";
+        } else if (user.role === "asistente") {
+          if (roleBadge) {
+            roleBadge.style.background = "rgba(52, 152, 219, 0.15)";
+            roleBadge.style.color = "#3498db";
+            roleBadge.style.border = "1px solid rgba(52, 152, 219, 0.3)";
+          }
+          if (cardCashouts) cardCashouts.style.display = "none";
+          if (cardBalance) cardBalance.style.display = "flex";
+          if (cardOperapedia) cardOperapedia.style.display = "flex";
+        } else if (user.role === "recursos_humanos") {
+          if (roleBadge) {
+            roleBadge.style.background = "rgba(155, 89, 182, 0.15)";
+            roleBadge.style.color = "#9b59b2";
+            roleBadge.style.border = "1px solid rgba(155, 89, 182, 0.3)";
+          }
+          if (cardCashouts) cardCashouts.style.display = "none";
+          if (cardOperapedia) cardOperapedia.style.display = "none";
+          if (cardBalance) cardBalance.style.display = "none";
+          if (cardIncidencias) cardIncidencias.style.display = "flex";
+          if (cardDashboardReports) cardDashboardReports.style.display = "flex";
+        } else if (user.role === "movimientos") {
+          if (roleBadge) {
+            roleBadge.style.background = "rgba(26, 188, 156, 0.15)";
+            roleBadge.style.color = "#1abc9c";
+            roleBadge.style.border = "1px solid rgba(26, 188, 156, 0.3)";
+          }
+          if (cardCashouts) cardCashouts.style.display = "none";
+          if (cardKyc) cardKyc.style.display = "none";
+          if (cardBalance) cardBalance.style.display = "none";
+          if (cardLocations) cardLocations.style.display = "none";
+          if (cardTierlock) cardTierlock.style.display = "none";
+          if (cardIncidencias) cardIncidencias.style.display = "none";
+          if (cardOperapedia) cardOperapedia.style.display = "flex";
+          if (cardShiftlog) cardShiftlog.style.display = "flex";
+        } else if (user.role === "cajero") {
+          if (roleBadge) {
+            roleBadge.style.background = "rgba(241, 196, 15, 0.15)";
+            roleBadge.style.color = "#f1c40f";
+            roleBadge.style.border = "1px solid rgba(241, 196, 15, 0.3)";
+          }
+        }
+      } catch (err) {
+        console.error("❌ Error renderizando dashboard:", err);
       }
     }
 
     function logout() {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      location.reload();
+      window.location.href = "login.html";
     }
     // ================= LÓGICA MODAL HELP DESK =================
     function openHelpDeskModal() {
@@ -1550,11 +1510,17 @@
     async function inicializarSockets(userId) {
       if (!userId) return;
 
-      socket = io("https://general-cashouts-production.up.railway.app");
+      const savedToken = localStorage.getItem("token");
+      if (!savedToken) return;
+
+      socket = io("https://general-cashouts-production.up.railway.app", {
+        auth: { token: savedToken },
+        query: { token: savedToken }
+      });
 
       socket.on("connect", () => {
         console.log("✅ WebSocket conectado | ID:", socket.id);
-        socket.emit("join_room", userId);
+        // El backend ahora asigna la sala automáticamente
       });
 
       socket.on("connect_error", (err) => {

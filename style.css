@@ -85,7 +85,6 @@ button.btn-primary:hover { background: var(--accent-hover); }
     width: 100%;
     max-width: 1280px;
     padding: 20px;
-    display: none; /* Oculto hasta que inicie sesión */
 }
 
 .navbar {
