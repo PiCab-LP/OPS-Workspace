@@ -177,6 +177,7 @@
             <tr>
               <th>Fecha</th>
               <th>Tipo</th>
+              <th>Título</th>
               <th>Colaborador</th>
               <th>Severidad</th>
               <th>Estado</th>
@@ -185,7 +186,7 @@
           </thead>
           <tbody id="tableBody">
             <tr>
-              <td colspan="6" class="empty-state"><i class="fas fa-spinner fa-spin"></i> Cargando informes...</td>
+              <td colspan="7" class="empty-state"><i class="fas fa-spinner fa-spin"></i> Cargando informes...</td>
             </tr>
           </tbody>
         </table>
@@ -238,7 +239,7 @@
       } catch (err) {
         console.error("Error cargando reportes:", err);
         document.getElementById("tableBody").innerHTML =
-          '<tr><td colspan="6" class="empty-state">Error al cargar los datos</td></tr>';
+          '<tr><td colspan="7" class="empty-state">Error al cargar los datos</td></tr>';
       } finally {
         setTimeout(() => {
           document.getElementById("mainLoader").classList.add("hidden");
@@ -399,7 +400,7 @@
       const page = filteredReports.slice(start, start + PAGE_SIZE);
 
       if (page.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No se encontraron informes</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No se encontraron informes</td></tr>';
         document.getElementById("pagination").innerHTML = "";
         return;
       }
@@ -413,6 +414,7 @@
         return `<tr>
           <td>${fecha}</td>
           <td><span class="type-label">${r.type === "Error Operacional" ? "⚠️" : "💬"} ${r.type}</span></td>
+          <td class="title-cell" title="${r.subject || r.Subject || ''}">${r.subject || r.Subject || '-'}</td>
           <td>${r.collaboratorName}</td>
           <td><span class="badge ${sevClass}">${displaySeverity}</span></td>
           <td><span class="badge ${statusClass}">${statusLabel}</span></td>
