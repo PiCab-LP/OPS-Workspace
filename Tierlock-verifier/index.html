@@ -1,456 +1,503 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tierlock Verifier - Workspace</title>
-    <link rel="stylesheet" href="../style.css">
-    <link rel="icon" type="image/png" href="../imgs/dashboard.png">
+    <link rel="stylesheet" href="../style.css" />
+    <link rel="icon" type="image/png" href="../imgs/dashboard.png" />
     <style>
-        .tierlock-layout {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 10;
-        }
+      .tierlock-layout {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        position: relative;
+        z-index: 10;
+      }
 
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(22, 24, 29, 0.7);
-            backdrop-filter: blur(12px);
-            padding: 15px 25px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            margin-bottom: 20px;
-        }
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(22, 24, 29, 0.7);
+        backdrop-filter: blur(12px);
+        padding: 15px 25px;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        margin-bottom: 20px;
+      }
 
-        /* Nav light mode corrections */
-        body.light-mode .navbar {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-        }
+      /* Nav light mode corrections */
+      body.light-mode .navbar {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+      }
 
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+      .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
 
-        .btn-hub {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 7px 14px;
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s ease;
-        }
+      .btn-hub {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 7px 14px;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
 
-        .btn-hub:hover {
-            background: var(--bg-input);
-        }
+      .btn-hub:hover {
+        background: var(--bg-input);
+      }
 
-        body.light-mode .btn-hub {
-            color: #1f2937;
-        }
+      body.light-mode .btn-hub {
+        color: #1f2937;
+      }
 
-        body.light-mode .btn-hub:hover {
-            background: rgba(0, 0, 0, 0.05);
-            /* Light hover background */
-        }
+      body.light-mode .btn-hub:hover {
+        background: rgba(0, 0, 0, 0.05);
+        /* Light hover background */
+      }
 
-        /* Card container */
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(12px);
-            max-width: 850px;
-            margin: 0 auto;
-        }
+      /* Card container */
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(12px);
+        max-width: 850px;
+        margin: 0 auto;
+      }
 
-        body.light-mode .card {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        }
+      body.light-mode .card {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      }
 
-        h2 {
-            color: var(--accent);
-            margin: 0 0 25px 0;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 15px;
-            font-size: 24px;
-        }
+      h2 {
+        color: var(--accent);
+        margin: 0 0 25px 0;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 15px;
+        font-size: 24px;
+      }
 
-        .search-box {
-            display: grid;
-            grid-template-columns: 1fr 1fr auto;
-            gap: 15px;
-            align-items: end;
-            margin-bottom: 30px;
-        }
+      .search-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 15px;
+        align-items: end;
+        margin-bottom: 30px;
+      }
 
-        .field {
-            display: flex;
-            flex-direction: column;
-        }
+      .field {
+        display: flex;
+        flex-direction: column;
+      }
 
-        label {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
+      label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
 
-        input,
-        select {
-            width: 100%;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 15px;
-            outline: none;
-            transition: border 0.2s;
-            box-sizing: border-box;
-            margin: 0;
-        }
+      input,
+      select {
+        width: 100%;
+        background: var(--bg-input);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 15px;
+        outline: none;
+        transition: border 0.2s;
+        box-sizing: border-box;
+        margin: 0;
+      }
 
-        input:focus,
-        select:focus {
-            border-color: var(--accent);
-        }
+      input:focus,
+      select:focus {
+        border-color: var(--accent);
+      }
 
-        body.light-mode input,
-        body.light-mode select {
-            background-color: #f4f6f8 !important;
-            color: #1f2937 !important;
-            border: 1px solid rgba(0, 0, 0, 0.15) !important;
-        }
+      body.light-mode input,
+      body.light-mode select {
+        background-color: #f4f6f8 !important;
+        color: #1f2937 !important;
+        border: 1px solid rgba(0, 0, 0, 0.15) !important;
+      }
 
-        body.light-mode input::placeholder {
-            color: #6b7280 !important;
-        }
+      body.light-mode input::placeholder {
+        color: #6b7280 !important;
+      }
 
-        button {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            height: 46px;
-            transition: opacity 0.2s;
-            margin: 0;
-        }
+      button {
+        background: var(--accent);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        height: 46px;
+        transition: opacity 0.2s;
+        margin: 0;
+      }
 
-        button:hover {
-            opacity: 0.9;
-        }
+      button:hover {
+        opacity: 0.9;
+      }
 
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
 
-        #loader {
-            display: none;
-            text-align: center;
-            color: #d29922;
-            margin: 20px 0;
-            font-weight: 600;
-        }
+      #loader {
+        display: none;
+        text-align: center;
+        color: #d29922;
+        margin: 20px 0;
+        font-weight: 600;
+      }
 
-        .result-header {
-            margin-top: 30px;
-            padding: 15px;
-            background: var(--bg-input);
-            border-radius: 8px;
-            border-left: 4px solid var(--accent);
-            display: none;
-            color: var(--text-primary);
-        }
+      .result-header {
+        margin-top: 30px;
+        padding: 15px;
+        background: var(--bg-input);
+        border-radius: 8px;
+        border-left: 4px solid var(--accent);
+        display: none;
+        color: var(--text-primary);
+      }
 
-        body.light-mode .result-header {
-            background-color: #f4f6f8;
-            color: #1f2937;
-            border: 1px solid rgba(0, 0, 0, 0.15);
-            border-left: 4px solid var(--accent);
-        }
+      body.light-mode .result-header {
+        background-color: #f4f6f8;
+        color: #1f2937;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        border-left: 4px solid var(--accent);
+      }
 
-        .table-container {
-            margin-top: 20px;
-            overflow-x: auto;
-            display: none;
-        }
+      .table-container {
+        margin-top: 20px;
+        overflow-x: auto;
+        display: none;
+      }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
 
-        th {
-            text-align: left;
-            padding: 14px;
-            border-bottom: 2px solid var(--border);
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+      th {
+        text-align: left;
+        padding: 14px;
+        border-bottom: 2px solid var(--border);
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
 
-        td {
-            text-align: left;
-            padding: 14px;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.9rem;
-            color: var(--text-primary);
-        }
+      td {
+        text-align: left;
+        padding: 14px;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.9rem;
+        color: var(--text-primary);
+      }
 
-        tr:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
+      tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+      }
 
-        body.light-mode tr:hover {
-            background: rgba(0, 0, 0, 0.02);
-        }
+      body.light-mode tr:hover {
+        background: rgba(0, 0, 0, 0.02);
+      }
 
-        .tag {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            display: inline-block;
-        }
+      .tag {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        display: inline-block;
+      }
 
-        .tag-valid {
-            background: rgba(63, 185, 80, 0.15);
-            color: #3fb950;
-            border: 1px solid #3fb950;
-        }
+      .tag-valid {
+        background: rgba(63, 185, 80, 0.15);
+        color: #3fb950;
+        border: 1px solid #3fb950;
+      }
 
-        .tag-invalid {
-            background: rgba(248, 81, 73, 0.15);
-            color: #f85149;
-            border: 1px solid #f85149;
-        }
+      .tag-invalid {
+        background: rgba(248, 81, 73, 0.15);
+        color: #f85149;
+        border: 1px solid #f85149;
+      }
     </style>
     <!-- Particles JS -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-</head>
+  </head>
 
-<body>
+  <body>
     <!-- Efecto Nodos Background -->
-    <div id="particles-js" style="position: fixed; width: 100vw; height: 100vh; top: 0; left: 0; z-index: -1;"></div>
+    <div
+      id="particles-js"
+      style="
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        z-index: -1;
+      "
+    ></div>
 
     <div class="tierlock-layout">
-        <!-- Navbar -->
-        <nav class="navbar">
-            <div class="nav-left">
-                <a href="/" class="btn-hub">
-                    <span style="font-size: 16px; margin: 0; line-height: 1;">🏠</span>
-                    <span>Volver al Hub</span>
-                </a>
-            </div>
-        </nav>
-
-        <div class="card">
-            <h2>Tierlock Verifier</h2>
-
-            <div class="search-box">
-                <div class="field">
-                    <label>Email</label>
-                    <input type="email" id="email" placeholder="cliente@example.com">
-                </div>
-                <div class="field">
-                    <label>Compañía</label>
-                    <select id="company"></select>
-                </div>
-                <button id="btnConsultar">Consultar</button>
-            </div>
-
-            <div id="loader">Validando depósitos...</div>
-
-            <div id="resultHeader" class="result-header">
-                <strong>Usuario:</strong> <span id="resUser" style="color:var(--accent); font-weight: 600;"></span>
-            </div>
-
-            <div id="tableContainer" class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Código OP</th>
-                            <th>Monto</th>
-                            <th>External ID</th>
-                            <th>Estado Tierlock</th>
-                        </tr>
-                    </thead>
-                    <tbody id="resTable"></tbody>
-                </table>
-            </div>
+      <!-- Navbar -->
+      <nav class="navbar">
+        <div class="nav-left">
+          <a href="/" class="btn-hub">
+            <span style="font-size: 16px; margin: 0; line-height: 1">🏠</span>
+            <span>Volver al Hub</span>
+          </a>
         </div>
+      </nav>
+
+      <div class="card">
+        <h2>Tierlock Verifier</h2>
+
+        <div class="search-box">
+          <div class="field">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="cliente@example.com" />
+          </div>
+          <div class="field">
+            <label>Compañía</label>
+            <select id="company"></select>
+          </div>
+          <button id="btnConsultar">Consultar</button>
+        </div>
+
+        <div id="loader">Validando depósitos...</div>
+
+        <div id="resultHeader" class="result-header">
+          <strong>Usuario:</strong>
+          <span
+            id="resUser"
+            style="color: var(--accent); font-weight: 600"
+          ></span>
+        </div>
+
+        <div id="tableContainer" class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Código OP</th>
+                <th>Monto</th>
+                <th>External ID</th>
+                <th>Estado Tierlock</th>
+              </tr>
+            </thead>
+            <tbody id="resTable"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <script>
-        // ================= SEGURIDAD Y CARGA INICIAL =================
-        const userStr = localStorage.getItem('user');
+      // ================= SEGURIDAD Y CARGA INICIAL =================
+      const userStr = localStorage.getItem("user");
 
-        if (!userStr) {
-            window.location.href = '/'; // Si no está logueado, lo patea al Hub
-        } else {
-            const user = JSON.parse(userStr);
-            // Seguridad: Solo supervisores o analistas pueden estar en esta ruta
-            if (user.role !== 'supervisor' && user.role !== 'analista') {
-                window.location.href = '/'; // Lo patea al Hub principal
-            }
+      if (!userStr) {
+        window.location.href = "/"; // Si no está logueado, lo patea al Hub
+      } else {
+        const user = JSON.parse(userStr);
+        // Seguridad: Solo supervisores o analistas pueden estar en esta ruta
+        if (user.role !== "supervisor" && user.role !== "analista") {
+          window.location.href = "/"; // Lo patea al Hub principal
         }
+      }
 
-        // ================= MODO CLARO / OSCURO =================
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('workspaceTheme');
-            if (savedTheme === 'light') {
-                document.body.classList.add('light-mode');
-            }
+      // ================= MODO CLARO / OSCURO =================
+      function loadTheme() {
+        const savedTheme = localStorage.getItem("workspaceTheme");
+        if (savedTheme === "light") {
+          document.body.classList.add("light-mode");
         }
-        loadTheme();
+      }
+      loadTheme();
 
-        // ================= FONDO PARTICULAS (NODOS) =================
-        if (typeof particlesJS !== 'undefined') {
-            particlesJS("particles-js", {
-                "particles": {
-                    "number": { "value": 60, "density": { "enable": true, "value_area": 800 } },
-                    "color": { "value": "#5e6ad2" },
-                    "shape": { "type": "circle" },
-                    "opacity": { "value": 0.3, "random": false },
-                    "size": { "value": 3, "random": true },
-                    "line_linked": {
-                        "enable": true,
-                        "distance": 150,
-                        "color": "#5e6ad2",
-                        "opacity": 0.2,
-                        "width": 1
-                    },
-                    "move": {
-                        "enable": true,
-                        "speed": 1.5,
-                        "direction": "none",
-                        "random": false,
-                        "straight": false,
-                        "out_mode": "out",
-                        "bounce": false
-                    }
-                },
-                "interactivity": {
-                    "detect_on": "window",
-                    "events": {
-                        "onhover": { "enable": true, "mode": "grab" },
-                        "onclick": { "enable": true, "mode": "push" },
-                        "resize": true
-                    },
-                    "modes": {
-                        "grab": { "distance": 200, "line_linked": { "opacity": 0.6 } },
-                        "push": { "particles_nb": 4 }
-                    }
-                },
-                "retina_detect": true
-            });
-        }
-
-        // ================= LÓGICA DE APLICACIÓN =================
-        const companies = [
-            "Play Play Play", "Lucky Lady", "Mushroom Kingdom", "Ballerz World of Gamez",
-            "Pandagod", "Token Tiger", "Innercore Games", "Fast Fortunes",
-            "Lucky Duck Lounge", "Simply Unmatched", "Lucky Shamrock", "Paper Route", "Crazy Coins",
-            "Lucky Fin", "House of LingLing", "Cash Wave", "KiingzNation",
-            "Ms Lady Vegas", "Galaxy Entertainment", "Rapid Reloads", "The Hot Spot", "Best Fish Games",
-            "Wager Island", "777 Twenty Four Seven", "Two City Takeover", "Luxury Slots",
-            "Fast Play Slots", "Black Sheep Gameroom", "Slot Luck", "Wysaro", "Legendary Millions Casino",
-            "Lucky Waves Arcade", "The Penthouse", "Marathon Lounge", "Candy World", "Born Lucky Gameroom", "Royale Dynasty", "Jackpot Junction", "The Reel Deal", "Huncho’s World"
-        ];
-
-        const select = document.getElementById('company');
-        companies.sort().forEach(c => {
-            const opt = document.createElement('option');
-            opt.value = c;
-            opt.innerHTML = c;
-            select.appendChild(opt);
+      // ================= FONDO PARTICULAS (NODOS) =================
+      if (typeof particlesJS !== "undefined") {
+        particlesJS("particles-js", {
+          particles: {
+            number: { value: 60, density: { enable: true, value_area: 800 } },
+            color: { value: "#5e6ad2" },
+            shape: { type: "circle" },
+            opacity: { value: 0.3, random: false },
+            size: { value: 3, random: true },
+            line_linked: {
+              enable: true,
+              distance: 150,
+              color: "#5e6ad2",
+              opacity: 0.2,
+              width: 1,
+            },
+            move: {
+              enable: true,
+              speed: 1.5,
+              direction: "none",
+              random: false,
+              straight: false,
+              out_mode: "out",
+              bounce: false,
+            },
+          },
+          interactivity: {
+            detect_on: "window",
+            events: {
+              onhover: { enable: true, mode: "grab" },
+              onclick: { enable: true, mode: "push" },
+              resize: true,
+            },
+            modes: {
+              grab: { distance: 200, line_linked: { opacity: 0.6 } },
+              push: { particles_nb: 4 },
+            },
+          },
+          retina_detect: true,
         });
+      }
 
-        const API_URL = "https://cfqhf3dye55julwwfwvggs5hkm0uncau.lambda-url.us-east-2.on.aws/";
+      // ================= LÓGICA DE APLICACIÓN =================
+      const companies = [
+        "Play Play Play",
+        "Lucky Lady",
+        "Mushroom Kingdom",
+        "Ballerz World of Gamez",
+        "Pandagod",
+        "Token Tiger",
+        "Innercore Games",
+        "Fast Fortunes",
+        "Lucky Duck Lounge",
+        "Simply Unmatched",
+        "Lucky Shamrock",
+        "Paper Route",
+        "Crazy Coins",
+        "Lucky Fin",
+        "House of LingLing",
+        "Cash Wave",
+        "KiingzNation",
+        "Ms Lady Vegas",
+        "Galaxy Entertainment",
+        "Rapid Reloads",
+        "The Hot Spot",
+        "Best Fish Games",
+        "Wager Island",
+        "777 Twenty Four Seven",
+        "Two City Takeover",
+        "Luxury Slots",
+        "Fast Play Slots",
+        "Black Sheep Gameroom",
+        "Slot Luck",
+        "Wysaro",
+        "Legendary Millions Casino",
+        "Lucky Waves Arcade",
+        "The Penthouse",
+        "Marathon Lounge",
+        "Candy World",
+        "Born Lucky Gameroom",
+        "Royale Dynasty",
+        "Jackpot Junction",
+        "The Reel Deal",
+        "Huncho’s World",
+        "Lucky Diamonds",
+      ];
 
-        document.getElementById('btnConsultar').addEventListener('click', async () => {
-            const email = document.getElementById('email').value;
-            const company = document.getElementById('company').value;
-            const btn = document.getElementById('btnConsultar');
-            const loader = document.getElementById('loader');
-            const tableBody = document.getElementById('resTable');
+      const select = document.getElementById("company");
+      companies.sort().forEach((c) => {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.innerHTML = c;
+        select.appendChild(opt);
+      });
 
-            if (!email) return alert("Ingresa un correo");
+      const API_URL =
+        "https://cfqhf3dye55julwwfwvggs5hkm0uncau.lambda-url.us-east-2.on.aws/";
 
-            btn.disabled = true;
-            loader.style.display = 'block';
-            document.getElementById('resultHeader').style.display = 'none';
-            document.getElementById('tableContainer').style.display = 'none';
-            tableBody.innerHTML = '';
+      document
+        .getElementById("btnConsultar")
+        .addEventListener("click", async () => {
+          const email = document.getElementById("email").value;
+          const company = document.getElementById("company").value;
+          const btn = document.getElementById("btnConsultar");
+          const loader = document.getElementById("loader");
+          const tableBody = document.getElementById("resTable");
 
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, company })
-                });
+          if (!email) return alert("Ingresa un correo");
 
-                const data = await response.json();
+          btn.disabled = true;
+          loader.style.display = "block";
+          document.getElementById("resultHeader").style.display = "none";
+          document.getElementById("tableContainer").style.display = "none";
+          tableBody.innerHTML = "";
 
-                if (response.status !== 200) throw new Error(data);
+          try {
+            const response = await fetch(API_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, company }),
+            });
 
-                document.getElementById('resUser').innerText = data.customer;
+            const data = await response.json();
 
-                data.deposits.forEach(d => {
-                    const row = `
+            if (response.status !== 200) throw new Error(data);
+
+            document.getElementById("resUser").innerText = data.customer;
+
+            data.deposits.forEach((d) => {
+              const row = `
                     <tr>
                         <td><code>${d.op_code}</code></td>
                         <td><strong>$${d.amount}</strong></td>
-                        <td><small>${d.tx_id || 'N/A'}</small></td>
+                        <td><small>${d.tx_id || "N/A"}</small></td>
                         <td>
-                            <span class="tag ${d.valid ? 'tag-valid' : 'tag-invalid'}">
-                                ${d.valid ? '✅ VALIDADO' : '❌ NO ENCONTRADO'}
+                            <span class="tag ${d.valid ? "tag-valid" : "tag-invalid"}">
+                                ${d.valid ? "✅ VALIDADO" : "❌ NO ENCONTRADO"}
                             </span>
                         </td>
                     </tr>
                 `;
-                    tableBody.insertAdjacentHTML('beforeend', row);
-                });
+              tableBody.insertAdjacentHTML("beforeend", row);
+            });
 
-                document.getElementById('resultHeader').style.display = 'block';
-                document.getElementById('tableContainer').style.display = 'block';
-
-            } catch (error) {
-                console.error(error);
-                alert("Error: " + error.message);
-            } finally {
-                btn.disabled = false;
-                loader.style.display = 'none';
-            }
+            document.getElementById("resultHeader").style.display = "block";
+            document.getElementById("tableContainer").style.display = "block";
+          } catch (error) {
+            console.error(error);
+            alert("Error: " + error.message);
+          } finally {
+            btn.disabled = false;
+            loader.style.display = "none";
+          }
         });
     </script>
-</body>
-
+  </body>
 </html>
