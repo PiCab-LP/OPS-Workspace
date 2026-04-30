@@ -99,17 +99,8 @@
               <button class="filter-chip" data-category="cashout">
                 💸 Cashout
               </button>
-              <button class="filter-chip" data-category="consideraciones">
-                📋 Consideraciones
-              </button>
               <button class="filter-chip" data-category="promociones">
                 🎁 Promociones
-              </button>
-              <button class="filter-chip" data-category="terminos">
-                📜 Términos
-              </button>
-              <button class="filter-chip" data-category="canales">
-                📞 Canales
               </button>
               <button class="filter-chip" data-category="notas">
                 📝 Notas
@@ -222,12 +213,14 @@
         <div class="content-area">
           <!-- TAB: CREDENCIALES -->
           <div class="tab-pane tab-pane-active" data-pane="credenciales">
-            <input
-              type="text"
-              class="content-search"
-              id="gameSearch"
-              placeholder="Buscar credenciales..."
-            />
+            <div class="sticky-search-bar">
+              <input
+                type="text"
+                class="content-search"
+                id="gameSearch"
+                placeholder="Buscar credenciales..."
+              />
+            </div>
             <div class="games-grid" id="gamesGrid">
               <div class="welcome-state" id="welcomeState" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh;">
                 <div class="welcome-icon">📓</div>

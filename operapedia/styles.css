@@ -908,6 +908,16 @@ textarea,
   display: block;
 }
 
+.sticky-search-bar {
+  position: sticky;
+  top: -24px;
+  margin: -24px -32px 20px;
+  padding: 16px 32px;
+  background: var(--bg-app);
+  z-index: 20;
+  border-bottom: 1px solid var(--border);
+}
+
 .content-search {
   width: 100%;
   max-width: 400px;
@@ -919,7 +929,6 @@ textarea,
   font-size: 13px;
   font-family: inherit;
   outline: none;
-  margin-bottom: 20px;
   transition: all 0.2s;
 }
 

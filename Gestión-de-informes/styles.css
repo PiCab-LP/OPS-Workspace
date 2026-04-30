@@ -64,6 +64,23 @@ body.no-scroll { overflow: hidden; }
 .dash-header .accent { color: var(--accent); }
 .dash-header .subtitle { color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
 
+/* Toggle Switch */
+.view-toggle {
+  display: flex; background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: 10px; padding: 4px; gap: 4px;
+}
+.toggle-btn {
+  background: transparent; border: none; color: var(--text-secondary);
+  padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px;
+}
+.toggle-btn:hover { color: var(--text-primary); }
+.toggle-btn.active {
+  background: var(--bg-card); color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+
 /* ===== FILTERS ===== */
 .filters-bar {
   display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center;
@@ -213,6 +230,7 @@ tbody tr:hover { background: rgba(94,106,210,0.04); }
 .badge-orange { background: rgba(234,88,12,0.12); color: #ea580c; }
 .badge-red { background: rgba(239,68,68,0.12); color: #ef4444; }
 .badge-gray { background: rgba(160,170,191,0.12); color: #a0aabf; }
+.badge-blue { background: rgba(94,106,210,0.12); color: var(--accent); }
 .title-cell {
   max-width: 220px;
   white-space: nowrap;

@@ -1701,13 +1701,7 @@ const finishEdit = async () => {
         html += '</div>';
       }
 
-      // CONSIDERACIONES
-      if (matches.consideraciones) {
-        html += `<div class="result-section"><h4>📋 Consideraciones para cashouts</h4>`;
-        const preview = matches.consideraciones.substring(0, 200) + (matches.consideraciones.length > 200 ? '...' : '');
-        html += `<div class="search-result-card"><div class="search-result-text">${preview}</div></div>`;
-        html += '</div>';
-      }
+
 
       // PROMOCIONES
       if (matches.promociones.length > 0) {
