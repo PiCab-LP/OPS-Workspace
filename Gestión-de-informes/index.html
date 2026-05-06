@@ -264,6 +264,14 @@
     let currentPage = 1;
     const PAGE_SIZE = 10;
 
+    function formatDate(dateStr) {
+      if (!dateStr || dateStr === "N/A") return "N/A";
+      if (!dateStr.includes("-")) return dateStr;
+      const parts = dateStr.split("-");
+      if (parts.length !== 3) return dateStr;
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
     // =================== LOAD DATA ===================
     async function loadReports() {
       try {
@@ -539,7 +547,9 @@
           <div class="detail-field"><span class="field-label">N° Incidencia</span><span class="field-value">${r.incidenceNumber || "-"}</span></div>
           <div class="detail-field"><span class="field-label">Severidad</span><span class="field-value badge ${sevClassDetail}">${displaySeverity}</span></div>
           <div class="detail-field"><span class="field-label">Estado</span><span class="field-value badge ${statusClass}">${statusLabel}</span></div>
-          <div class="detail-field"><span class="field-label">Fecha</span><span class="field-value">${fecha}</span></div>
+          <div class="detail-field"><span class="field-label">Compañía</span><span class="field-value">${r.company || "N/A"}</span></div>
+          <div class="detail-field"><span class="field-label">Fecha del Informe</span><span class="field-value">${formatDate(r.reportDate)}</span></div>
+          ${r.type === 'Error Operacional' && r.errorDate ? `<div class="detail-field"><span class="field-label">Fecha del Error</span><span class="field-value">${formatDate(r.errorDate)}</span></div>` : ''}
         </div>
 
         <div class="detail-section">

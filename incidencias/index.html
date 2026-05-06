@@ -536,6 +536,20 @@
           <input type="text" id="incidenceNumber" required placeholder="Se genera automáticamente" readonly
             maxlength="10" />
         </div>
+        <div class="form-group">
+          <label>Compañía <span class="required">*</span></label>
+          <select id="selectCompany" required>
+            <option value="">Cargando compañías...</option>
+          </select>
+        </div>
+        <div class="form-group" id="field-error-date">
+          <label>Fecha en la que se dio el error <span class="required">*</span></label>
+          <input type="date" id="errorDate" required />
+        </div>
+        <div class="form-group" id="field-report-date">
+          <label>Fecha en la que se está haciendo el informe <span class="required">*</span></label>
+          <input type="date" id="reportDate" required readonly />
+        </div>
         <div class="form-group hide" id="field-feedback-date">
           <label>Fecha del Feedback <span class="required">*</span></label>
           <input type="date" id="feedbackDate" />
@@ -627,8 +641,9 @@
       let selectedFiles = [];
 
       // Redirigir si no es supervisor
-      if (!token || userData.role !== "supervisor") {
+      if (!token || !userData || userData.role !== "supervisor") {
         window.location.href = "/";
+        return;
       }
 
       // 1. Cargar Colaboradores Dinámicamente
@@ -637,20 +652,60 @@
           const res = await fetch(`${API_BASE}/users`, {
             headers: { Authorization: `Bearer ${token}` },
           });
+          
+          if (res.status === 401) {
+            window.location.href = "/";
+            return;
+          }
+
           const data = await res.json();
           const select = document.getElementById("selectColaborador");
           select.innerHTML =
             '<option value="">Seleccione un colaborador...</option>';
-          data.data.forEach((u) => {
-            // Ahora enviamos a todos los usuarios, incluyendo supervisores
-            select.innerHTML += `<option value="${u._id}">${u.fullName}</option>`;
-            // Si hay otros roles como 'admin' y quieres ocultarlos, puedes usar: if (u.role !== 'admin')
-          });
+          
+          const users = data.data || data;
+          if (Array.isArray(users)) {
+            users.forEach((u) => {
+              select.innerHTML += `<option value="${u._id}">${u.fullName}</option>`;
+            });
+          }
         } catch (err) {
-          console.error("Error al cargar usuarios");
+          console.error("Error al cargar usuarios", err);
         }
       }
       loadUsers();
+
+      // 1.2 Cargar Compañías Dinámicamente
+      async function loadCompanies() {
+        try {
+          const res = await fetch(`${API_BASE}/rules`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          if (res.status === 401) {
+            window.location.href = "/";
+            return;
+          }
+
+          const json = await res.json();
+          const rules = json.data || json;
+          const select = document.getElementById("selectCompany");
+          select.innerHTML = '<option value="">Seleccione una compañía...</option>';
+          
+          if (Array.isArray(rules)) {
+            rules.forEach((r) => {
+              select.innerHTML += `<option value="${r.name}">${r.name}</option>`;
+            });
+          }
+        } catch (err) {
+          console.error("Error al cargar compañías", err);
+          document.getElementById("selectCompany").innerHTML = '<option value="">Error al cargar</option>';
+        }
+      }
+      loadCompanies();
+
+      // Configurar fecha de reporte por defecto a hoy
+      document.getElementById("reportDate").valueAsDate = new Date();
 
       // 1.5 Auto-generar N° de Incidencia al seleccionar colaborador
       async function actualizarConteo() {
@@ -691,6 +746,7 @@
           const severityField = document.getElementById("field-severity");
           const imageField = document.getElementById("field-image");
           const feedbackDateField = document.getElementById("field-feedback-date");
+          const errorDateField = document.getElementById("field-error-date");
           const labelSubject = document.getElementById("label-subject");
           const labelIncidence = document.getElementById("label-incidence");
           const inputSubject = document.getElementById("subject");
@@ -699,6 +755,8 @@
             severityField.classList.add("hide");
             imageField.classList.add("hide");
             feedbackDateField.classList.add("hide");
+            errorDateField.classList.remove("hide");
+            document.getElementById("errorDate").required = true;
             document.getElementById("feedbackDate").required = false;
             labelSubject.innerHTML = 'Asunto del Informe <span class="required">*</span>';
             labelIncidence.innerHTML = 'N° de Incidencia <span class="required">*</span>';
@@ -707,6 +765,8 @@
             severityField.classList.add("hide");
             imageField.classList.add("hide");
             feedbackDateField.classList.remove("hide");
+            errorDateField.classList.add("hide");
+            document.getElementById("errorDate").required = false;
             document.getElementById("feedbackDate").required = true;
             labelSubject.innerHTML = 'Título del Feedback <span class="required">*</span>';
             labelIncidence.innerHTML = 'N° de Feedback <span class="required">*</span>';
@@ -715,6 +775,8 @@
             severityField.classList.remove("hide");
             imageField.classList.remove("hide");
             feedbackDateField.classList.add("hide");
+            errorDateField.classList.remove("hide");
+            document.getElementById("errorDate").required = true;
             document.getElementById("feedbackDate").required = false;
             labelSubject.innerHTML = 'Asunto del Informe <span class="required">*</span>';
             labelIncidence.innerHTML = 'N° de Incidencia <span class="required">*</span>';
@@ -893,6 +955,19 @@
             "subject",
             document.getElementById("subject").value,
           );
+          formData.append(
+            "company",
+            document.getElementById("selectCompany").value,
+          );
+          
+          const reportDateVal = document.getElementById("reportDate").value;
+          formData.append("reportDate", reportDateVal);
+
+          if (currentType !== "Feedback") {
+            const errDateVal = document.getElementById("errorDate").value;
+            formData.append("errorDate", errDateVal);
+          }
+
           let finalSeverity = "N/A"; // Por defecto para "Incidencias"
 
           if (currentType === "Error Operacional") {
@@ -943,6 +1018,9 @@
               document.getElementById("main-report-form").reset();
               document.getElementById("gallery-preview").innerHTML = "";
               document.getElementById("incidenceNumber").value = "";
+              document.getElementById("selectCompany").value = "";
+              document.getElementById("errorDate").value = "";
+              document.getElementById("reportDate").valueAsDate = new Date();
               selectedFiles = [];
               selectedSeverity = "";
               document

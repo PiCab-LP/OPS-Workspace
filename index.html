@@ -891,6 +891,9 @@
             line-height: 1.6;
           ">
         <p><strong>Tipo:</strong> <span id="r-type">Cargando...</span></p>
+        <p><strong>Compañía:</strong> <span id="r-company">Cargando...</span></p>
+        <p><strong>Fecha del Informe:</strong> <span id="r-reportDate">Cargando...</span></p>
+        <p id="row-error-date"><strong>Fecha del Error:</strong> <span id="r-errorDate">Cargando...</span></p>
         <p>
           <strong>Asunto:</strong> <span id="r-subject">Cargando...</span>
         </p>
@@ -1657,6 +1660,14 @@
     // Variable global para guardar el reporte temporalmente
     let currentReportData = null;
 
+    function formatSimpleDate(dateStr) {
+      if (!dateStr || dateStr === "N/A") return "N/A";
+      if (!dateStr.includes("-")) return dateStr;
+      const parts = dateStr.split("-");
+      if (parts.length !== 3) return dateStr;
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
     async function openReportToSign(reportId) {
       document.getElementById("notif-dropdown").style.display = "none";
       document.getElementById("signReportModal").style.display = "flex";
@@ -1680,8 +1691,22 @@
           document.getElementById("r-desc").innerText =
             currentReportData.description;
 
+          document.getElementById("r-company").innerText =
+            currentReportData.company || "N/A";
+          document.getElementById("r-reportDate").innerText =
+            formatSimpleDate(currentReportData.reportDate);
+
           // ✅ Mostrar/ocultar campos según el tipo
           const isError = currentReportData.type === "Error Operacional";
+
+          const rowErrorDate = document.getElementById("row-error-date");
+          if (isError && currentReportData.errorDate) {
+            rowErrorDate.style.display = "block";
+            document.getElementById("r-errorDate").innerText =
+              formatSimpleDate(currentReportData.errorDate);
+          } else {
+            rowErrorDate.style.display = "none";
+          }
 
           // Severidad: solo visible en Error Operacional
           const rowSeverity = document.getElementById("row-severity");
@@ -1825,6 +1850,9 @@
               .toISOString()
               .split("T")[0],
             asunto: currentReportData.subject,
+            company: currentReportData.company,
+            reportDate: currentReportData.reportDate,
+            errorDate: currentReportData.errorDate,
             severidad: currentReportData.severity,
             descripcion: currentReportData.description,
             destinatarios: currentReportData.recipients || [],
@@ -1838,7 +1866,7 @@
           loadingText.textContent = "Enviando correo...";
 
           const WEB_APP_URL =
-            "https://script.google.com/macros/s/AKfycby_288EEWssi0FMVYMJTU8IplP8w-3TDbpdmEXKyPIo9fpRxzqq43U1LyQpw44uARoqlA/exec";
+            "https://script.google.com/macros/s/AKfycbx3jizg2XR490i21wrladFc7-BQthgxkb7HODvsrCzxCUJrCFYiZz6WsAlE0ESg2z1S2w/exec";
 
           try {
             await fetch(WEB_APP_URL, {
