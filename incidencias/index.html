@@ -536,7 +536,7 @@
           <input type="text" id="incidenceNumber" required placeholder="Se genera automáticamente" readonly
             maxlength="10" />
         </div>
-        <div class="form-group">
+        <div class="form-group" id="field-company">
           <label>Compañía <span class="required">*</span></label>
           <select id="selectCompany" required>
             <option value="">Cargando compañías...</option>
@@ -747,6 +747,7 @@
           const imageField = document.getElementById("field-image");
           const feedbackDateField = document.getElementById("field-feedback-date");
           const errorDateField = document.getElementById("field-error-date");
+          const companyField = document.getElementById("field-company");
           const labelSubject = document.getElementById("label-subject");
           const labelIncidence = document.getElementById("label-incidence");
           const inputSubject = document.getElementById("subject");
@@ -755,29 +756,36 @@
             severityField.classList.add("hide");
             imageField.classList.add("hide");
             feedbackDateField.classList.add("hide");
-            errorDateField.classList.remove("hide");
-            document.getElementById("errorDate").required = true;
+            errorDateField.classList.add("hide");
+            companyField.classList.add("hide");
+            document.getElementById("errorDate").required = false;
             document.getElementById("feedbackDate").required = false;
+            document.getElementById("selectCompany").required = false;
             labelSubject.innerHTML = 'Asunto del Informe <span class="required">*</span>';
             labelIncidence.innerHTML = 'N° de Incidencia <span class="required">*</span>';
             inputSubject.placeholder = 'Resumen corto de la situación';
           } else if (currentType === "Feedback") {
             severityField.classList.add("hide");
             imageField.classList.add("hide");
-            feedbackDateField.classList.remove("hide");
+            feedbackDateField.classList.add("hide");
             errorDateField.classList.add("hide");
+            companyField.classList.add("hide");
             document.getElementById("errorDate").required = false;
-            document.getElementById("feedbackDate").required = true;
+            document.getElementById("feedbackDate").required = false;
+            document.getElementById("selectCompany").required = false;
             labelSubject.innerHTML = 'Título del Feedback <span class="required">*</span>';
             labelIncidence.innerHTML = 'N° de Feedback <span class="required">*</span>';
             inputSubject.placeholder = 'Título del feedback';
           } else {
+            // Error Operacional
             severityField.classList.remove("hide");
             imageField.classList.remove("hide");
             feedbackDateField.classList.add("hide");
             errorDateField.classList.remove("hide");
+            companyField.classList.remove("hide");
             document.getElementById("errorDate").required = true;
             document.getElementById("feedbackDate").required = false;
+            document.getElementById("selectCompany").required = true;
             labelSubject.innerHTML = 'Asunto del Informe <span class="required">*</span>';
             labelIncidence.innerHTML = 'N° de Incidencia <span class="required">*</span>';
             inputSubject.placeholder = 'Resumen corto de la situación';
@@ -983,7 +991,7 @@
           formData.append("severity", finalSeverity);
           let descValue = document.getElementById("description").value;
           if (currentType === "Feedback") {
-            const fDate = document.getElementById("feedbackDate").value;
+            const fDate = document.getElementById("reportDate").value;
             descValue = `Fecha del Feedback: ${fDate}\n\n${descValue}`;
             formData.append("feedbackDate", fDate);
           }

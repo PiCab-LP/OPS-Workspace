@@ -286,6 +286,7 @@
           informesReports = allReports.filter(r => r.type !== 'Feedback');
           feedbackReports = allReports.filter(r => r.type === 'Feedback');
 
+
           filteredReports = [...informesReports];
           populateFilterDropdowns();
           renderAll();
@@ -308,7 +309,9 @@
         const supName = r.supervisorId?.fullName || "Desconocido";
         const supId = r.supervisorId?._id || "";
         if (supId) supervisors.set(supId, supName);
-        collaborators.set(r.collaboratorId, r.collaboratorName);
+        
+        const collabId = r.collaboratorId?._id || r.collaboratorId;
+        collaborators.set(collabId, r.collaboratorName);
       });
 
       const selSup = document.getElementById("filterSupervisor");
@@ -334,8 +337,9 @@
       const ff = document.getElementById("filterFechaFin").value;
 
       filteredReports = informesReports.filter(r => {
+        const rCollabId = r.collaboratorId?._id || r.collaboratorId;
         if (sup && (r.supervisorId?._id || "") !== sup) return false;
-        if (col && r.collaboratorId !== col) return false;
+        if (col && rCollabId !== col) return false;
         if (sev && r.severity !== sev) return false;
 
         if (estado) {
@@ -547,8 +551,8 @@
           <div class="detail-field"><span class="field-label">N° Incidencia</span><span class="field-value">${r.incidenceNumber || "-"}</span></div>
           <div class="detail-field"><span class="field-label">Severidad</span><span class="field-value badge ${sevClassDetail}">${displaySeverity}</span></div>
           <div class="detail-field"><span class="field-label">Estado</span><span class="field-value badge ${statusClass}">${statusLabel}</span></div>
-          <div class="detail-field"><span class="field-label">Compañía</span><span class="field-value">${r.company || "N/A"}</span></div>
-          <div class="detail-field"><span class="field-label">Fecha del Informe</span><span class="field-value">${formatDate(r.reportDate)}</span></div>
+          ${r.type === 'Error Operacional' ? `<div class="detail-field"><span class="field-label">Compañía</span><span class="field-value">${r.company || "N/A"}</span></div>` : ''}
+          <div class="detail-field"><span class="field-label">Fecha del Informe</span><span class="field-value">${r.reportDate ? formatDate(r.reportDate) : fecha}</span></div>
           ${r.type === 'Error Operacional' && r.errorDate ? `<div class="detail-field"><span class="field-label">Fecha del Error</span><span class="field-value">${formatDate(r.errorDate)}</span></div>` : ''}
         </div>
 
@@ -654,9 +658,13 @@
         return;
       }
 
+
       tbody.innerHTML = allUsers.map(u => {
         // Feedbacks del usuario
-        const userFeedbacks = feedbackReports.filter(r => r.collaboratorId === u._id);
+        const userFeedbacks = feedbackReports.filter(r => {
+          const rCollabId = r.collaboratorId?._id || r.collaboratorId;
+          return rCollabId === u._id;
+        });
         const fbCount = userFeedbacks.length;
         
         // Comprobar meta semanal

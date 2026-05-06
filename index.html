@@ -891,7 +891,7 @@
             line-height: 1.6;
           ">
         <p><strong>Tipo:</strong> <span id="r-type">Cargando...</span></p>
-        <p><strong>Compañía:</strong> <span id="r-company">Cargando...</span></p>
+        <p id="row-company"><strong>Compañía:</strong> <span id="r-company">Cargando...</span></p>
         <p><strong>Fecha del Informe:</strong> <span id="r-reportDate">Cargando...</span></p>
         <p id="row-error-date"><strong>Fecha del Error:</strong> <span id="r-errorDate">Cargando...</span></p>
         <p>
@@ -1693,11 +1693,21 @@
 
           document.getElementById("r-company").innerText =
             currentReportData.company || "N/A";
+          const reportDateFallback = new Date(currentReportData.createdAt).toLocaleDateString("es-MX", { day: "2-digit", month: "2-digit", year: "numeric" });
           document.getElementById("r-reportDate").innerText =
-            formatSimpleDate(currentReportData.reportDate);
+            currentReportData.reportDate ? formatSimpleDate(currentReportData.reportDate) : reportDateFallback;
 
           // ✅ Mostrar/ocultar campos según el tipo
           const isError = currentReportData.type === "Error Operacional";
+
+          const rowCompany = document.getElementById("row-company");
+          if (isError) {
+            rowCompany.style.display = "block";
+            document.getElementById("r-company").innerText =
+              currentReportData.company || "N/A";
+          } else {
+            rowCompany.style.display = "none";
+          }
 
           const rowErrorDate = document.getElementById("row-error-date");
           if (isError && currentReportData.errorDate) {
